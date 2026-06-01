@@ -33,8 +33,8 @@ export class Menus {
     try { localStorage.setItem(PROGRESS_KEY, String(this.unlocked)); } catch {}
   }
 
-  _clear() { this.el.innerHTML = ''; this.el.classList.remove('hidden'); }
-  hide() { this.el.classList.add('hidden'); }
+  _clear() { this.el.innerHTML = ''; this.el.classList.remove('hidden'); this.root.classList.remove('hidden'); }
+  hide() { this.el.classList.add('hidden'); this.root.classList.add('hidden'); }
   _h(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   _btn(label, onClick, cls = '') {
     const b = this._h('button', `menu-btn ${cls}`, label);

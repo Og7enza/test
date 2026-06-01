@@ -25,11 +25,11 @@ html, body {
 /* --- Calques overlay ------------------------------------------------------ */
 #ui-layer { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
 #ui-layer .hud-interactive { pointer-events: auto; }
-#menu-layer { position: fixed; inset: 0; z-index: 5; }
+#menu-layer { position: fixed; inset: 0; z-index: 5; pointer-events: none; }
 #menu-layer.hidden, .menu-layer.hidden { display: none; }
 
 /* ============================ MENUS ====================================== */
-.menu-layer { position: fixed; inset: 0; z-index: 5;
+.menu-layer { position: fixed; inset: 0; z-index: 5; pointer-events: auto;
   background: radial-gradient(120% 120% at 50% 0%, #1a2747 0%, #070b16 60%, #04060c 100%);
   display: flex; align-items: center; justify-content: center; overflow-y: auto;
 }
