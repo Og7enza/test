@@ -1,0 +1,27 @@
+{
+  "name": "divine-rivals",
+  "version": "1.0.0",
+  "description": "Divine Rivals - jeu mobile de stratégie/action en temps réel inspiré de Team Buddies, thème mythologie grecque/égyptienne. Three.js + Capacitor.",
+  "type": "module",
+  "scripts": {
+    "start": "node tools/serve.js",
+    "serve": "node tools/serve.js",
+    "vendor": "node tools/vendor-three.js",
+    "build": "node tools/build.js",
+    "cap:sync": "cap sync",
+    "cap:android": "cap add android && cap sync android && cap open android",
+    "cap:ios": "cap add ios && cap sync ios && cap open ios"
+  },
+  "keywords": ["game", "threejs", "capacitor", "mobile", "team-buddies", "rts"],
+  "author": "Divine Rivals",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/core": "^6.1.2",
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/ios": "^6.1.2"
+  }
+}

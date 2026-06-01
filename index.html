@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#05070d" />
+  <title>Divine Rivals</title>
+  <link rel="stylesheet" href="./style.css" />
+  <!-- Three.js embarqué localement (jeu autonome / offline pour Capacitor) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/three.module.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- Canvas 3D (rempli par Three.js) -->
+  <div id="game-root"></div>
+
+  <!-- Calque HUD tactile (overlay) -->
+  <div id="ui-layer"></div>
+
+  <!-- Calque menus -->
+  <div id="menu-layer"></div>
+
+  <!-- Invite à passer en paysage -->
+  <div id="rotate-prompt">
+    <div class="rotate-inner">📱↻<br />Tournez l'appareil en <b>paysage</b></div>
+  </div>
+
+  <!-- Écran de chargement initial -->
+  <div id="boot">
+    <div class="boot-inner">⚡<br />DIVINE RIVALS<br /><small>Chargement…</small></div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

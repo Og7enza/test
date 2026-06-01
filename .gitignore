@@ -1,0 +1,15 @@
+# Dépendances
+node_modules/
+
+# Plateformes natives Capacitor (générées par `npx cap add`)
+/android/
+/ios/
+
+# Build / divers
+dist/
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# IMPORTANT : vendor/ EST versionné (Three.js embarqué pour un jeu autonome/offline)

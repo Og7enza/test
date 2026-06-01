@@ -1,0 +1,22 @@
+{
+  "appId": "com.divinerivals.game",
+  "appName": "Divine Rivals",
+  "webDir": "www",
+  "backgroundColor": "#05070d",
+  "android": {
+    "allowMixedContent": false
+  },
+  "ios": {
+    "contentInset": "always"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 800,
+      "backgroundColor": "#05070d",
+      "showSpinner": false
+    }
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
