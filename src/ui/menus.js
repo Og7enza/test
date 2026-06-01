@@ -46,6 +46,11 @@ export class Menus {
   showMain() {
     this._clear();
     const wrap = this._h('div', 'menu-screen menu-main');
+    const logo = document.createElement('img');
+    logo.className = 'menu-logo'; logo.alt = 'Divine Rivals';
+    logo.src = 'assets/ui/logo.png';
+    logo.onerror = () => logo.remove();   // pas de logo fourni => on garde le titre texte
+    wrap.appendChild(logo);
     wrap.appendChild(this._h('h1', 'menu-title', '⚡ DIVINE RIVALS'));
     wrap.appendChild(this._h('p', 'menu-sub', 'Empilez les nuages. Forgez. Dominez l\'Olympe.'));
     const col = this._h('div', 'menu-col');
@@ -172,7 +177,8 @@ export class Menus {
       <div><b>⚒️ Forge</b>Selon la forme empilée : une arme ou un véhicule !</div>
       <div><b>✨ Invoque</b>Pile verticale (2/3/4) = nouveau coéquipier.</div>
       <div><b>🔥 Tir</b>Visée auto assistée. Maintenez Tir.</div>
-      <div><b>🤚 Ordres IA</b>Maintenez le doigt sur un allié → menu radial.</div>
+      <div><b>🤚 Gambits (IA)</b>Maintenez le doigt sur un allié → menu radial. Chaque ordre est un « gambit » (règles si→alors) : fuit si faible, attaque à portée, protège le chef…</div>
+      <div><b>🎖️ Bataillon</b>Bouton Bataillon : vos alliés marchent en formation (Pointe / Ligne / File / Cercle) derrière vous et combattent ensemble.</div>
     `));
     wrap.appendChild(this._btn('OK, j\'ai compris', () => done(), 'big'));
     this.el.appendChild(wrap);

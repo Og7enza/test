@@ -42,8 +42,21 @@ les outils mobiles des DevTools). Sur ordinateur, la souris simule le tactile.
 | **Donner un ordre à un allié (IA)** | **Maintenez** le doigt sur un allié → menu radial |
 | **Pause** | Bouton ⏸ en haut au centre |
 
-### Ordres du menu radial
-🐾 Suivre · 🛡️ Défendre base · ⚔️ Attaquer · ☁️ Collecter · ✋ Attendre
+### Gambits (IA des alliés, façon FFXII)
+Maintenez le doigt sur un allié → menu radial. Chaque ordre est en réalité un **gambit** :
+une liste ordonnée de règles *condition → action* évaluées de haut en bas. Exemple du
+préréglage « Attaquer » : *si PV < 15% → repli, sinon → attaque la cible la plus proche*.
+
+🐾 Suivre · 🛟 Protéger le chef · 🛡️ Défendre base · ⚔️ Attaquer · ☁️ Collecter · ✋ Attendre
+
+### Bataillons (formations)
+Bouton **🎖️ Bataillon** : il fait basculer vos alliés en **formation** derrière vous et
+cycle entre **Pointe (V) → Ligne → File → Cercle → Off**. En formation, ils avancent
+groupés et rompent les rangs pour combattre quand un ennemi entre à portée, puis se
+reforment.
+
+> 🎨 Assets manquants (sols, icônes, logo, splash…) : voir **[ASSETS.md](ASSETS.md)**.
+> Tout est optionnel et « drop-in » — le jeu tourne déjà sans, en rendu procédural.
 
 ---
 

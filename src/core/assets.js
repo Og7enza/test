@@ -27,6 +27,25 @@ export function toonMat(color, { flat = true, emissive = 0x000000, emissiveInten
   return m;
 }
 
+// Chargeur de texture OPTIONNEL : applique l'image si elle existe, sinon ne fait
+// rien (on garde le rendu procédural). Permet d'ajouter des assets plus tard
+// sans jamais casser le build s'ils sont absents.
+const _texLoader = new THREE.TextureLoader();
+export function optionalTexture(url, onApply, { repeat = 1, srgb = true } = {}) {
+  _texLoader.load(
+    url,
+    (t) => {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(repeat, repeat);
+      if (srgb && 'colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
+      t.anisotropy = 4;
+      onApply(t);
+    },
+    undefined,
+    () => { /* asset absent : on reste en procédural, aucune erreur bloquante */ },
+  );
+}
+
 // Géométries réutilisées (perf : on partage autant que possible).
 const G = {
   box: new THREE.BoxGeometry(1, 1, 1),
@@ -246,6 +265,10 @@ export function makeArena(world) {
   // Sol.
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(half * 2, half * 2, 1, 1), toonMat(world.ground, { flat: false }));
   ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; g.add(ground);
+  // Texture de sol optionnelle (assets/textures/groundN.png), sinon couleur unie.
+  optionalTexture(`assets/textures/ground${world.id}.png`, (t) => {
+    ground.material.map = t; ground.material.color.set(0xffffff); ground.material.needsUpdate = true;
+  }, { repeat: 6 });
 
   // Bordures (murs) — obstacles de périmètre.
   const wallMat = toonMat(world.accent);

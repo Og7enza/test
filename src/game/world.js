@@ -30,6 +30,7 @@ class Team {
     this.score = 0;                               // kills (deathmatch)
     this.canRespawn = true;
     this.respawnTimer = 0;
+    this.formation = 'off';                       // bataillon : off|wedge|line|column|circle
 
     // Temple.
     this.templeGroup = makeTemple(this.color);
@@ -54,6 +55,7 @@ class Team {
 
   aliveBuddies() { return this.buddies.filter((b) => b.alive); }
   leader() { return (this.activeBuddy && this.activeBuddy.alive) ? this.activeBuddy : this.aliveBuddies()[0] || null; }
+  get battalionActive() { return this.formation !== 'off'; }
 
   damageTemple(d) {
     if (this.templeDestroyed) return;
@@ -63,6 +65,7 @@ class Team {
       const p = this.templeGroup.position;
       this.world.particles.emit('explosion', p.x, 3, p.z, { big: true, count: 60 });
       this.world.audio.explosion(true);
+      this.world.engine.addShake(0.9);
       if (this.core) this.core.visible = false;
     }
   }
@@ -136,6 +139,17 @@ export class World {
       new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35, side: THREE.DoubleSide }));
     ring.rotation.x = -Math.PI / 2; ring.position.y = 0.06; this.scene.add(ring);
     this.centerRing = ring;
+
+    // Réticule de cible (un par équipe humaine) : montre la cible verrouillée.
+    for (const t of this.teams) {
+      if (t.controller !== 'human') continue;
+      const ret = new THREE.Group();
+      const r1 = new THREE.Mesh(new THREE.RingGeometry(0.95, 1.2, 4),
+        new THREE.MeshBasicMaterial({ color: t.color.accent, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthTest: false }));
+      r1.rotation.x = -Math.PI / 2; r1.position.y = 0.14;
+      ret.add(r1); ret.renderOrder = 998; ret.visible = false;
+      this.scene.add(ret); t._reticle = ret;
+    }
   }
 
   _spawnLayout(n) {
@@ -291,6 +305,8 @@ export class World {
       if ((ox / d) * dx + (oz / d) * dz < 0.3) continue;   // doit être devant
       b._lastAttacker = buddy.team;
       b.takeDamage(w.damage, buddy.team);
+      const kb = b.vehicle ? 0.8 : 4.0;
+      b.vel.x += dx * kb; b.vel.z += dz * kb;
       this.particles.emit('hit', b.pos.x, 1.2, b.pos.z, { color: w.projColor });
     }
     // Temples ennemis au corps à corps (toutes les équipes adverses).
@@ -351,11 +367,15 @@ export class World {
     const w = p.weapon;
     b._lastAttacker = p.team;
     b.takeDamage(w.damage, p.team);
+    // Recul (impact) dans la direction du projectile.
+    const kb = b.vehicle ? 1.0 : 5.0, l = Math.hypot(p.vx, p.vz) || 1;
+    b.vel.x += (p.vx / l) * kb; b.vel.z += (p.vz / l) * kb;
     this.particles.emit('hit', p.x, p.y, p.z, { color: w.projColor });
     this.audio.hurt();
     // Dégâts de zone.
     if (w.aoe) {
       this.particles.emit('explosion', p.x, p.y, p.z, { count: 18 });
+      this.engine.addShake(0.35);
       for (const o of this.buddies) {
         if (o === b || o.team === p.team || !o.alive) continue;
         if (Math.hypot(o.pos.x - p.x, o.pos.z - p.z) < w.aoe) { o._lastAttacker = p.team; o.takeDamage(w.damage * 0.6, p.team); }
@@ -423,6 +443,18 @@ export class World {
     for (const b of this.buddies) b.update(dt, this.time);
     this._updateProjectiles(dt);
     for (const t of this.teams) t.pad.update(this.time);
+
+    // Réticules de cible (équipes humaines).
+    for (const t of this.teams) {
+      if (t.controller !== 'human' || !t._reticle) continue;
+      const b = t.activeBuddy, tg = (b && b.alive) ? b.target : null;
+      if (tg && tg.alive !== false) {
+        const tp = tg.pos || tg.position;
+        t._reticle.visible = true;
+        t._reticle.position.set(tp.x, 0.14, tp.z);
+        t._reticle.rotation.y += dt * 3;
+      } else t._reticle.visible = false;
+    }
 
     // Pulsation des cœurs de temple.
     for (const t of this.teams) if (t.core && !t.templeDestroyed) {
@@ -534,7 +566,7 @@ export class World {
     for (const b of this.buddies.slice()) b.dispose();
     for (const c of this.clouds.slice()) this.scene.remove(c.group);
     for (const p of this.projectiles) this.scene.remove(p.mesh);
-    for (const t of this.teams) { this.scene.remove(t.templeGroup); this.scene.remove(t.pad.group); }
+    for (const t of this.teams) { this.scene.remove(t.templeGroup); this.scene.remove(t.pad.group); if (t._reticle) this.scene.remove(t._reticle); }
     if (this._arenaGroup) this.scene.remove(this._arenaGroup);
     if (this.centerRing) this.scene.remove(this.centerRing);
     this.buddies = []; this.clouds = []; this.projectiles = []; this.teams = [];

@@ -6,9 +6,9 @@
 name: Build Android APK
 
 on:
-  push:
-    branches: [ "claude/stoic-keller-zLmP2" ]
-  workflow_dispatch:        # permet de lancer manuellement depuis l'onglet Actions
+  workflow_dispatch:        # lancement MANUEL uniquement (onglet Actions → "Run workflow").
+                            # Ainsi un simple push de code n'enclenche pas de build :
+                            # on compile quand les assets sont prêts.
 
 jobs:
   build:

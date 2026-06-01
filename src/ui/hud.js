@@ -62,6 +62,7 @@ export class HUD {
       const action = this._btn('✋<span>Action</span>', 'hud-action');
       const forge = this._btn('⚒️<span>Forge</span>', 'hud-forge');
       const summon = this._btn('✨<span>Invoque</span>', 'hud-summon');
+      const batt = this._btn('🎖️<span>Bataillon</span>', 'hud-batt');
       const weap = document.createElement('div'); weap.className = 'hud-weapon';
 
       fire.addEventListener('pointerdown', (e) => { e.preventDefault(); this.h.fireDown(team); fire.classList.add('down'); });
@@ -70,14 +71,15 @@ export class HUD {
       action.addEventListener('pointerdown', (e) => { e.preventDefault(); this.h.action(team); });
       forge.addEventListener('pointerdown', (e) => { e.preventDefault(); this.h.forge(team); });
       summon.addEventListener('pointerdown', (e) => { e.preventDefault(); this.h.summon(team); });
+      batt.addEventListener('pointerdown', (e) => { e.preventDefault(); this.h.battalion(team); });
 
       const right = document.createElement('div'); right.className = 'hud-right';
-      right.appendChild(weap); right.appendChild(summon); right.appendChild(forge);
+      right.appendChild(weap); right.appendChild(batt); right.appendChild(summon); right.appendChild(forge);
       right.appendChild(action); right.appendChild(fire);
       panel.appendChild(right);
 
       this.root.appendChild(panel);
-      this.panels.push({ team, panel, obj, stats, buddyRow, weap, joyBase, joyKnob, fire, action, forge, summon });
+      this.panels.push({ team, panel, obj, stats, buddyRow, weap, joyBase, joyKnob, fire, action, forge, summon, batt });
     }
   }
 
@@ -219,6 +221,11 @@ export class HUD {
         p.forge.classList.toggle('enabled', canCraft);
         p.summon.classList.toggle('enabled', canCraft);
       }
+
+      // Bataillon (formation en cours).
+      const fmt = { off: 'Bataillon', wedge: '🔺 Pointe', line: '▬ Ligne', column: '┃ File', circle: '⭕ Cercle' }[team.formation] || 'Bataillon';
+      p.batt.innerHTML = `🎖️<span>${fmt}</span>`;
+      p.batt.classList.toggle('active', team.battalionActive);
 
       // Icônes des buddies.
       this._updateBuddyRow(p, team);

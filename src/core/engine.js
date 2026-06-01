@@ -23,6 +23,7 @@ export class Engine {
     this._setupLights();
 
     this.viewports = [];     // { camera, rect, target:Vector3, cam2:Vector3 }
+    this.shake = 0;          // secousse caméra (impacts/explosions)
     this.clock = new THREE.Clock();
     this._raf = null;
     this._onResize = this._resize.bind(this);
@@ -109,8 +110,17 @@ export class Engine {
     const desired = this._tmp || (this._tmp = new THREE.Vector3());
     desired.set(vp.target.x + off.x, vp.target.y + off.y, vp.target.z + off.z);
     vp.camera.position.lerp(desired, CONFIG.camera.lerp);
+    if (this.shake > 0.001) {
+      const s = this.shake;
+      vp.camera.position.x += (Math.random() - 0.5) * s;
+      vp.camera.position.y += (Math.random() - 0.5) * s * 0.6;
+      vp.camera.position.z += (Math.random() - 0.5) * s;
+    }
     vp.camera.lookAt(vp.target.x, vp.target.y + 1, vp.target.z);
   }
+
+  // Déclenche une secousse de caméra (intensité cumulée, plafonnée).
+  addShake(a) { this.shake = Math.min(1.4, Math.max(this.shake, a)); }
 
   _resize() {
     const W = this.container.clientWidth, H = this.container.clientHeight;
@@ -147,6 +157,7 @@ export class Engine {
       r.render(this.scene, v.camera);
     }
     r.setScissorTest(false);
+    if (this.shake > 0) { this.shake *= 0.86; if (this.shake < 0.002) this.shake = 0; }
   }
 
   dispose() {

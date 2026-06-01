@@ -43,6 +43,11 @@ class Game {
       action: (team) => this.doAction(team),
       forge: (team) => this.world && this.world.playerForge(team),
       summon: (team) => this.world && this.world.playerSummon(team),
+      battalion: (team) => {
+        const seq = ['off', 'wedge', 'line', 'column', 'circle'];
+        team.formation = seq[(seq.indexOf(team.formation) + 1) % seq.length];
+        audio.uiClick();
+      },
       switchBuddy: (team, b) => { if (b.alive) { team.activeBuddy = b; audio.uiClick(); } },
       joystick: (team, dx, dy) => {
         const b = team.activeBuddy; if (!b) return;

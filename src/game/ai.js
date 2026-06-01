@@ -1,96 +1,77 @@
 // =============================================================================
 //  ai.js — Intelligence des buddies.
-//   1) updateBuddyBehavior() : exécute l'ORDRE d'un buddy (Suivre / Défendre /
-//      Attaquer / Collecter / Attendre). Utilisé pour tous les buddies SAUF
-//      celui contrôlé manuellement par un humain.
-//   2) TeamAI : "directeur" d'une équipe gérée par l'ordinateur. Répartit les
-//      rôles, collecte les nuages, fabrique armes/coéquipiers selon sa recette
-//      objectif.
+//   1) updateBuddyBehavior() : fait jouer un buddy. S'il appartient à un
+//      BATAILLON actif (et n'est pas le chef), il tient sa place en FORMATION
+//      tant qu'aucune menace immédiate ; sinon il exécute son GAMBIT (cf.
+//      gambits.js). Utilisé pour tous les buddies SAUF celui piloté à la main.
+//   2) TeamAI : "directeur" d'une équipe gérée par l'ordinateur (rôles +
+//      collecte + craft selon une recette objectif).
 // =============================================================================
 
 import { CONFIG } from '../data/config.js';
 import { totalClouds } from '../data/recipes.js';
+import { runGambit } from './gambits.js';
 
-// Les 5 ordres disponibles via le menu radial.
+// Les "ordres" du menu radial sont désormais des PRÉRÉGLAGES de gambits.
 export const ORDERS = [
   { id: 'follow',  label: 'Suivre',        icon: '🐾' },
+  { id: 'guard',   label: 'Protéger chef', icon: '🛟' },
   { id: 'defend',  label: 'Défendre base', icon: '🛡️' },
   { id: 'attack',  label: 'Attaquer',      icon: '⚔️' },
   { id: 'collect', label: 'Collecter',     icon: '☁️' },
   { id: 'wait',    label: 'Attendre',      icon: '✋' },
 ];
 
-function approachPoint(b, target, standoff) {
-  // Point situé à `standoff` de la cible, dans la direction du buddy.
-  const tp = target.pos || target.position;
-  let dx = b.pos.x - tp.x, dz = b.pos.z - tp.z;
-  const d = Math.hypot(dx, dz) || 1;
-  return { x: tp.x + (dx / d) * standoff, z: tp.z + (dz / d) * standoff };
+// --- Formations de bataillon (décalages en repère "chef") -------------------
+// x = latéral (droite +), z = profondeur (derrière +).
+export const FORMATIONS = {
+  wedge:  (i) => { const k = Math.floor(i / 2) + 1, side = (i % 2) ? -1 : 1; return { x: side * 1.7 * k, z: 1.3 * k }; },
+  line:   (i, n) => ({ x: (i - (n - 1) / 2) * 1.9, z: 2.0 }),
+  column: (i) => ({ x: 0, z: (i + 1) * 1.9 }),
+  circle: (i, n) => { const a = (i / Math.max(1, n)) * Math.PI * 2; return { x: Math.cos(a) * 2.5, z: 2.4 + Math.sin(a) * 2.5 }; },
+};
+
+function formationSlot(b) {
+  const team = b.team, leader = team.leader();
+  if (!leader) return null;
+  const members = team.aliveBuddies().filter((x) => x !== leader);
+  const i = members.indexOf(b);
+  if (i < 0) return null;
+  const off = (FORMATIONS[team.formation] || FORMATIONS.wedge)(i, members.length);
+  const f = leader.facing;
+  // forward = (sin f, cos f) ; right = (cos f, -sin f) ; behind = -forward
+  const rx = Math.cos(f), rz = -Math.sin(f), bx = -Math.sin(f), bz = -Math.cos(f);
+  return { x: leader.pos.x + rx * off.x + bx * off.z, z: leader.pos.z + rz * off.x + bz * off.z };
+}
+
+// Pré-calcule le contexte utile aux gambits (perception du buddy).
+function computeInfo(b, world) {
+  const e = world.nearestEnemyBuddy(b);
+  const enemyDist = e ? Math.hypot(e.pos.x - b.pos.x, e.pos.z - b.pos.z) : Infinity;
+  const cloud = (!b.carried) ? world.nearestFreeCloud(b.pos) : null;
+  let baseThreat = false, leaderThreat = false;
+  const home = b.team.spawn, leader = b.team.leader();
+  for (const o of world.buddies) {
+    if (o.team === b.team || !o.alive) continue;
+    if (Math.hypot(o.pos.x - home.x, o.pos.z - home.z) < 14) baseThreat = true;
+    if (leader && Math.hypot(o.pos.x - leader.pos.x, o.pos.z - leader.pos.z) < 8) leaderThreat = true;
+  }
+  return { enemy: e, enemyDist, cloud, baseThreat, leaderThreat };
 }
 
 export function updateBuddyBehavior(b, world) {
   if (!b.alive) return;
-  const { dist: enemyDist } = world.nearestEnemy(b);
-  const threatened = enemyDist < 8;
+  const info = computeInfo(b, world);
 
-  switch (b.order) {
-    case 'wait':
-      b.moveTarget = null; b.joy = null;
-      b.wantFire = enemyDist < b.weapon.range;
-      break;
-
-    case 'follow': {
-      const leader = b.team.leader();
-      if (leader && leader !== b) {
-        const i = b.team.buddies.indexOf(b);
-        const ang = i * 1.7;
-        const tx = leader.pos.x + Math.cos(ang) * 2.6, tz = leader.pos.z + Math.sin(ang) * 2.6;
-        b.moveTarget = (Math.hypot(b.pos.x - tx, b.pos.z - tz) > 1.4) ? { x: tx, z: tz } : null;
-      } else b.moveTarget = null;
-      b.wantFire = true;            // tire si une cible passe à portée
-      break;
-    }
-
-    case 'defend': {
-      const home = b.team.spawn;
-      const fromHome = Math.hypot(b.pos.x - home.x, b.pos.z - home.z);
-      if (fromHome > 9) b.moveTarget = { x: home.x, z: home.z };
-      else if (b.target) b.moveTarget = approachPoint(b, b.target, Math.min(8, b.weapon.range * 0.7));
-      else b.moveTarget = null;
-      b.wantFire = true;
-      break;
-    }
-
-    case 'attack': {
-      let tgt = world.nearestEnemyBuddy(b);
-      if (!tgt) tgt = world.enemyTempleFor(b.team);
-      if (tgt) b.moveTarget = approachPoint(b, tgt, Math.max(2.5, b.weapon.range * 0.7));
-      b.wantFire = true;
-      break;
-    }
-
-    case 'collect':
-    default: {
-      if (!b.carried) {
-        const cloud = world.nearestFreeCloud(b.pos);
-        if (cloud) {
-          b.moveTarget = { x: cloud.pos.x, z: cloud.pos.z };
-          if (Math.hypot(b.pos.x - cloud.pos.x, b.pos.z - cloud.pos.z) < CONFIG.buddy.pickupReach) world.tryPickup(b);
-        } else {
-          b.moveTarget = { x: b.team.pad.x, z: b.team.pad.z };
-        }
-      } else {
-        // Apporte au pad. Une IA d'équipe vise une colonne précise (motif).
-        const col = b.team.ai ? b.team.ai.depositColumnWorld(b) : { x: b.team.pad.x, z: b.team.pad.z };
-        b.moveTarget = { x: col.x, z: col.z };
-        if (Math.hypot(b.pos.x - b.team.pad.x, b.pos.z - b.team.pad.z) < CONFIG.pad.useRadius) {
-          if (world.tryDeposit(b) && b.team.ai) b.team.ai.afterDeposit(b);
-        }
-      }
-      b.wantFire = threatened;       // se défend si menacé
-      break;
+  // Bataillon : on tient la formation tant qu'aucun ennemi à portée.
+  if (b.team.battalionActive && b !== b.team.leader()) {
+    if (info.enemyDist > b.weapon.range * 0.95) {
+      const slot = formationSlot(b);
+      if (slot) { b.moveTarget = slot; b.joy = null; b.wantFire = info.enemyDist < b.weapon.range; return; }
     }
   }
+  // Sinon : on joue le gambit (préréglage d'ordre).
+  runGambit(b.order, b, world, info);
 }
 
 // --- Directeur d'équipe IA ---------------------------------------------------
@@ -129,14 +110,12 @@ export class TeamAI {
     const lvl = this.team.aiLevel || 0.5;
     const targetSize = Math.min(CONFIG.buddy.maxPerTeam, 2 + Math.round(lvl * 2));
     if (teamSize < targetSize) return { kind: 'summon', cols: [2, 0, 0, 0] };  // archer
-    // Sinon : une arme dont le palier dépend du niveau d'IA.
     if (lvl > 0.85) return { kind: 'forge', cols: [2, 2, 2, 2] };   // Colère de Zeus
     if (lvl > 0.65) return { kind: 'forge', cols: [2, 2, 1, 0] };   // Foudre divine
     if (lvl > 0.45) return { kind: 'forge', cols: [2, 1, 1, 0] };   // Mitrailleuse
     return { kind: 'forge', cols: [1, 1, 1, 0] };                   // Éclair
   }
 
-  // Colonne où déposer pour se rapprocher du motif objectif.
   depositColumnWorld(b) {
     const pad = this.team.pad, g = this.goal || { cols: [4, 0, 0, 0] };
     let col = -1;
@@ -146,20 +125,13 @@ export class TeamAI {
     return { x: pad.x + pad.columns[col].x, z: pad.z + pad.columns[col].z };
   }
 
-  // Après un dépôt : si le motif objectif est atteint, on fabrique.
   afterDeposit() {
     const pad = this.team.pad;
     if (!this.goal) return;
-    const need = totalClouds(this.goal.cols);
-    if (pad.total() < need) return;
-
-    const action = this.goal.kind;
-    const res = action === 'summon' ? pad.summon() : pad.forge();
-    if (res) {
-      this.world.applyCraftResult(this.team, this.builder, res);
-    } else {
-      pad.clear();   // motif raté : on recycle
-    }
+    if (pad.total() < totalClouds(this.goal.cols)) return;
+    const res = this.goal.kind === 'summon' ? pad.summon() : pad.forge();
+    if (res) this.world.applyCraftResult(this.team, this.builder, res);
+    else pad.clear();
     this.goal = null;
   }
 }

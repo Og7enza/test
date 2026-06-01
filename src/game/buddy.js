@@ -112,6 +112,7 @@ export class Buddy {
     const p = this.pos;
     this.world.particles.emit('explosion', p.x, (this.vehicle ? 1.2 : 1.0), p.z, { big: !!this.vehicle });
     this.world.audio.explosion(!!this.vehicle);
+    this.world.engine.addShake(this.vehicle ? 0.6 : 0.28);
     if (this.carried) this.world.spawnCloud(p.x, p.z, 1.2);   // relâche le nuage
     this.world.removeBuddy(this);
   }
