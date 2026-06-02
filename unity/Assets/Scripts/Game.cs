@@ -18,7 +18,8 @@ public class Game : MonoBehaviour {
     bool running, resultsShown; float shake;
     readonly List<Camera> cams = new List<Camera>();
     readonly List<Team> camTeam = new List<Team>();
-    readonly Vector3 camOffset = new Vector3(0, 34, 26);
+    Vector3 camOffset = new Vector3(0, 50, 32);   // caméra plus HAUTE (vue d'ensemble) — ajustable
+    float[] lastTapT; Vector2[] lastTapP;         // détection du double-tap, par joueur
 
     void Awake() {
         Application.targetFrameRate = Config.TargetFPS;
@@ -87,6 +88,8 @@ public class Game : MonoBehaviour {
         world.onShake = a => shake = Mathf.Min(1.4f, Mathf.Max(shake, a));
         MakeCameras(humans);
         hud = new HUD(this, world);
+        foreach (var t in world.teams) if (t.controller == Ctrl.Human)
+            hud.Toast(t, "Joystick = bouger  ·  DOUBLE-tap le sol = aller ici  ·  tape un allié = le choisir");
         resultsShown = false; running = true;
     }
 
@@ -107,13 +110,14 @@ public class Game : MonoBehaviour {
         for (int i = 0; i < humanTeams.Count; i++) {
             var go = new GameObject("Cam" + i);
             var cam = go.AddComponent<Camera>();
-            cam.fieldOfView = 38; cam.farClipPlane = 400; cam.nearClipPlane = 0.5f;
+            cam.fieldOfView = 42; cam.farClipPlane = 400; cam.nearClipPlane = 0.5f;
             cam.backgroundColor = new Color(0.5f, 0.66f, 0.86f);
             cam.rect = rects[Mathf.Min(i, rects.Length - 1)];
             var t = humanTeams[i];
             go.transform.position = t.spawn + camOffset;
             cams.Add(cam); camTeam.Add(t);
         }
+        lastTapT = new float[cams.Count]; lastTapP = new Vector2[cams.Count];
     }
 
     void Update() {
@@ -147,29 +151,62 @@ public class Game : MonoBehaviour {
                 var tc = Input.GetTouch(i);
                 if (tc.phase != TouchPhase.Began) continue;
                 if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(tc.fingerId)) continue;
-                TapAt(tc.position);
+                ProcessTap(tc.position);
             }
         } else if (Input.GetMouseButtonDown(0)) {
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
-            TapAt(Input.mousePosition);
+            ProcessTap(Input.mousePosition);
         }
     }
 
-    void TapAt(Vector2 screen) {
+    // Tap SIMPLE = sélectionner un allié sous le doigt. DOUBLE-tap = ordre d'aller
+    // à ce point. On ne confond donc plus joystick (direction) et ordre (destination).
+    void ProcessTap(Vector2 screen) {
+        int ci = CamIndexAt(screen); if (ci < 0) return;
+        var t = camTeam[ci];
+        float now = Time.time;
+        bool dbl = lastTapT != null && (now - lastTapT[ci] < 0.35f) && (Vector2.Distance(screen, lastTapP[ci]) < 90f);
+        if (lastTapT != null) { lastTapT[ci] = now; lastTapP[ci] = screen; }
+
+        if (dbl) {
+            if (t.active != null && t.active.alive && GroundPoint(ci, screen, out var p)) {
+                t.active.SetMove(p); t.active.joy = Vector2.zero;
+                world.fx.Burst(p + Vector3.up * 0.2f, t.accent, 14, 3);   // "ping" de destination
+            }
+        } else {
+            var b = BuddyAtScreen(t, ci, screen, 70f);
+            if (b != null) { t.active = b; sfx.Pickup(); }
+        }
+    }
+
+    int CamIndexAt(Vector2 screen) {
         float vx = screen.x / Screen.width, vy = screen.y / Screen.height;
         for (int i = 0; i < cams.Count; i++) {
             var r = cams[i].rect;
-            if (vx < r.x || vx > r.x + r.width || vy < r.y || vy > r.y + r.height) continue;
-            var t = camTeam[i];
-            if (t.active == null || !t.active.alive) return;
-            Ray ray = cams[i].ScreenPointToRay(screen);
-            if (Mathf.Abs(ray.direction.y) < 1e-4f) return;
-            float dist = -ray.origin.y / ray.direction.y;
-            if (dist <= 0) return;
-            Vector3 p = ray.origin + ray.direction * dist;
-            t.active.SetMove(p);
-            return;
+            if (vx >= r.x && vx <= r.x + r.width && vy >= r.y && vy <= r.y + r.height) return i;
         }
+        return -1;
+    }
+
+    bool GroundPoint(int ci, Vector2 screen, out Vector3 p) {
+        p = Vector3.zero;
+        Ray ray = cams[ci].ScreenPointToRay(screen);
+        if (Mathf.Abs(ray.direction.y) < 1e-4f) return false;
+        float dist = -ray.origin.y / ray.direction.y;
+        if (dist <= 0) return false;
+        p = ray.origin + ray.direction * dist; return true;
+    }
+
+    Buddy BuddyAtScreen(Team team, int ci, Vector2 screen, float px) {
+        Buddy best = null; float bd = px * px;
+        foreach (var b in team.Alive()) {
+            if (b.working) continue;
+            Vector3 sp = cams[ci].WorldToScreenPoint(b.Pos + Vector3.up * 1.2f);
+            if (sp.z <= 0f) continue;
+            float d = (new Vector2(sp.x, sp.y) - screen).sqrMagnitude;
+            if (d < bd) { bd = d; best = b; }
+        }
+        return best;
     }
 
     // --- Callbacks appelés par le HUD ----------------------------------------
