@@ -28,7 +28,8 @@ public class Buddy : IDamageable {
     public bool working; public int post = -1; public Vector3 workPos;
     public VehicleDef vehicle; public bool flying; public float aimError;
     public Team lastFrom;
-    Transform bodyT; float bob;
+    Transform bodyT; float bob, flash;
+    Transform hpFill; Renderer hpFillRend;
 
     public Vector3 Pos => tr.position;
     public bool Dead => !alive;
@@ -42,6 +43,12 @@ public class Buddy : IDamageable {
         P.Prim(PrimitiveType.Sphere, tr, new Vector3(0, 1.7f, 0), new Vector3(0.7f, 0.7f, 0.7f), P.Mat(new Color(0.96f, 0.8f, 0.6f)));
         P.Prim(PrimitiveType.Sphere, tr, new Vector3(0, 1.92f, 0), new Vector3(0.8f, 0.5f, 0.8f), P.Mat(t.accent));            // casque
         P.Prim(PrimitiveType.Cylinder, tr, new Vector3(0, 0.04f, 0), new Vector3(1.5f, 0.02f, 1.5f), P.Mat(t.primary, true)); // anneau d'équipe
+        var eyeM = P.Mat(new Color(0.1f, 0.1f, 0.15f));
+        P.Prim(PrimitiveType.Sphere, tr, new Vector3(-0.18f, 1.75f, 0.32f), Vector3.one * 0.16f, eyeM);
+        P.Prim(PrimitiveType.Sphere, tr, new Vector3(0.18f, 1.75f, 0.32f), Vector3.one * 0.16f, eyeM);
+        P.Prim(PrimitiveType.Cube, tr, new Vector3(0, 2.6f, 0), new Vector3(1.2f, 0.16f, 0.06f), P.Mat(new Color(0.08f, 0.08f, 0.1f)));           // barre de vie (fond)
+        var fill = P.Prim(PrimitiveType.Cube, tr, new Vector3(0, 2.6f, 0.05f), new Vector3(1.2f, 0.16f, 0.06f), P.Mat(new Color(0.3f, 0.9f, 0.4f), true));
+        hpFill = fill.transform; hpFillRend = fill.GetComponent<Renderer>();
         SetWeapon(weaponId);
     }
 
@@ -70,6 +77,7 @@ public class Buddy : IDamageable {
             bob += dt * 9f;
             bodyT.localPosition = new Vector3(0, 0.9f + Mathf.Abs(Mathf.Sin(bob)) * 0.12f, 0);
             tr.Rotate(0, dt * 60f, 0);
+            UpdateBars(dt);
             return;
         }
 
@@ -106,6 +114,21 @@ public class Buddy : IDamageable {
         if (wantFire && (weapon.melee || InRange())) Fire();
         // 6) Nuage porté.
         if (carryVis) carryVis.transform.position = tr.position + Vector3.up * 2.5f;
+        UpdateBars(dt);
+    }
+
+    public void Knockback(Vector3 dir, float force) { dir.y = 0; if (dir.sqrMagnitude > 0.001f) { dir.Normalize(); vel += dir * force; } flash = 0.12f; }
+
+    void UpdateBars(float dt) {
+        if (flash > 0f) flash -= dt;
+        float k = flash > 0f ? 1.16f : 1f;
+        if (bodyT) { bodyT.localScale = Vector3.one * 0.9f * k; if (!working) bodyT.localPosition = new Vector3(0, 0.9f, 0); }
+        float f = Mathf.Clamp01(hp / maxHp);
+        if (hpFill) {
+            hpFill.localScale = new Vector3(1.2f * f, 0.16f, 0.06f);
+            hpFill.localPosition = new Vector3(-(1f - f) * 0.6f, 2.6f, 0.05f);
+            if (hpFillRend) hpFillRend.sharedMaterial.color = f > 0.5f ? new Color(0.3f, 0.9f, 0.4f) : (f > 0.25f ? new Color(0.95f, 0.8f, 0.2f) : new Color(0.9f, 0.3f, 0.3f));
+        }
     }
 
     bool InRange() {
@@ -148,14 +171,14 @@ public class Buddy : IDamageable {
 
     public void Damage(float dmg, Team from) {
         if (!alive) return;
-        hp -= dmg; if (from != null) lastFrom = from;
+        hp -= dmg; flash = 0.12f; if (from != null) lastFrom = from;
         if (hp <= 0) Die();
     }
 
     void Die() {
         alive = false;
         world.fx.Burst(Pos + Vector3.up, vehicle != null ? team.accent : team.primary, vehicle != null ? 30 : 16, 7);
-        world.sfx.Boom();
+        world.sfx.Boom(); world.Shake(vehicle != null ? 0.6f : 0.3f);
         if (carryColor >= 0) world.SpawnCloud(Pos, carryColor, 1.2f);
         world.RemoveBuddy(this);
     }

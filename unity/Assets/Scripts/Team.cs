@@ -42,7 +42,7 @@ public class Team {
 public class GodBust : IDamageable {
     public World world; public Team team; public GameObject go; Transform tr, core;
     public float hp, maxHp; public bool destroyed; public float riseT; public bool risen;
-    float defTimer; WeaponDef defWeapon;
+    float defTimer; WeaponDef defWeapon; Transform hpFill;
 
     public Vector3 Pos => new Vector3(team.spawn.x, 4f, team.spawn.z);
     public bool Dead => destroyed;
@@ -87,10 +87,14 @@ public class GodBust : IDamageable {
         }
         // Cœur divin (point faible / témoin de PV).
         core = P.Prim(PrimitiveType.Sphere, tr, new Vector3(0, 3.0f, 1.3f), Vector3.one * 0.9f, P.Mat(team.accent, true)).transform;
+        // Grande barre de PV (c'est l'objectif).
+        P.Prim(PrimitiveType.Cube, tr, new Vector3(0, 8.4f, 0), new Vector3(5f, 0.4f, 0.1f), P.Mat(new Color(0.08f, 0.08f, 0.1f)));
+        hpFill = P.Prim(PrimitiveType.Cube, tr, new Vector3(0, 8.4f, 0.06f), new Vector3(5f, 0.4f, 0.1f), P.Mat(new Color(0.95f, 0.3f, 0.3f), true)).transform;
     }
 
     public void Tick(float dt, float t) {
         if (!destroyed) {
+            if (hpFill) { float f = Mathf.Clamp01(hp / maxHp); hpFill.localScale = new Vector3(5f * f, 0.4f, 0.1f); hpFill.localPosition = new Vector3(-(1f - f) * 2.5f, 8.4f, 0.06f); }
             if (!risen) {
                 riseT = Mathf.Min(1f, riseT + dt / Config.RiseTime);
                 float e = 1f - Mathf.Pow(1f - riseT, 3f);
@@ -127,8 +131,9 @@ public class GodBust : IDamageable {
         if (hp <= 0f) {
             destroyed = true;
             if (core) core.gameObject.SetActive(false);
+            if (hpFill) hpFill.gameObject.SetActive(false);
             world.fx.Burst(new Vector3(team.spawn.x, 4f, team.spawn.z), team.accent, 80, 9);
-            world.sfx.Boom();
+            world.sfx.Boom(); world.Shake(1.2f);
         }
     }
 }

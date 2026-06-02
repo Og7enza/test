@@ -15,7 +15,7 @@ public class Game : MonoBehaviour {
     Sfx sfx;
     HUD hud;
     GameObject menu;
-    bool running, resultsShown;
+    bool running, resultsShown; float shake;
     readonly List<Camera> cams = new List<Camera>();
     readonly List<Team> camTeam = new List<Team>();
     readonly Vector3 camOffset = new Vector3(0, 34, 26);
@@ -37,7 +37,10 @@ public class Game : MonoBehaviour {
         l.type = LightType.Directional; l.color = new Color(1f, 0.96f, 0.88f); l.intensity = 1.15f;
         l.shadows = LightShadows.Soft;
         g.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
-        RenderSettings.ambientLight = new Color(0.5f, 0.55f, 0.62f);
+        var fill = new GameObject("Fill").AddComponent<Light>();
+        fill.type = LightType.Directional; fill.color = new Color(0.6f, 0.72f, 0.95f); fill.intensity = 0.45f; fill.shadows = LightShadows.None;
+        fill.transform.rotation = Quaternion.Euler(-28f, 140f, 0f);
+        RenderSettings.ambientLight = new Color(0.56f, 0.6f, 0.68f);
     }
 
     void SetupEventSystem() {
@@ -81,6 +84,7 @@ public class Game : MonoBehaviour {
             cfgs.Add(new TeamCfg { colorIndex = 1, ctrl = Ctrl.Human, viewport = 1, aiLevel = 0.6f });
         }
         world.Init(cfgs);
+        world.onShake = a => shake = Mathf.Min(1.4f, Mathf.Max(shake, a));
         MakeCameras(humans);
         hud = new HUD(this, world);
         resultsShown = false; running = true;
@@ -104,7 +108,7 @@ public class Game : MonoBehaviour {
             var go = new GameObject("Cam" + i);
             var cam = go.AddComponent<Camera>();
             cam.fieldOfView = 38; cam.farClipPlane = 400; cam.nearClipPlane = 0.5f;
-            cam.backgroundColor = new Color(0.18f, 0.28f, 0.42f);
+            cam.backgroundColor = new Color(0.5f, 0.66f, 0.86f);
             cam.rect = rects[Mathf.Min(i, rects.Length - 1)];
             var t = humanTeams[i];
             go.transform.position = t.spawn + camOffset;
@@ -119,6 +123,7 @@ public class Game : MonoBehaviour {
             HandleTaps();
             world.Tick(dt);
             FollowCams(dt);
+            if (shake > 0f) shake = Mathf.Max(0f, shake - dt * 4.5f);
             if (hud != null) hud.Refresh();
         }
         if (world.over && !resultsShown) { resultsShown = true; sfx.Boom(); ShowResults(); }
@@ -130,6 +135,7 @@ public class Game : MonoBehaviour {
             Vector3 tgt = (t.active != null && t.active.alive) ? t.active.Pos : new Vector3(t.spawn.x, 1f, t.spawn.z);
             var cam = cams[i].transform;
             cam.position = Vector3.Lerp(cam.position, tgt + camOffset, 1f - Mathf.Exp(-6f * dt));
+            if (shake > 0.001f) cam.position += new Vector3(Random.value - 0.5f, (Random.value - 0.5f) * 0.6f, Random.value - 0.5f) * shake;
             cam.LookAt(tgt + Vector3.up);
         }
     }

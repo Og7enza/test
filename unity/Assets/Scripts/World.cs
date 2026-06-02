@@ -24,6 +24,8 @@ public class World {
     public List<Obstacle> obstacles = new List<Obstacle>();
     public float time, waveTimer = Config.WaveInterval;
     public bool over; public string result; public Team winner;
+    public System.Action<float> onShake;     // secousse caméra (impacts/explosions)
+    public void Shake(float a) { onShake?.Invoke(a); }
 
     public World(Transform root, Sfx sfx) { this.root = root; this.sfx = sfx; fx = new Fx(root); }
 
@@ -114,7 +116,8 @@ public class World {
             Vector3 o = b.Pos - a.Pos; o.y = 0; float d = o.magnitude;
             if (d > w.range || d < 0.01f) continue;
             if (Vector3.Dot(o / d, dir) < 0.3f) continue;
-            b.Damage(w.damage, a.team); fx.Burst(b.Pos + Vector3.up, w.color, 6, 4);
+            b.Damage(w.damage, a.team); b.Knockback(dir, b.vehicle != null ? 0.8f : 4f);
+            fx.Burst(b.Pos + Vector3.up, w.color, 6, 4); Shake(0.1f);
         }
         foreach (var t in teams) {
             if (t == a.team || t.bust.destroyed) continue;
@@ -144,9 +147,11 @@ public class World {
         }
     }
     void ApplyHit(Projectile p, Buddy b) {
-        b.Damage(p.weapon.damage, p.team); fx.Burst(p.pos, p.weapon.color, 6, 4); sfx.Hurt();
+        b.Damage(p.weapon.damage, p.team);
+        b.Knockback(p.vel, b.vehicle != null ? 1f : 5f);
+        fx.Burst(p.pos, p.weapon.color, 6, 4); sfx.Hurt(); Shake(0.12f);
         if (p.weapon.aoe > 0f) {
-            fx.Burst(p.pos, new Color(1f, 0.6f, 0.2f), 18, 6);
+            fx.Burst(p.pos, new Color(1f, 0.6f, 0.2f), 18, 6); Shake(0.4f);
             foreach (var o in buddies) if (o != b && o.team != p.team && o.alive && (o.Pos - p.pos).sqrMagnitude < p.weapon.aoe * p.weapon.aoe)
                 o.Damage(p.weapon.damage * 0.6f, p.team);
         }

@@ -60,7 +60,11 @@ public class AI {
                 }
                 b.wantFire = world.NearestEnemyBuddy(team, b.Pos) is Buddy e2 && (e2.Pos - b.Pos).sqrMagnitude < 36f;
             } else {
-                var e = world.NearestEnemyBuddy(team, b.Pos);
+                // Si notre base est menacée, on rapatrie les combattants dessus.
+                Vector3 home = new Vector3(team.spawn.x, 0, team.spawn.z);
+                var threat = world.NearestEnemyBuddy(team, home);
+                bool defend = threat != null && (threat.Pos - home).sqrMagnitude < 16f * 16f;
+                var e = defend ? threat : world.NearestEnemyBuddy(team, b.Pos);
                 IDamageable tgt = e != null ? (IDamageable)e : world.EnemyBustFor(team);
                 if (tgt != null) {
                     Vector3 tp = tgt.Pos; Vector3 dir = b.Pos - tp; dir.y = 0; float d = dir.magnitude;
