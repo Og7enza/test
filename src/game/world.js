@@ -164,7 +164,8 @@ export class World {
 
   // --- Buddies --------------------------------------------------------------
   spawnBuddy(team, x, z, weaponId = 'fists') {
-    if (team.buddies.filter((b) => b.alive).length >= CONFIG.buddy.maxPerTeam) return null;
+    // Pas de limite de jeu : seul un garde-fou perf très haut (hardCap) s'applique.
+    if (team.buddies.filter((b) => b.alive).length >= CONFIG.buddy.hardCap) return null;
     const b = new Buddy(this, team, x, z, weaponId);
     b.group.userData.buddyRef = b;
     team.buddies.push(b);
@@ -267,7 +268,7 @@ export class World {
   playerSummon(team) {
     const chk = this._padReady(team);
     if (!chk.ok) return chk;
-    if (team.aliveBuddies().length >= CONFIG.buddy.maxPerTeam) { this.audio.craftFail(); return { ok: false, reason: 'max' }; }
+    if (team.aliveBuddies().length >= CONFIG.buddy.hardCap) { this.audio.craftFail(); return { ok: false, reason: 'max' }; }
     const res = team.pad.summon();
     if (res) { this.applyCraftResult(team, chk.b, res); return { ok: true, ...res, label: this._craftLabel(res) }; }
     this.audio.craftFail();
@@ -275,14 +276,22 @@ export class World {
   }
 
   // Dépôt CIBLÉ sur une colonne (Atelier) : permet de bâtir un motif précis.
+  // Source du nuage : celui porté ; sinon on attrape automatiquement le nuage au
+  // sol le plus proche (rayon généreux) => on peut empiler vite en restant au pad.
   depositToColumn(team, col) {
     const b = team.activeBuddy;
     if (!b || !b.alive) return { ok: false, reason: 'no-buddy' };
-    if (!b.carried) return { ok: false, reason: 'no-cloud' };
     const pad = team.pad;
     if (Math.hypot(b.pos.x - pad.x, b.pos.z - pad.z) > CONFIG.pad.useRadius) return { ok: false, reason: 'far' };
+    let grabbed = null;
+    if (!b.carried) {
+      const c = this.nearestFreeCloud(b.pos);
+      const reach = CONFIG.pad.useRadius + 2.5;   // ~5.7 : attrape les nuages autour du pad
+      if (!c || Math.hypot(c.pos.x - b.pos.x, c.pos.z - b.pos.z) > reach) return { ok: false, reason: 'no-cloud-near' };
+      grabbed = c;
+    }
     if (!pad.addToColumn(col)) return { ok: false, reason: 'col-full' };
-    b.releaseCloudMesh();
+    if (grabbed) this._removeCloud(grabbed); else b.releaseCloudMesh();
     team.collected++;
     this.audio.drop();
     return { ok: true };
@@ -461,6 +470,14 @@ export class World {
         const x = (Math.random() * 2 - 1) * (CONFIG.arena.half - 6);
         const z = (Math.random() * 2 - 1) * (CONFIG.arena.half - 6);
         this.spawnCloud(x, z);
+      }
+      // "Fuel" de craft : quelques nuages près de chaque pad (build fluide au camp).
+      const np = CONFIG.clouds.nearPad || 0;
+      for (const t of this.teams) {
+        for (let k = 0; k < np; k++) {
+          const ang = Math.random() * Math.PI * 2, r = 1.5 + Math.random() * 2.2;
+          this.spawnCloud(t.pad.x + Math.cos(ang) * r, t.pad.z + Math.sin(ang) * r);
+        }
       }
     }
     for (const c of this.clouds) c.update(dt);

@@ -127,7 +127,8 @@ html, body {
   color: #fff; max-width: 60%; }
 .hud-stats { background: var(--panel); padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.12); }
 
-.hud-buddies { position: absolute; top: 44px; left: 10px; display: flex; gap: 6px; }
+.hud-buddies { position: absolute; top: 44px; left: 10px; display: flex; gap: 6px;
+  flex-wrap: wrap; max-width: 60%; max-height: 108px; overflow: hidden; }
 .hud-buddy { position: relative; width: 44px; height: 44px; border-radius: 10px; cursor: pointer;
   border: 2px solid rgba(255, 255, 255, 0.25); background: var(--panel); font-size: 22px;
   display: flex; align-items: center; justify-content: center; overflow: hidden; color: #fff; }

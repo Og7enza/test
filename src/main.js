@@ -154,8 +154,9 @@ class Game {
       case 'empty': return 'Empile d\'abord des nuages sur le pad';
       case 'no-buddy': return 'Aucun buddy actif';
       case 'no-cloud': return 'Ramasse un nuage d\'abord (bouton Action)';
+      case 'no-cloud-near': return 'Aucun nuage à portée — amène-en un près du pad (ou attends une vague)';
       case 'col-full': return 'Colonne pleine (ou pad plein : 8 max)';
-      case 'max': return 'Équipe pleine (4 buddies max)';
+      case 'max': return 'Trop de buddies (garde-fou)';
       case 'shape':
         return kind === 'summon'
           ? 'Invocation : empile 2, 3 ou 4 nuages dans UNE seule colonne'

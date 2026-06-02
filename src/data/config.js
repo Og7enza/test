@@ -28,13 +28,14 @@ export const CONFIG = {
 
   // ---- Nuages (ressource unique) -------------------------------------------
   clouds: {
-    waveInterval: 8.0,           // secondes entre deux vagues
-    perWave: 3,                  // nuages par vague
-    maxOnGround: 24,             // plafond pour éviter la surcharge
+    waveInterval: 6.0,           // secondes entre deux vagues
+    perWave: 4,                  // nuages par vague
+    maxOnGround: 40,             // plafond pour éviter la surcharge
     fallSpeed: 9,
     spawnHeight: 22,
     size: 1.4,
     pickupRadius: 1.9,
+    nearPad: 1,                  // nuages déposés près de CHAQUE pad par vague (fuel de craft)
   },
 
   // ---- Pad d'empilement (2x2, hauteur jusqu'à 4, capacité 8) ----------------
@@ -53,7 +54,8 @@ export const CONFIG = {
     baseHP: 100,
     baseSpeed: 7.2,
     accel: 40,
-    maxPerTeam: 4,
+    maxPerTeam: 4,               // CIBLE d'effectif pour l'IA seulement (le joueur n'est pas limité)
+    hardCap: 64,                 // garde-fou perf (jamais atteint en jeu) — pas de vraie limite
     respawnDelay: 6.0,           // anti soft-lock : un buddy de base réapparaît
     pickupReach: 1.9,
     aimAssistRange: 26,          // portée de l'acquisition de cible auto
