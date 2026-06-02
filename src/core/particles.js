@@ -21,6 +21,8 @@ const VERT = `
   }
 `;
 const FRAG = `
+  uniform sampler2D uTex;
+  uniform float uHasTex;
   varying vec3 vColor;
   varying float vAlpha;
   void main() {
@@ -28,7 +30,11 @@ const FRAG = `
     float r = dot(d, d);
     if (r > 0.25) discard;                 // disque
     float soft = smoothstep(0.25, 0.02, r); // bord doux
-    gl_FragColor = vec4(vColor, vAlpha * soft);
+    float a = vAlpha * soft;
+    if (uHasTex > 0.5) {                    // sprite optionnel (assets/textures/particle.png)
+      a = vAlpha * texture2D(uTex, gl_PointCoord).a;
+    }
+    gl_FragColor = vec4(vColor, a);
   }
 `;
 
@@ -55,9 +61,17 @@ export class ParticleSystem {
 
     this.mat = new THREE.ShaderMaterial({
       vertexShader: VERT, fragmentShader: FRAG,
+      uniforms: { uTex: { value: null }, uHasTex: { value: 0 } },
       transparent: true, depthWrite: false, vertexColors: true,
       blending: THREE.AdditiveBlending,
     });
+    // Sprite de particule optionnel : glow doux si l'image existe, sinon disque analytique.
+    new THREE.TextureLoader().load(
+      'assets/textures/particle.png',
+      (t) => { this.mat.uniforms.uTex.value = t; this.mat.uniforms.uHasTex.value = 1; },
+      undefined,
+      () => { /* asset absent : on garde le disque procédural */ },
+    );
     this.points = new THREE.Points(geo, this.mat);
     this.points.frustumCulled = false;
     scene.add(this.points);

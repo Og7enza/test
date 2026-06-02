@@ -21,6 +21,7 @@ export class Engine {
     this.scene.fog = new THREE.Fog(CONFIG.fogColor, 60, 180);
 
     this._setupLights();
+    this._setupSky();
 
     this.viewports = [];     // { camera, rect, target:Vector3, cam2:Vector3 }
     this.shake = 0;          // secousse caméra (impacts/explosions)
@@ -46,14 +47,43 @@ export class Engine {
     sun.shadow.bias = -0.0008;
     this.scene.add(sun);
     this.scene.add(sun.target);
+    // Lumière d'appoint "or olympien" : rim doux sans ombre (léger pour mobile).
+    const rim = new THREE.DirectionalLight(0xffd24a, 0.35);
+    rim.position.set(-24, 18, -26);
+    this.scene.add(rim);
     this.sun = sun;
     this.hemi = hemi;
+    this.rim = rim;
+  }
+
+  // Dôme céleste texturé (skybox). Image optionnelle ; couleur unie en repli.
+  _setupSky() {
+    const mat = new THREE.MeshBasicMaterial({ side: THREE.BackSide, fog: false, color: 0xffffff, depthWrite: false });
+    this.skyDome = new THREE.Mesh(new THREE.SphereGeometry(300, 32, 16), mat);
+    this.skyDome.renderOrder = -1;
+    this.scene.add(this.skyDome);
+    this._skyLoader = new THREE.TextureLoader();
   }
 
   setTheme(world) {
     const sky = new THREE.Color(world.sky);
     this.scene.background = sky;
     this.scene.fog.color = sky;
+    // Skybox texturée (assets/textures/skyN.png) ; repli sur couleur unie si absente.
+    if (this.skyDome) {
+      this.skyDome.material.color.set(sky);
+      this._skyLoader.load(
+        `assets/textures/sky${world.id}.png`,
+        (t) => {
+          if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
+          this.skyDome.material.map = t;
+          this.skyDome.material.color.set(0xffffff);
+          this.skyDome.material.needsUpdate = true;
+        },
+        undefined,
+        () => { /* asset absent : on garde la couleur unie */ },
+      );
+    }
   }
 
   // Crée `count` viewports (1, 2 ou 4) avec leur caméra.

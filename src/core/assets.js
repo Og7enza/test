@@ -267,8 +267,9 @@ export function makeArena(world) {
   ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; g.add(ground);
   // Texture de sol optionnelle (assets/textures/groundN.png), sinon couleur unie.
   optionalTexture(`assets/textures/ground${world.id}.png`, (t) => {
+    t.magFilter = THREE.LinearFilter;
     ground.material.map = t; ground.material.color.set(0xffffff); ground.material.needsUpdate = true;
-  }, { repeat: 6 });
+  }, { repeat: 5 });
 
   // Bordures (murs) — obstacles de périmètre.
   const wallMat = toonMat(world.accent);
