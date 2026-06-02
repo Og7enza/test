@@ -41,8 +41,13 @@ class Game {
       fireDown: (team) => { if (team.activeBuddy) team.activeBuddy.wantFire = true; },
       fireUp: (team) => { if (team.activeBuddy) team.activeBuddy.wantFire = false; },
       action: (team) => this.doAction(team),
-      forge: (team) => this.world && this.world.playerForge(team),
-      summon: (team) => this.world && this.world.playerSummon(team),
+      forge: (team) => { if (this.world) this._craftFeedback(team, this.world.playerForge(team), 'forge'); },
+      summon: (team) => { if (this.world) this._craftFeedback(team, this.world.playerSummon(team), 'summon'); },
+      depositColumn: (team, col) => {
+        if (!this.world) return;
+        const r = this.world.depositToColumn(team, col);
+        if (this.hud && !r.ok) this.hud.toast(team, this._reasonMsg(r.reason, 'deposit'), false);
+      },
       battalion: (team) => {
         const seq = ['off', 'wedge', 'line', 'column', 'circle'];
         team.formation = seq[(seq.indexOf(team.formation) + 1) % seq.length];
@@ -134,7 +139,29 @@ class Game {
     const nearPad = Math.hypot(b.pos.x - team.pad.x, b.pos.z - team.pad.z) < CONFIG.pad.useRadius;
     if (b.carried && nearPad) this.world.tryDeposit(b);
     else if (b.carried) this.world.dropCarried(b);
-    else this.world.tryPickup(b);
+    else if (!this.world.tryPickup(b) && this.hud) this.hud.toast(team, 'Aucun nuage à portée — va en ramasser un', false);
+  }
+
+  // Retour visuel d'un craft (forge/invocation) : toast succès ou raison d'échec.
+  _craftFeedback(team, r, kind) {
+    if (!this.hud || !r) return;
+    if (r.ok) this.hud.toast(team, (kind === 'summon' ? '✨ ' : '⚒️ ') + r.label + ' !', true);
+    else this.hud.toast(team, this._reasonMsg(r.reason, kind), false);
+  }
+  _reasonMsg(reason, kind) {
+    switch (reason) {
+      case 'far': return 'Approche-toi du pad de ton équipe';
+      case 'empty': return 'Empile d\'abord des nuages sur le pad';
+      case 'no-buddy': return 'Aucun buddy actif';
+      case 'no-cloud': return 'Ramasse un nuage d\'abord (bouton Action)';
+      case 'col-full': return 'Colonne pleine (ou pad plein : 8 max)';
+      case 'max': return 'Équipe pleine (4 buddies max)';
+      case 'shape':
+        return kind === 'summon'
+          ? 'Invocation : empile 2, 3 ou 4 nuages dans UNE seule colonne'
+          : 'Aucune recette pour ce motif (voir 📜 Recettes)';
+      default: return '—';
+    }
   }
 
   // --- Cycle de vie d'une partie --------------------------------------------

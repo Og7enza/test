@@ -10,7 +10,7 @@
 // =============================================================================
 
 import { ORDERS } from '../game/ai.js';
-import { getWeapon } from '../data/weapons.js';
+import { getWeapon, VEHICLES, TEAMMATES } from '../data/weapons.js';
 import { CONFIG } from '../data/config.js';
 
 export class HUD {
@@ -78,8 +78,29 @@ export class HUD {
       right.appendChild(action); right.appendChild(fire);
       panel.appendChild(right);
 
+      // Toast : retour visuel (craft réussi / raison d'échec).
+      const toast = document.createElement('div'); toast.className = 'hud-toast';
+      panel.appendChild(toast);
+
+      // Atelier : grille 2x2 du pad. On tape une colonne pour y empiler le nuage
+      // porté (dépôt CIBLÉ) — indispensable pour faire une pile verticale (invoc.).
+      const build = document.createElement('div'); build.className = 'hud-build';
+      build.innerHTML = '<div class="build-title">⚒️ Atelier — tape une colonne</div>';
+      const grid = document.createElement('div'); grid.className = 'build-grid';
+      const buildCells = [];
+      for (const col of [2, 3, 0, 1]) {           // ordre visuel : haut (2,3) puis bas (0,1)
+        const cell = document.createElement('button');
+        cell.className = 'build-cell hud-interactive';
+        cell.addEventListener('pointerdown', (e) => { e.preventDefault(); this.h.depositColumn(team, col); });
+        grid.appendChild(cell); buildCells[col] = cell;
+      }
+      build.appendChild(grid);
+      const buildPreview = document.createElement('div'); buildPreview.className = 'build-preview';
+      build.appendChild(buildPreview);
+      panel.appendChild(build);
+
       this.root.appendChild(panel);
-      this.panels.push({ team, panel, obj, stats, buddyRow, weap, joyBase, joyKnob, fire, action, forge, summon, batt });
+      this.panels.push({ team, panel, obj, stats, buddyRow, weap, joyBase, joyKnob, fire, action, forge, summon, batt, toast, build, buildCells, buildPreview });
     }
   }
 
@@ -227,6 +248,9 @@ export class HUD {
       p.batt.innerHTML = `🎖️<span>${fmt}</span>`;
       p.batt.classList.toggle('active', team.battalionActive);
 
+      // Atelier (visible près du pad) : état des colonnes + aperçu du résultat.
+      this._updateBuildPanel(p, team, b);
+
       // Icônes des buddies.
       this._updateBuddyRow(p, team);
     }
@@ -255,8 +279,42 @@ export class HUD {
     }
   }
 
+  // --- Atelier (dépôt ciblé + aperçu) ---------------------------------------
+  _updateBuildPanel(p, team, b) {
+    const nearPad = b && b.alive && !b.vehicle &&
+      Math.hypot(b.pos.x - team.pad.x, b.pos.z - team.pad.z) < CONFIG.pad.useRadius;
+    p.build.classList.toggle('show', !!nearPad);
+    if (!nearPad) return;
+    const pad = team.pad;
+    for (let col = 0; col < 4; col++) {
+      const h = pad.heights[col];
+      const cell = p.buildCells[col];
+      cell.innerHTML = h ? '<i>☁️</i>'.repeat(h) : '<small>+</small>';
+      cell.classList.toggle('filled', h > 0);
+    }
+    const pv = pad.preview();
+    p.buildPreview.innerHTML = `⚒️ ${this._resName(pv.forge) || '—'}　·　✨ ${this._resName(pv.summon) || '—'}`;
+  }
+  _resName(res) {
+    if (!res) return null;
+    if (res.kind === 'weapon') { const w = getWeapon(res.id); return `${w.icon} ${w.name}`; }
+    if (res.kind === 'vehicle') { const v = VEHICLES[res.id]; return v ? `${v.icon} ${v.name}` : res.id; }
+    if (res.kind === 'teammate') { const t = TEAMMATES[res.id]; return t ? `${t.icon} ${t.name}` : res.id; }
+    return null;
+  }
+
+  // Message transitoire (succès craft / raison d'échec / astuce).
+  toast(team, msg, ok = true) {
+    const p = this.panels.find((pp) => pp.team === team);
+    if (!p) return;
+    p.toast.textContent = msg;
+    p.toast.className = 'hud-toast show ' + (ok ? 'ok' : 'err');
+    clearTimeout(p._toastT);
+    p._toastT = setTimeout(() => { p.toast.className = 'hud-toast'; }, 2300);
+  }
+
   dispose() {
-    for (const p of this.panels) p.panel.remove();
+    for (const p of this.panels) { clearTimeout(p._toastT); p.panel.remove(); }
     this.radial.remove(); this.minimap.remove();
   }
 }

@@ -65,6 +65,15 @@ export class Pad {
 
   signature() { return signatureOf(this.heights); }
 
+  // Dépôt CIBLÉ sur une colonne précise (utilisé par l'Atelier tactile).
+  // Renvoie true si déposé, false si pad/colonne pleine ou index invalide.
+  addToColumn(col) {
+    if (col < 0 || col > 3) return false;
+    if (this.isFull()) return false;
+    if (this.heights[col] >= CONFIG.pad.maxColumnHeight) return false;
+    return this._add(col);
+  }
+
   // Tente une forge (arme/véhicule). Vide le pad si réussi. Renvoie le résultat.
   forge() {
     const res = resolveForge(this.heights);

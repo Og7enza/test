@@ -238,21 +238,54 @@ export class World {
   }
 
   // --- Craft (joueur) -------------------------------------------------------
-  playerForge(team) {
-    const b = team.activeBuddy;
-    if (!b || !b.alive) return null;
-    if (Math.hypot(b.pos.x - team.pad.x, b.pos.z - team.pad.z) > CONFIG.pad.useRadius) return null;
-    const res = team.pad.forge();
-    if (res) this.applyCraftResult(team, b, res); else this.audio.craftFail();
-    return res;
+  _craftLabel(res) {
+    if (res.kind === 'weapon') return (WEAPONS[res.id] || {}).name || res.id;
+    if (res.kind === 'vehicle') return (VEHICLES[res.id] || {}).name || res.id;
+    if (res.kind === 'teammate') return (TEAMMATES[res.id] || {}).name || res.id;
+    return res.id;
   }
-  playerSummon(team) {
+
+  _padReady(team) {
     const b = team.activeBuddy;
-    if (!b || !b.alive) return null;
-    if (Math.hypot(b.pos.x - team.pad.x, b.pos.z - team.pad.z) > CONFIG.pad.useRadius) return null;
+    if (!b || !b.alive) return { ok: false, reason: 'no-buddy' };
+    if (Math.hypot(b.pos.x - team.pad.x, b.pos.z - team.pad.z) > CONFIG.pad.useRadius) return { ok: false, reason: 'far' };
+    if (team.pad.isEmpty()) return { ok: false, reason: 'empty' };
+    return { ok: true, b };
+  }
+
+  // Forge (arme/véhicule). Renvoie un résultat riche pour le retour HUD.
+  playerForge(team) {
+    const chk = this._padReady(team);
+    if (!chk.ok) return chk;
+    const res = team.pad.forge();
+    if (res) { this.applyCraftResult(team, chk.b, res); return { ok: true, ...res, label: this._craftLabel(res) }; }
+    this.audio.craftFail();
+    return { ok: false, reason: 'shape' };
+  }
+
+  // Invocation (coéquipier). Exige une pile verticale pure (2/3/4).
+  playerSummon(team) {
+    const chk = this._padReady(team);
+    if (!chk.ok) return chk;
+    if (team.aliveBuddies().length >= CONFIG.buddy.maxPerTeam) { this.audio.craftFail(); return { ok: false, reason: 'max' }; }
     const res = team.pad.summon();
-    if (res) this.applyCraftResult(team, b, res); else this.audio.craftFail();
-    return res;
+    if (res) { this.applyCraftResult(team, chk.b, res); return { ok: true, ...res, label: this._craftLabel(res) }; }
+    this.audio.craftFail();
+    return { ok: false, reason: 'shape' };
+  }
+
+  // Dépôt CIBLÉ sur une colonne (Atelier) : permet de bâtir un motif précis.
+  depositToColumn(team, col) {
+    const b = team.activeBuddy;
+    if (!b || !b.alive) return { ok: false, reason: 'no-buddy' };
+    if (!b.carried) return { ok: false, reason: 'no-cloud' };
+    const pad = team.pad;
+    if (Math.hypot(b.pos.x - pad.x, b.pos.z - pad.z) > CONFIG.pad.useRadius) return { ok: false, reason: 'far' };
+    if (!pad.addToColumn(col)) return { ok: false, reason: 'col-full' };
+    b.releaseCloudMesh();
+    team.collected++;
+    this.audio.drop();
+    return { ok: true };
   }
 
   applyCraftResult(team, builder, res) {
