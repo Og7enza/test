@@ -218,8 +218,11 @@ export class HUD {
       p.obj.textContent = `🎯 ${o.label}${prog}`;
 
       const enemyTemple = this.world.enemyTempleFor(team);
-      const eHP = enemyTemple ? Math.max(0, Math.ceil(enemyTemple.userData.teamRef.templeHP)) : 0;
-      p.stats.innerHTML = `${team.color.emoji} <b>${team.color.name}</b> · 🏛️${Math.max(0, Math.ceil(team.templeHP))} · ☁️${this.world.clouds.filter(c => c.landed).length} · 💥${eHP}`;
+      const eTeam = enemyTemple ? enemyTemple.userData.teamRef : null;
+      const eHP = eTeam ? Math.max(0, Math.ceil(eTeam.templeHP)) : 0;
+      const eName = eTeam ? (eTeam.godName || 'ennemi') : '—';
+      const clouds = this.world.clouds.filter((c) => c.landed).length;
+      p.stats.innerHTML = `${team.color.emoji} 🗿<b>${Math.max(0, Math.ceil(team.templeHP))}</b> · ☁️${clouds} · 🎯 ${eName} <b>${eHP}</b>`;
 
       // Arme + munitions.
       if (b) {

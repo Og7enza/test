@@ -4,6 +4,7 @@
 // =============================================================================
 
 import { WORLDS, buildCampaign } from '../data/campaign.js';
+import { CONFIG } from '../data/config.js';
 
 const CAMPAIGN = buildCampaign();
 
@@ -18,10 +19,16 @@ function buildCampaignMatch(missionIndex) {
   const mission = CAMPAIGN[missionIndex];
   const worldTheme = WORLDS[mission.world];
   let objective = { ...mission.objective };
-  let enemyRespawn = !(objective.type === 'eliminate' || objective.type === 'boss');
 
-  // Les missions "boss" deviennent un affrontement final (équipe pleine).
-  if (mission.boss) { objective = { type: 'eliminate', label: '👑 BOSS — Anéantissez la garde divine !' }; enemyRespawn = false; }
+  // NOUVEAU but principal : DÉTRUIRE LE BUSTE DU DIEU ennemi (les combats
+  // "élimination"/boss deviennent un siège de la base).
+  if (objective.type === 'eliminate' || objective.type === 'boss' || mission.boss) {
+    objective = { type: 'destroy_base', label: mission.boss ? '👑 BOSS — Abattez le dieu ennemi !' : '🗿 Détruisez le buste du dieu ennemi' };
+  }
+  // En siège, les minions ennemis RÉAPPARAISSENT (ce sont des moyens, pas la cible).
+  const enemyRespawn = objective.type !== 'eliminate';
+  // PV de la base ennemie : plus costaud dans les mondes avancés et en boss.
+  const enemyTempleHP = Math.round(CONFIG.temple.hp * (1 + mission.world * 0.12) * (mission.boss ? 1.6 : 1));
 
   const enemyColor = (mission.world % 3) + 1;
   const teamConfigs = [
@@ -31,6 +38,7 @@ function buildCampaignMatch(missionIndex) {
       aiLevel: mission.boss ? 1.0 : mission.aiLevel,
       initialBuddies: mission.boss ? 4 : mission.enemyBuddies,
       canRespawn: enemyRespawn,
+      templeHP: enemyTempleHP,
     },
   ];
   return { worldTheme, teamConfigs, objective, playerCount: 1, mode: 'campaign', context: { type: 'campaign', missionIndex } };
@@ -41,9 +49,9 @@ function buildSkirmish({ bots, difficulty, worldId }) {
   const teamConfigs = [{ colorIndex: 0, controller: 'human', viewport: 0, initialBuddies: 1, canRespawn: true }];
   const nb = Math.min(3, Math.max(1, bots));
   for (let i = 0; i < nb; i++)
-    teamConfigs.push({ colorIndex: i + 1, controller: 'ai', aiLevel: difficulty, initialBuddies: 1, canRespawn: false });
-  // Sur petite arène, 2 équipes max sont alignées ; au-delà on passe en coins.
-  const objective = { type: 'eliminate', label: 'Éliminez tous les rivaux' };
+    teamConfigs.push({ colorIndex: i + 1, controller: 'ai', aiLevel: difficulty, initialBuddies: 1, canRespawn: true });
+  // Objectif : raser le buste du dieu ennemi (les minions réapparaissent).
+  const objective = { type: 'destroy_base', label: '🗿 Détruisez le buste du dieu ennemi' };
   return { worldTheme, teamConfigs, objective, playerCount: 1, mode: 'skirmish', context: { type: 'skirmish' } };
 }
 

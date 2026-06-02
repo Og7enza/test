@@ -238,6 +238,72 @@ export function makeVehicle(type, teamColor = 0x3aa0ff) {
 }
 
 // ---------------------------------------------------------------------------
+//  BUSTE DU DIEU (base destructible). Thème par index d'équipe :
+//  0 Zeus · 1 Hadès · 2 Anubis (chacal) · 3 Râ (faucon). Le socle est à y=0
+//  pour pouvoir émerger du sol (le monde anime group.position.y).
+//  userData.core = gemme divine (point faible / pulse / cachée à la mort).
+// ---------------------------------------------------------------------------
+const GODS = [
+  { id: 'zeus',   name: 'Zeus',   head: 'beard',  crown: 'laurel',  skin: 0xf0e0c0, hair: 0xf4f4f4 },
+  { id: 'hades',  name: 'Hadès',  head: 'beard',  crown: 'spikes',  skin: 0xb9aecb, hair: 0x241c33 },
+  { id: 'anubis', name: 'Anubis', head: 'jackal', crown: 'none',    skin: 0x1c2330, hair: 0x0f1420 },
+  { id: 'ra',     name: 'Râ',     head: 'falcon', crown: 'sundisk', skin: 0xcf9a2e, hair: 0x9a6a1a },
+];
+export function godForTeam(colorIndex) { return GODS[colorIndex % GODS.length]; }
+
+export function makeGodBust({ primary = 0x3aa0ff, accent = 0xffd24a } = {}, godIndex = 0) {
+  const g = new THREE.Group();
+  const god = GODS[godIndex % GODS.length];
+  const stone = toonMat(0xe8e2d0), stone2 = toonMat(0xd2c9b2);
+  const robe = toonMat(primary), gold = toonMat(accent);
+  const skinM = toonMat(god.skin), hairM = toonMat(god.hair);
+  const dark = toonMat(0x222233), white = toonMat(0xffffff);
+
+  // Piédestal (socle à étages), base à y=0.
+  g.add(mesh(G.box, stone, { pos: [0, 0.5, 0], scale: [6, 1.0, 6], receive: true }));
+  g.add(mesh(G.box, stone2, { pos: [0, 1.3, 0], scale: [5, 0.7, 5], receive: true }));
+  g.add(mesh(G.cyl, stone, { pos: [0, 1.95, 0], scale: [3.4, 0.6, 3.4] }));
+
+  // Buste : torse/épaules en robe colorée + pectoral doré.
+  g.add(mesh(new THREE.CylinderGeometry(1.5, 2.4, 2.6, 14), robe, { pos: [0, 3.4, 0] }));
+  g.add(mesh(G.box, gold, { pos: [0, 2.6, 1.05], scale: [2.4, 0.5, 0.4] }));
+  // Cou.
+  g.add(mesh(G.cyl, skinM, { pos: [0, 4.6, 0], scale: [0.7, 0.9, 0.7] }));
+
+  const hy = 5.6;
+  if (god.head === 'beard') {
+    g.add(mesh(new THREE.SphereGeometry(1.05, 14, 12), skinM, { pos: [0, hy, 0] }));
+    g.add(mesh(new THREE.SphereGeometry(1.12, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.55), hairM, { pos: [0, hy + 0.18, 0] })); // chevelure
+    g.add(mesh(new THREE.ConeGeometry(0.85, 1.6, 10), hairM, { pos: [0, hy - 1.05, 0.3], rot: [Math.PI, 0, 0] }));            // barbe
+    g.add(mesh(G.sphere, white, { pos: [-0.34, hy + 0.12, 0.86], scale: [0.26, 0.3, 0.18], cast: false }));
+    g.add(mesh(G.sphere, white, { pos: [0.34, hy + 0.12, 0.86], scale: [0.26, 0.3, 0.18], cast: false }));
+    g.add(mesh(G.sphere, dark, { pos: [-0.34, hy + 0.12, 1.0], scale: [0.11, 0.13, 0.1], cast: false }));
+    g.add(mesh(G.sphere, dark, { pos: [0.34, hy + 0.12, 1.0], scale: [0.11, 0.13, 0.1], cast: false }));
+  } else if (god.head === 'jackal') {
+    g.add(mesh(new THREE.BoxGeometry(1.2, 1.3, 1.5), skinM, { pos: [0, hy, 0.1] }));
+    g.add(mesh(new THREE.ConeGeometry(0.5, 1.5, 8), skinM, { pos: [0, hy - 0.15, 1.15], rot: [Math.PI / 2, 0, 0] }));   // museau
+    for (const s of [-1, 1]) g.add(mesh(new THREE.ConeGeometry(0.32, 1.4, 6), skinM, { pos: [s * 0.5, hy + 1.15, -0.1] })); // oreilles
+    for (const s of [-1, 1]) g.add(mesh(G.sphere, gold, { pos: [s * 0.36, hy + 0.15, 0.78], scale: [0.16, 0.2, 0.12], cast: false }));
+  } else { // falcon (Râ)
+    g.add(mesh(new THREE.SphereGeometry(1.0, 14, 12), skinM, { pos: [0, hy, 0] }));
+    g.add(mesh(new THREE.ConeGeometry(0.34, 1.0, 8), gold, { pos: [0, hy - 0.1, 1.0], rot: [Math.PI / 2, 0, 0] }));      // bec
+    g.add(mesh(new THREE.TorusGeometry(1.05, 0.18, 8, 22), gold, { pos: [0, hy + 0.5, -0.4] }));                        // disque solaire
+    for (const s of [-1, 1]) g.add(mesh(G.sphere, dark, { pos: [s * 0.34, hy + 0.12, 0.82], scale: [0.15, 0.19, 0.12], cast: false }));
+  }
+
+  // Couronne.
+  if (god.crown === 'laurel') g.add(mesh(new THREE.TorusGeometry(1.0, 0.12, 6, 18), gold, { pos: [0, hy + 0.75, 0], rot: [Math.PI / 2, 0, 0] }));
+  else if (god.crown === 'spikes') for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; g.add(mesh(new THREE.ConeGeometry(0.16, 0.8, 5), dark, { pos: [Math.cos(a) * 0.95, hy + 0.85, Math.sin(a) * 0.95] })); }
+
+  // Cœur divin (gemme) sur le pectoral.
+  const core = mesh(new THREE.OctahedronGeometry(0.72, 0), toonMat(accent, { emissive: accent, emissiveIntensity: 1.0 }), { pos: [0, 3.1, 1.3] });
+  g.add(core);
+
+  g.userData = { core, godId: god.id, godName: god.name };
+  return g;
+}
+
+// ---------------------------------------------------------------------------
 //  PROJECTILES — petit mesh par type (clonable pour le pool).
 // ---------------------------------------------------------------------------
 export function makeProjectile(type, color) {

@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import { CONFIG } from '../data/config.js';
 import { WEAPONS, VEHICLES, TEAMMATES } from '../data/weapons.js';
-import { makeArena, makeTemple, makeProjectile } from '../core/assets.js';
+import { makeArena, makeGodBust, makeProjectile } from '../core/assets.js';
 import { Pad } from './pad.js';
 import { Buddy } from './buddy.js';
 import { updateBuddyBehavior, TeamAI } from './ai.js';
@@ -32,17 +32,20 @@ class Team {
     this.respawnTimer = 0;
     this.formation = 'off';                       // bataillon : off|wedge|line|column|circle
 
-    // Temple.
-    this.templeGroup = makeTemple(this.color);
-    this.templeGroup.position.set(this.spawn.x, 0, this.spawn.z);
-    // Oriente le temple vers le centre.
-    this.templeGroup.rotation.y = Math.atan2(-this.spawn.x, -this.spawn.z);
+    // Base = BUSTE DU DIEU. Démarre sous le sol (émerge au début de la partie).
+    this.templeGroup = makeGodBust(this.color, colorIndex);
+    this.templeGroup.position.set(this.spawn.x, -CONFIG.temple.riseDepth, this.spawn.z);
+    this.templeGroup.rotation.y = Math.atan2(-this.spawn.x, -this.spawn.z);  // face au centre
     this.templeGroup.userData.teamRef = this;
     world.scene.add(this.templeGroup);
     this.core = this.templeGroup.userData.core;
-    this.maxTempleHP = CONFIG.temple.hp;
+    this.godName = this.templeGroup.userData.godName;
+    this.maxTempleHP = opts.templeHP || CONFIG.temple.hp;
     this.templeHP = this.maxTempleHP;
     this.templeDestroyed = false;
+    this.baseRiseT = 0;                       // 0..1 progression d'émergence
+    this.baseRisen = false;                   // invulnérable tant que non émergé
+    this._defTimer = Math.random() * CONFIG.temple.defenseCooldown;  // riposte
 
     // Pad : entre le temple et le centre.
     const px = this.spawn.x + this.toCenter.x * 6.5;
@@ -58,14 +61,15 @@ class Team {
   get battalionActive() { return this.formation !== 'off'; }
 
   damageTemple(d) {
-    if (this.templeDestroyed) return;
+    if (this.templeDestroyed || !this.baseRisen) return;   // invulnérable pendant l'émergence
     this.templeHP -= d;
     if (this.templeHP <= 0) {
       this.templeDestroyed = true;
       const p = this.templeGroup.position;
-      this.world.particles.emit('explosion', p.x, 3, p.z, { big: true, count: 60 });
+      this.world.particles.emit('explosion', p.x, 4, p.z, { big: true, count: 80 });
+      this.world.particles.emit('explosion', p.x, 2, p.z, { big: true, count: 40 });
       this.world.audio.explosion(true);
-      this.world.engine.addShake(0.9);
+      this.world.engine.addShake(1.2);
       if (this.core) this.core.visible = false;
     }
   }
@@ -115,7 +119,7 @@ export class World {
       const spawn = spawns[i];
       const toCenter = this._dirToCenter(spawn);
       const team = new Team(this, i, cfg.colorIndex, cfg.controller, {
-        viewport: cfg.viewport, aiLevel: cfg.aiLevel, spawn, toCenter,
+        viewport: cfg.viewport, aiLevel: cfg.aiLevel, spawn, toCenter, templeHP: cfg.templeHP,
       });
       team.canRespawn = cfg.canRespawn !== undefined ? cfg.canRespawn : true;
       this.teams.push(team);
@@ -506,11 +510,8 @@ export class World {
       } else t._reticle.visible = false;
     }
 
-    // Pulsation des cœurs de temple.
-    for (const t of this.teams) if (t.core && !t.templeDestroyed) {
-      t.core.rotation.y += dt * 1.2;
-      t.core.position.y = 2.4 + Math.sin(this.time * 2) * 0.12;
-    }
+    // Bustes des dieux : émergence + pulse + riposte + effondrement.
+    this._updateBases(dt);
 
     // Respawn anti-blocage.
     for (const t of this.teams) this._handleRespawn(t, dt);
@@ -531,6 +532,48 @@ export class World {
       const b = this.spawnBuddy(team, team.spawn.x + team.toCenter.x * 3, team.spawn.z + team.toCenter.z * 3, 'fists');
       if (b && team.controller === 'human') team.activeBuddy = b;
     }
+  }
+
+  // Bustes : émergence du sol, pulse du cœur, riposte divine, effondrement.
+  _updateBases(dt) {
+    const T = CONFIG.temple;
+    for (const t of this.teams) {
+      const g = t.templeGroup;
+      if (!t.templeDestroyed) {
+        if (!t.baseRisen) {
+          t.baseRiseT = Math.min(1, t.baseRiseT + dt / T.riseTime);
+          const ease = 1 - Math.pow(1 - t.baseRiseT, 3);   // easeOutCubic
+          g.position.y = -T.riseDepth * (1 - ease);
+          if (Math.random() < 0.6) this.particles.emit('puff', t.spawn.x + (Math.random() - 0.5) * 5, 0.4, t.spawn.z + (Math.random() - 0.5) * 5, { count: 4 });
+          if (t.baseRiseT >= 1) { t.baseRisen = true; this.engine.addShake(0.5); this.audio.spawn(); }
+        }
+        if (t.core) { t.core.rotation.y += dt * 1.4; t.core.position.y = 3.1 + Math.sin(this.time * 2) * 0.1; }
+        if (t.baseRisen) {
+          t._defTimer -= dt;
+          if (t._defTimer <= 0) { t._defTimer = T.defenseCooldown; this._baseDefend(t); }
+        }
+      } else {
+        // Effondrement : le buste s'enfonce et bascule.
+        g.position.y = Math.max(-T.riseDepth, g.position.y - dt * 3.2);
+        g.rotation.z += dt * 0.5;
+      }
+    }
+  }
+
+  // La base tire la foudre sur l'ennemi le plus proche dans sa portée.
+  _baseDefend(team) {
+    const e = this._nearestEnemyOfTeam(team, team.spawn.x, team.spawn.z);
+    if (!e) return;
+    const dx = e.pos.x - team.spawn.x, dz = e.pos.z - team.spawn.z, d = Math.hypot(dx, dz) || 1;
+    if (d > CONFIG.temple.defenseRange) return;
+    const w = {
+      projType: 'lightning', projColor: team.color.accent, projSize: 0.55,
+      damage: CONFIG.temple.defenseDamage, projSpeed: 44, range: CONFIG.temple.defenseRange + 5,
+      spread: 0, count: 1, aoe: 1.8,
+    };
+    this.particles.emit('muzzle', team.spawn.x, 5.4, team.spawn.z, { color: team.color.accent, count: 10 });
+    this.spawnProjectile({ x: team.spawn.x, y: 5.0, z: team.spawn.z, dx: dx / d, dz: dz / d, weapon: w, team, owner: null });
+    this.audio.shoot('lightning');
   }
 
   _updateDomination(dt) {

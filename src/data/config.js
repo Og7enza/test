@@ -61,10 +61,15 @@ export const CONFIG = {
     aimAssistRange: 26,          // portée de l'acquisition de cible auto
   },
 
-  // ---- Temple / base --------------------------------------------------------
+  // ---- Base = BUSTE DU DIEU (objectif de siège : gros PV + riposte) ---------
   temple: {
-    hp: 400,
-    radius: 3.0,
+    hp: 1200,                    // beaucoup de PV : c'est LA cible à détruire
+    radius: 3.4,
+    riseTime: 2.6,               // durée d'émergence du buste hors du sol (s)
+    riseDepth: 7.5,              // profondeur de départ sous le sol
+    defenseRange: 17,            // portée de riposte (foudre divine)
+    defenseCooldown: 1.5,        // secondes entre deux tirs de la base
+    defenseDamage: 16,
   },
 
   // ---- Combat ---------------------------------------------------------------
