@@ -30,6 +30,7 @@ public class Buddy : IDamageable {
     public Team lastFrom;
     Transform bodyT; float bob, flash;
     Transform hpFill; Renderer hpFillRend;
+    GameObject sprite; Renderer spriteRend; bool usingSprite; float spriteW; int faceSign = 1; GameObject[] hideParts;
 
     public Vector3 Pos => tr.position;
     public bool Dead => !alive;
@@ -40,23 +41,58 @@ public class Buddy : IDamageable {
         go = P.Group("Buddy", w.root); tr = go.transform; tr.position = pos;
         var body = P.Prim(PrimitiveType.Capsule, tr, new Vector3(0, 0.9f, 0), new Vector3(0.9f, 0.9f, 0.9f), P.Mat(t.primary));
         bodyT = body.transform;
-        P.Prim(PrimitiveType.Sphere, tr, new Vector3(0, 1.7f, 0), new Vector3(0.7f, 0.7f, 0.7f), P.Mat(new Color(0.96f, 0.8f, 0.6f)));
-        P.Prim(PrimitiveType.Sphere, tr, new Vector3(0, 1.92f, 0), new Vector3(0.8f, 0.5f, 0.8f), P.Mat(t.accent));            // casque
-        P.Prim(PrimitiveType.Cylinder, tr, new Vector3(0, 0.04f, 0), new Vector3(1.5f, 0.02f, 1.5f), P.Mat(t.primary, true)); // anneau d'équipe
+        var head = P.Prim(PrimitiveType.Sphere, tr, new Vector3(0, 1.7f, 0), new Vector3(0.7f, 0.7f, 0.7f), P.Mat(new Color(0.96f, 0.8f, 0.6f)));
+        var helmet = P.Prim(PrimitiveType.Sphere, tr, new Vector3(0, 1.92f, 0), new Vector3(0.8f, 0.5f, 0.8f), P.Mat(t.accent));   // casque
+        P.Prim(PrimitiveType.Cylinder, tr, new Vector3(0, 0.04f, 0), new Vector3(1.5f, 0.02f, 1.5f), P.Mat(t.primary, true));      // anneau d'équipe
         var eyeM = P.Mat(new Color(0.1f, 0.1f, 0.15f));
-        P.Prim(PrimitiveType.Sphere, tr, new Vector3(-0.18f, 1.75f, 0.32f), Vector3.one * 0.16f, eyeM);
-        P.Prim(PrimitiveType.Sphere, tr, new Vector3(0.18f, 1.75f, 0.32f), Vector3.one * 0.16f, eyeM);
-        P.Prim(PrimitiveType.Cube, tr, new Vector3(0, 2.6f, 0), new Vector3(1.2f, 0.16f, 0.06f), P.Mat(new Color(0.08f, 0.08f, 0.1f)));           // barre de vie (fond)
+        var eyeL = P.Prim(PrimitiveType.Sphere, tr, new Vector3(-0.18f, 1.75f, 0.32f), Vector3.one * 0.16f, eyeM);
+        var eyeR = P.Prim(PrimitiveType.Sphere, tr, new Vector3(0.18f, 1.75f, 0.32f), Vector3.one * 0.16f, eyeM);
+        P.Prim(PrimitiveType.Cube, tr, new Vector3(0, 2.6f, 0), new Vector3(1.2f, 0.16f, 0.06f), P.Mat(new Color(0.08f, 0.08f, 0.1f)));   // barre de vie (fond)
         var fill = P.Prim(PrimitiveType.Cube, tr, new Vector3(0, 2.6f, 0.05f), new Vector3(1.2f, 0.16f, 0.06f), P.Mat(new Color(0.3f, 0.9f, 0.4f), true));
         hpFill = fill.transform; hpFillRend = fill.GetComponent<Renderer>();
+        // Sprite cartoon (si l'asset existe) : remplace les primitives du corps.
+        hideParts = new[] { body, head, helmet, eyeL, eyeR };
+        var stex = P.Tex(SpriteName(weaponId));
+        if (stex != null) {
+            usingSprite = true;
+            sprite = P.Billboard(tr, stex, 2.6f);
+            spriteRend = sprite.GetComponent<Renderer>();
+            spriteW = sprite.transform.localScale.x;
+            foreach (var g in hideParts) g.SetActive(false);
+        }
         SetWeapon(weaponId);
     }
 
-    public void SetWeapon(string id) { weaponId = id; weapon = Data.Weapon(id); }
+    public void SetWeapon(string id) {
+        weaponId = id; weapon = Data.Weapon(id);
+        if (usingSprite && spriteRend != null && vehicle == null) {
+            var tx = P.Tex(SpriteName(id));
+            if (tx != null) spriteRend.sharedMaterial.mainTexture = tx;
+        }
+    }
+
+    // Nom du sprite de minion selon l'arme (archer/lancier/foudre) + l'équipe.
+    string SpriteName(string wid) {
+        string cls = (wid == "bow") ? "archer" : (wid == "lance") ? "spearman"
+                   : (wid == "divineThunder" || wid == "electricBow") ? "thunderling" : null;
+        return cls != null ? "minion_" + cls + "_" + team.key : "minion_" + team.key;
+    }
+    string VehKey(string id) => id == "warChariot" ? "chariot" : id == "royalEagle" ? "eagle" : id == "giantTurtle" ? "turtle" : "pegasus";
 
     public void EnterVehicle(VehicleDef v) {
         vehicle = v; maxHp = v.hp; hp = v.hp; speed = v.speed; flying = v.fly; SetWeapon(v.weapon);
-        P.Prim(PrimitiveType.Cube, tr, new Vector3(0, 1.3f, 0), new Vector3(2.2f, 1.0f, 2.6f), P.Mat(team.accent));
+        if (usingSprite && spriteRend != null) {
+            var vt = P.Tex("veh_" + VehKey(v.id));
+            if (vt != null) {
+                spriteRend.sharedMaterial.mainTexture = vt;
+                float h = 3.4f, asp = vt.height > 0 ? vt.width / (float)vt.height : 1f;
+                spriteW = h * asp;
+                sprite.transform.localScale = new Vector3(faceSign * spriteW, h, 1f);
+                sprite.transform.localPosition = new Vector3(0, h * 0.5f, 0);
+            }
+        } else {
+            P.Prim(PrimitiveType.Cube, tr, new Vector3(0, 1.3f, 0), new Vector3(2.2f, 1.0f, 2.6f), P.Mat(team.accent));
+        }
     }
 
     public bool CanCarry() => carryColor < 0 && !working && vehicle == null;
@@ -75,8 +111,10 @@ public class Buddy : IDamageable {
         if (working) {                                  // touille le chaudron
             tr.position = Vector3.Lerp(tr.position, workPos, dt * 6f);
             bob += dt * 9f;
-            bodyT.localPosition = new Vector3(0, 0.9f + Mathf.Abs(Mathf.Sin(bob)) * 0.12f, 0);
-            tr.Rotate(0, dt * 60f, 0);
+            float by = Mathf.Abs(Mathf.Sin(bob)) * 0.12f;
+            bodyT.localPosition = new Vector3(0, 0.9f + by, 0);
+            if (usingSprite && sprite) sprite.transform.localPosition = new Vector3(0, 1.3f + by, 0);
+            else tr.Rotate(0, dt * 60f, 0);
             UpdateBars(dt);
             return;
         }
@@ -108,7 +146,13 @@ public class Buddy : IDamageable {
         // 4) Orientation.
         float spd = new Vector2(vel.x, vel.z).magnitude;
         if (spd > 0.3f && target == null) facing = Mathf.Atan2(vel.x, vel.z);
-        tr.rotation = Quaternion.Slerp(tr.rotation, Quaternion.Euler(0, facing * Mathf.Rad2Deg, 0), dt * 12f);
+        if (!usingSprite) {
+            tr.rotation = Quaternion.Slerp(tr.rotation, Quaternion.Euler(0, facing * Mathf.Rad2Deg, 0), dt * 12f);
+        } else {                                          // sprite : pas de rotation 3D, juste un flip G/D
+            float fdx = Mathf.Sin(facing);
+            if (fdx > 0.2f) faceSign = 1; else if (fdx < -0.2f) faceSign = -1;
+            sprite.transform.localScale = new Vector3(faceSign * spriteW, sprite.transform.localScale.y, 1f);
+        }
         // 5) Combat (visée auto).
         AcquireTarget();
         if (wantFire && (weapon.melee || InRange())) Fire();
@@ -121,8 +165,13 @@ public class Buddy : IDamageable {
 
     void UpdateBars(float dt) {
         if (flash > 0f) flash -= dt;
-        float k = flash > 0f ? 1.16f : 1f;
-        if (bodyT) { bodyT.localScale = Vector3.one * 0.9f * k; if (!working) bodyT.localPosition = new Vector3(0, 0.9f, 0); }
+        if (usingSprite && spriteRend != null) {
+            if (spriteRend.sharedMaterial.HasProperty("_Color"))
+                spriteRend.sharedMaterial.color = flash > 0f ? new Color(1f, 0.6f, 0.6f) : Color.white;
+        } else if (bodyT) {
+            float k = flash > 0f ? 1.16f : 1f;
+            bodyT.localScale = Vector3.one * 0.9f * k; if (!working) bodyT.localPosition = new Vector3(0, 0.9f, 0);
+        }
         float f = Mathf.Clamp01(hp / maxHp);
         if (hpFill) {
             hpFill.localScale = new Vector3(1.2f * f, 0.16f, 0.06f);

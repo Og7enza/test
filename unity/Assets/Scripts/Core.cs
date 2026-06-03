@@ -68,6 +68,10 @@ public static class Config {
     };
     public static readonly string[] TeamName = { "Olympe", "Hadès", "Anubis", "Râ" };
     public static readonly string[] GodName  = { "Zeus", "Hadès", "Anubis", "Râ" };
+    // Clés (minuscules sans accent) pour les noms de fichiers d'assets.
+    public static readonly string[] TeamKey = { "olympe", "hades", "anubis", "ra" };
+    public static readonly string[] GodKey  = { "zeus", "hades", "anubis", "ra" };
+    public static readonly Vector3 CamOffset = new Vector3(0, 50, 32);
 }
 
 // --- Helpers de génération procédurale --------------------------------------
@@ -109,6 +113,25 @@ public static class P {
         var g = new GameObject(name);
         if (parent) g.transform.SetParent(parent, false);
         return g;
+    }
+
+    // Charge une texture depuis Resources/art/ (null si absente).
+    public static Texture2D Tex(string name) { return Resources.Load<Texture2D>("art/" + name); }
+
+    // Quad "sprite" cartoon orienté face à la caméra iso (angle FIXE : marche
+    // pour l'écran partagé). Renvoie le GameObject (ou un quad neutre si tex null).
+    public static GameObject Billboard(Transform parent, Texture2D tex, float h) {
+        var q = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        var col = q.GetComponent<Collider>(); if (col) Object.Destroy(col);
+        q.transform.SetParent(parent, false);
+        float aspect = (tex != null && tex.height > 0) ? tex.width / (float)tex.height : 1f;
+        q.transform.localScale = new Vector3(h * aspect, h, 1f);
+        q.transform.localPosition = new Vector3(0, h * 0.5f, 0);
+        q.transform.localRotation = Quaternion.LookRotation(Config.CamOffset.normalized, Vector3.up);
+        var sh = Shader.Find("Sprites/Default") ?? Shader.Find("Unlit/Transparent");
+        var m = new Material(sh); m.mainTexture = tex;
+        q.GetComponent<Renderer>().sharedMaterial = m;
+        return q;
     }
 }
 

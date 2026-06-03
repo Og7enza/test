@@ -10,7 +10,7 @@ namespace DivineRivals {
 public class Team {
     public World world; public int index, colorIndex; public Ctrl controller; public int viewport;
     public float aiLevel; public Vector3 spawn, toCenter;
-    public Color primary, accent; public string teamName, godName;
+    public Color primary, accent; public string teamName, godName, key, gkey;
     public List<Buddy> buddies = new List<Buddy>();
     public Buddy active;
     public Cauldron cauldron; public GodBust bust;
@@ -26,6 +26,7 @@ public class Team {
         this.viewport = viewport; this.aiLevel = aiLevel; this.spawn = spawn;
         primary = Config.TeamPrimary[colorIndex % 4]; accent = Config.TeamAccent[colorIndex % 4];
         teamName = Config.TeamName[colorIndex % 4]; godName = Config.GodName[colorIndex % 4];
+        key = Config.TeamKey[colorIndex % 4]; gkey = Config.GodKey[colorIndex % 4];
         float d = new Vector2(spawn.x, spawn.z).magnitude; toCenter = d > 0.01f ? new Vector3(-spawn.x / d, 0, -spawn.z / d) : Vector3.forward;
         bust = new GodBust(w, this);
         cauldron = new Cauldron(w, this, spawn + toCenter * 6.5f);

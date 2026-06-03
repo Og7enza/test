@@ -18,7 +18,7 @@ public class Game : MonoBehaviour {
     bool running, resultsShown; float shake;
     readonly List<Camera> cams = new List<Camera>();
     readonly List<Team> camTeam = new List<Team>();
-    Vector3 camOffset = new Vector3(0, 50, 32);   // caméra plus HAUTE (vue d'ensemble) — ajustable
+    Vector3 camOffset = Config.CamOffset;          // caméra haute (vue d'ensemble) — réglable dans Config
     float[] lastTapT; Vector2[] lastTapP;         // détection du double-tap, par joueur
 
     void Awake() {
@@ -28,8 +28,20 @@ public class Game : MonoBehaviour {
         gameObject.AddComponent<AudioListener>();
         sfx = new Sfx(gameObject);
         SetupLight();
+        SetupSky();
         SetupEventSystem();
         ShowMenu(null);
+    }
+
+    void SetupSky() {
+        var sky = P.Tex("sky");
+        if (sky == null) return;
+        var sh = Shader.Find("Skybox/Panoramic");
+        if (sh == null) return;
+        var m = new Material(sh);
+        m.mainTexture = sky;
+        if (m.HasProperty("_MainTex")) m.SetTexture("_MainTex", sky);
+        RenderSettings.skybox = m;
     }
 
     void SetupLight() {
@@ -112,6 +124,7 @@ public class Game : MonoBehaviour {
             var cam = go.AddComponent<Camera>();
             cam.fieldOfView = 42; cam.farClipPlane = 400; cam.nearClipPlane = 0.5f;
             cam.backgroundColor = new Color(0.5f, 0.66f, 0.86f);
+            cam.clearFlags = RenderSettings.skybox != null ? CameraClearFlags.Skybox : CameraClearFlags.SolidColor;
             cam.rect = rects[Mathf.Min(i, rects.Length - 1)];
             var t = humanTeams[i];
             go.transform.position = t.spawn + camOffset;

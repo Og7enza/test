@@ -56,6 +56,15 @@ public class World {
     void BuildArena() {
         var ground = P.Prim(PrimitiveType.Plane, root, Vector3.zero, Vector3.one * (Config.ArenaHalf * 2f / 10f), P.Mat(new Color(0.42f, 0.65f, 0.42f)));
         ground.name = "Ground";
+        var gt = P.Tex("ground");
+        if (gt != null) {
+            gt.wrapMode = TextureWrapMode.Repeat;
+            var gm = ground.GetComponent<Renderer>().sharedMaterial;
+            gm.mainTexture = gt;
+            if (gm.HasProperty("_BaseMap")) gm.SetTexture("_BaseMap", gt);
+            gm.color = Color.white; if (gm.HasProperty("_BaseColor")) gm.SetColor("_BaseColor", Color.white);
+            gm.mainTextureScale = new Vector2(8, 8);
+        }
         var wallM = P.Mat(new Color(0.55f, 0.5f, 0.42f));
         float h = Config.ArenaHalf, t = 1.2f;
         P.Prim(PrimitiveType.Cube, root, new Vector3(0, 1.1f, -h), new Vector3(h * 2, 2.2f, t), wallM);
@@ -296,7 +305,9 @@ public class Fx {
         var em = ps.emission; em.enabled = false;
         var sh = ps.shape; sh.enabled = false;
         var r = ps.GetComponent<ParticleSystemRenderer>();
-        r.material = P.Mat(Color.white, true);
+        var ptex = P.Tex("particle");
+        if (ptex != null) { var pm = new Material(Shader.Find("Sprites/Default") ?? Shader.Find("Unlit/Transparent")); pm.mainTexture = ptex; r.material = pm; }
+        else r.material = P.Mat(Color.white, true);
         ps.Play();
     }
     public void Burst(Vector3 pos, Color col, int count, float speed) {
