@@ -24,6 +24,7 @@ dependencies:
   path_provider: ^2.1.4
   path: ^1.9.0
   image_picker: ^1.1.2     # fallback galerie pour la démo (sans caméra)
+  image: ^4.2.0            # incrustation (stamp) du matricule sur la photo
 
   # UI / utilitaires
   google_fonts: ^6.2.1

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/services/hash_service.dart';
 import '../../../core/services/location_service.dart';
+import '../../../core/services/stamp_service.dart';
 import '../../../core/services/trusted_time_service.dart';
 import '../../capture/domain/capture_draft.dart';
 import '../data/mock_certification_repository.dart';
@@ -16,6 +17,9 @@ final locationServiceProvider =
 
 final trustedTimeServiceProvider =
     Provider<TrustedTimeService>((ref) => const DeviceTrustedTimeService());
+
+final stampServiceProvider =
+    Provider<StampService>((ref) => const StampService());
 
 // --- Repository ---
 // Mock aujourd'hui. Remplacer par ApiCertificationRepository quand le backend
