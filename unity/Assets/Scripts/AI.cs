@@ -46,10 +46,26 @@ public class AI {
         if (best != null) team.cauldron.Craft(best);
     }
 
+    // Meilleure cible : proche ET blessée en priorité (focus-fire pour achever).
+    Buddy BestTarget(Buddy b) {
+        Buddy best = null; float bestScore = -1f; const float range = Config.AimRange;
+        foreach (var o in world.buddies) {
+            if (o.team == team || !o.alive) continue;
+            float d = (o.Pos - b.Pos).magnitude;
+            if (d > range) continue;
+            float score = (1f - d / range) + (1f - o.hp / o.maxHp) * 0.8f;
+            if (score > bestScore) { bestScore = score; best = o; }
+        }
+        return best;
+    }
+
     void Drive(float dt) {
+        Vector3 home = new Vector3(team.spawn.x, 0, team.spawn.z);
+        var threat = world.NearestEnemyBuddy(team, home);
+        bool baseThreatened = threat != null && (threat.Pos - home).sqrMagnitude < 16f * 16f;
         foreach (var b in team.Alive()) {
             if (b.working) continue;
-            if (b == gatherer) {
+            if (b == gatherer) {                              // collecteur : remplit le chaudron
                 if (b.carryColor < 0) {
                     var c = world.NearestFreeCloud(b.Pos);
                     if (c != null) { b.SetMove(c.Pos); if ((c.Pos - b.Pos).sqrMagnitude < Config.PickupReach * Config.PickupReach) world.TryPickup(b); }
@@ -58,17 +74,13 @@ public class AI {
                     b.SetMove(team.cauldron.pos);
                     if ((team.cauldron.pos - b.Pos).sqrMagnitude < Config.UseRadius * Config.UseRadius) world.TryDeposit(b);
                 }
-                b.wantFire = world.NearestEnemyBuddy(team, b.Pos) is Buddy e2 && (e2.Pos - b.Pos).sqrMagnitude < 36f;
-            } else {
-                // Si notre base est menacée, on rapatrie les combattants dessus.
-                Vector3 home = new Vector3(team.spawn.x, 0, team.spawn.z);
-                var threat = world.NearestEnemyBuddy(team, home);
-                bool defend = threat != null && (threat.Pos - home).sqrMagnitude < 16f * 16f;
-                var e = defend ? threat : world.NearestEnemyBuddy(team, b.Pos);
-                IDamageable tgt = e != null ? (IDamageable)e : world.EnemyBustFor(team);
+                var ng = world.NearestEnemyBuddy(team, b.Pos);
+                b.wantFire = ng != null && (ng.Pos - b.Pos).sqrMagnitude < 49f;   // se défend si menacé
+            } else {                                          // combattant
+                IDamageable tgt = baseThreatened ? (IDamageable)threat : ((IDamageable)BestTarget(b) ?? world.EnemyBustFor(team));
                 if (tgt != null) {
                     Vector3 tp = tgt.Pos; Vector3 dir = b.Pos - tp; dir.y = 0; float d = dir.magnitude;
-                    float stand = Mathf.Max(2.5f, b.weapon.range * 0.7f);
+                    float stand = Mathf.Max(2.2f, b.weapon.range * (0.55f + (1f - team.aiLevel) * 0.25f));
                     b.SetMove(tp + (d > 0.01f ? dir / d : Vector3.forward) * stand);
                 }
                 b.wantFire = true;

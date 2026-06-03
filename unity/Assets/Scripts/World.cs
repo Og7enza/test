@@ -238,6 +238,9 @@ public class World {
             if (b.team.controller == Ctrl.Human && !humanActive) { b.joy = Vector2.zero; b.wantFire = true; }
             b.Tick(dt, time);
         }
+        // Dépôt AUTOMATIQUE : un buddy qui porte un nuage et passe près de SON
+        // chaudron le verse tout seul (pickup reste manuel via le bouton ACTION).
+        foreach (var b in buddies) if (b.alive && !b.working && b.carryColor >= 0) TryDeposit(b);
         TickProjectiles(dt);
         CheckEnd();
     }

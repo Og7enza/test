@@ -223,7 +223,23 @@ public class Game : MonoBehaviour {
     }
 
     // --- Callbacks appelés par le HUD ----------------------------------------
-    public void OnJoystick(Team t, Vector2 v) { if (t.active != null && t.active.alive) { t.active.joy = v; if (v.sqrMagnitude > 0.04f) t.active.hasMove = false; } }
+    public void OnJoystick(Team t, Vector2 v) {
+        if (t.active == null || !t.active.alive) return;
+        if (v.sqrMagnitude < 0.04f) { t.active.joy = Vector2.zero; return; }
+        // Mappe le stick (écran) sur le plan de jeu RELATIVEMENT à la caméra iso :
+        // haut = loin (forward caméra), droite = +X caméra. Fini l'inversion.
+        Camera cam = null;
+        for (int i = 0; i < camTeam.Count; i++) if (camTeam[i] == t) { cam = cams[i]; break; }
+        Vector2 jv;
+        if (cam != null) {
+            Vector3 f = cam.transform.forward; f.y = 0; f.Normalize();
+            Vector3 r = cam.transform.right; r.y = 0; r.Normalize();
+            Vector3 d = r * v.x + f * v.y;
+            jv = new Vector2(d.x, d.z);
+        } else jv = new Vector2(v.x, -v.y);
+        t.active.joy = jv;
+        t.active.hasMove = false;
+    }
     public void OnFire(Team t, bool down) { if (t.active != null && t.active.alive) t.active.wantFire = down; }
     public void OnSwitch(Team t) {
         var f = t.Free(); if (f.Count == 0) return;

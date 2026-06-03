@@ -62,19 +62,28 @@ public class PressButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void OnPointerUp(PointerEventData e) { onUp?.Invoke(); }
 }
 
-// Joystick virtuel (uGUI, multitouch-safe).
+// Joystick FLOTTANT : grande zone tactile ; la base + le knob apparaissent sous
+// le doigt, n'importe où dans la zone (bien plus confortable sur mobile).
 public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler {
-    public RectTransform bg, knob; public System.Action<Vector2> onChange; float radius = 70f;
-    void Start() { if (bg) radius = bg.sizeDelta.x * 0.5f; }
-    public void OnPointerDown(PointerEventData e) { OnDrag(e); }
+    public RectTransform zone, baseRT, knob; public System.Action<Vector2> onChange;
+    float radius = 95f; Vector2 startLocal;
+    public void OnPointerDown(PointerEventData e) {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(zone, e.position, e.pressEventCamera, out startLocal);
+        if (baseRT) { baseRT.gameObject.SetActive(true); baseRT.anchoredPosition = startLocal; }
+        if (knob) knob.anchoredPosition = Vector2.zero;
+    }
     public void OnDrag(PointerEventData e) {
         Vector2 lp;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(bg, e.position, e.pressEventCamera, out lp);
-        Vector2 v = Vector2.ClampMagnitude(lp, radius);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(zone, e.position, e.pressEventCamera, out lp);
+        Vector2 v = Vector2.ClampMagnitude(lp - startLocal, radius);
         if (knob) knob.anchoredPosition = v;
-        onChange?.Invoke(v / Mathf.Max(1f, radius));
+        onChange?.Invoke(v / radius);
     }
-    public void OnPointerUp(PointerEventData e) { if (knob) knob.anchoredPosition = Vector2.zero; onChange?.Invoke(Vector2.zero); }
+    public void OnPointerUp(PointerEventData e) {
+        if (baseRT) baseRT.gameObject.SetActive(false);
+        if (knob) knob.anchoredPosition = Vector2.zero;
+        onChange?.Invoke(Vector2.zero);
+    }
 }
 
 // --- HUD --------------------------------------------------------------------
@@ -110,12 +119,14 @@ public class HUD {
             p.stats = UI.Text(top, "", 20, Vector2.zero, Vector2.zero, Color.white);
             var srt = p.stats.GetComponent<RectTransform>(); srt.anchorMin = Vector2.zero; srt.anchorMax = Vector2.one; srt.sizeDelta = new Vector2(-16, 0); srt.anchoredPosition = Vector2.zero; p.stats.alignment = TextAnchor.MiddleLeft;
 
-            // Joystick (bas-gauche).
-            var jbg = UI.Node(region, new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), new Vector2(24, 24), new Vector2(150, 150));
-            UI.Box(jbg, new Color(1, 1, 1, 0.10f));
-            var knob = UI.Node(jbg, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(64, 64));
-            UI.Box(knob, new Color(1f, 0.84f, 0.3f, 0.9f));
-            var joy = jbg.gameObject.AddComponent<Joystick>(); joy.bg = jbg; joy.knob = knob;
+            // Joystick FLOTTANT : grande zone tactile (moitié gauche) ; base+knob au toucher.
+            var jzone = UI.Node(region, new Vector2(0, 0), new Vector2(0.5f, 0.82f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            UI.Box(jzone, new Color(1, 1, 1, 0.02f));
+            var jbase = UI.Node(jzone, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(190, 190));
+            UI.Box(jbase, new Color(1, 1, 1, 0.12f)); jbase.gameObject.SetActive(false);
+            var knob = UI.Node(jbase, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(84, 84));
+            UI.Box(knob, new Color(1f, 0.84f, 0.3f, 0.95f));
+            var joy = jzone.gameObject.AddComponent<Joystick>(); joy.zone = jzone; joy.baseRT = jbase; joy.knob = knob;
             var capt = team; joy.onChange = v => game.OnJoystick(capt, v);
 
             // Bouton TIR (maintenu) : Image + PressButton (pas de Button onClick).
@@ -127,7 +138,7 @@ public class HUD {
 
             var act = UI.Button(region, "ACTION", new Vector2(0, 0), new Vector2(96, 88), () => game.OnAction(capt)); Anchor(act, new Vector2(1, 0), new Vector2(-210, 64));
             var sw = UI.Button(region, "CHGT", new Vector2(0, 0), new Vector2(84, 76), () => game.OnSwitch(capt)); Anchor(sw, new Vector2(1, 0), new Vector2(-92, 200));
-            var cauldronBtn = UI.Button(region, "CHAUDRON", new Vector2(0, 0), new Vector2(180, 64), () => ToggleCraft(p)); Anchor(cauldronBtn, new Vector2(0.5f, 0), new Vector2(0, 40));
+            var cauldronBtn = UI.Button(region, "CHAUDRON", new Vector2(0, 0), new Vector2(180, 56), () => ToggleCraft(p)); Anchor(cauldronBtn, new Vector2(0.5f, 1), new Vector2(0, -56));
 
             BuildCraftPanel(p, region);
 
