@@ -15,4 +15,8 @@ class AppConfig {
 
   /// Préfixe lisible des matricules (ex. `TC-XXXX-XXXX-XXXX`).
   static const String matriculePrefix = 'TC';
+
+  /// Prix simulé de la certification (DÉMO — aucun débit réel).
+  static const double demoMintPrice = 2.99;
+  static const String demoCurrency = 'EUR';
 }

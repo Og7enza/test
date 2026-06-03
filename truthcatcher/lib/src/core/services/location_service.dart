@@ -50,6 +50,22 @@ class LocationService {
     );
   }
 
+  /// Variante « démo » : ne lève jamais d'exception. En cas de refus de
+  /// permission ou de GPS indisponible, renvoie une position simulée afin que
+  /// le parcours de certification reste démontrable de bout en bout.
+  Future<GeoFix> currentFixOrSimulated() async {
+    try {
+      return await currentFix();
+    } catch (_) {
+      return const GeoFix(
+        latitude: 48.85837,
+        longitude: 2.29448,
+        accuracy: 0,
+        label: 'Position simulée (démo)',
+      );
+    }
+  }
+
   Future<String> _reverseGeocode(double lat, double lng) async {
     try {
       final placemarks = await placemarkFromCoordinates(lat, lng);
