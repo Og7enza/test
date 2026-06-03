@@ -81,6 +81,11 @@ class ProfileScreen extends ConsumerWidget {
             child: Column(
               children: [
                 _Tile(
+                  icon: Icons.workspace_premium_outlined,
+                  label: 'Abonnement Premium',
+                  onTap: () => context.push('/premium'),
+                ),
+                _Tile(
                   icon: Icons.help_outline,
                   label: 'Aide',
                   onTap: () => context.push('/profile/help'),

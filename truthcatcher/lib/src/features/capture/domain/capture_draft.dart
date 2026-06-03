@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
 /// Brouillon de preuve : tout ce qui est capturé localement AVANT certification
-/// (photo, empreinte, géolocalisation, horodatage de confiance).
+/// (photo, empreinte, géolocalisation, horodatage), plus les choix de
+/// confidentialité (Premium) : quelles infos sont partagées et la visibilité.
 class CaptureDraft {
   const CaptureDraft({
     required this.imagePath,
@@ -13,6 +14,10 @@ class CaptureDraft {
     required this.accuracy,
     required this.locationLabel,
     this.name = '',
+    this.shareAddress = true,
+    this.shareCoordinates = true,
+    this.shareTimestamp = true,
+    this.isPublic = true,
   });
 
   final String imagePath;
@@ -25,7 +30,20 @@ class CaptureDraft {
   final String locationLabel;
   final String name;
 
-  CaptureDraft copyWith({String? name}) => CaptureDraft(
+  // Confidentialité (Premium)
+  final bool shareAddress;
+  final bool shareCoordinates;
+  final bool shareTimestamp;
+  final bool isPublic;
+
+  CaptureDraft copyWith({
+    String? name,
+    bool? shareAddress,
+    bool? shareCoordinates,
+    bool? shareTimestamp,
+    bool? isPublic,
+  }) =>
+      CaptureDraft(
         imagePath: imagePath,
         bytes: bytes,
         sha256Hex: sha256Hex,
@@ -35,5 +53,9 @@ class CaptureDraft {
         accuracy: accuracy,
         locationLabel: locationLabel,
         name: name ?? this.name,
+        shareAddress: shareAddress ?? this.shareAddress,
+        shareCoordinates: shareCoordinates ?? this.shareCoordinates,
+        shareTimestamp: shareTimestamp ?? this.shareTimestamp,
+        isPublic: isPublic ?? this.isPublic,
       );
 }

@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../account/application/account_providers.dart';
 import '../../certificate/application/certificate_providers.dart';
 import '../domain/capture_draft.dart';
 
@@ -135,6 +136,34 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final remaining = ref.watch(accountProvider).quotaRemaining;
+    if (remaining <= 0) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Quota épuisé')),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.lock_clock_outlined,
+                    size: 64, color: AppColors.textMuted),
+                const SizedBox(height: 16),
+                const Text(
+                  'Vous avez utilisé tout votre quota de photos.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => context.push('/premium'),
+                  child: const Text('Passer Premium'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: AppColors.primaryDark,
       extendBodyBehindAppBar: true,

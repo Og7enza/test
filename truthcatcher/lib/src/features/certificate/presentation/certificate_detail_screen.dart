@@ -151,6 +151,41 @@ class _DetailBody extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(height: 12),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      c.isPublic ? Icons.public : Icons.lock_outline,
+                      size: 20,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      c.isPublic ? 'Preuve publique' : 'Preuve privée',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _chip('Adresse', c.shareAddress),
+                    _chip('Coordonnées GPS', c.shareCoordinates),
+                    _chip('Horodatage', c.shareTimestamp),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
         const SizedBox(height: 16),
         FilledButton.icon(
           onPressed: () => Share.share(
@@ -165,6 +200,28 @@ class _DetailBody extends StatelessWidget {
       ],
     );
   }
+}
+
+Widget _chip(String label, bool on) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    decoration: BoxDecoration(
+      color: on ? AppColors.primary.withOpacity(0.12) : AppColors.background,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          on ? Icons.check_circle : Icons.cancel,
+          size: 14,
+          color: on ? AppColors.success : AppColors.textMuted,
+        ),
+        const SizedBox(width: 6),
+        Text(label, style: const TextStyle(fontSize: 12)),
+      ],
+    ),
+  );
 }
 
 class _MatriculeBanner extends StatelessWidget {

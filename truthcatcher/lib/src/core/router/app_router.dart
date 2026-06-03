@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/account/presentation/premium_screen.dart';
 import '../../features/auth/application/auth_providers.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/reset_screen.dart';
@@ -120,6 +121,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/transactions',
         builder: (context, state) => const TransactionsScreen(),
+      ),
+      GoRoute(
+        path: '/premium',
+        builder: (context, state) => const PremiumScreen(),
       ),
     ],
   );

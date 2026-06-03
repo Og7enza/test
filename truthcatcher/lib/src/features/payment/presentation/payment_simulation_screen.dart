@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../account/application/account_providers.dart';
 import '../../capture/domain/capture_draft.dart';
 import '../../certificate/application/certificate_providers.dart';
 import '../../coupon/application/coupon_providers.dart';
@@ -77,6 +78,7 @@ class _PaymentSimulationScreenState
 
       final cert =
           await ref.read(certificatesProvider.notifier).certify(widget.draft);
+      ref.read(accountProvider.notifier).consumeQuota();
       if (!mounted) return;
       context.go('/');
       context.push('/certificate/${cert.matricule}', extra: cert);

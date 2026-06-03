@@ -125,6 +125,10 @@ class MockCertificationRepository implements CertificationRepository {
       locationLabel: draft.locationLabel,
       localImagePath: draft.imagePath,
       status: CertificateStatus.certified,
+      shareAddress: draft.shareAddress,
+      shareCoordinates: draft.shareCoordinates,
+      shareTimestamp: draft.shareTimestamp,
+      isPublic: draft.isPublic,
       // Mint NFT simulé (gas-free) — remplacé par le vrai mint Polygon plus tard.
       chain: AppConfig.chainName,
       tokenId: _fakeTokenId(),

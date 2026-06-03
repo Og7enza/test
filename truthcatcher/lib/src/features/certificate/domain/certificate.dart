@@ -3,7 +3,7 @@ enum CertificateStatus { draft, certifying, certified, failed }
 
 /// Une preuve certifiée. Modernise l'ancien modèle `MintedImage`
 /// (voir docs/BACKEND_API.md §7) en y ajoutant les champs probants manquants
-/// (hash SHA-256, latitude/longitude).
+/// (hash SHA-256, latitude/longitude) et les réglages de confidentialité.
 class Certificate {
   const Certificate({
     required this.matricule,
@@ -24,6 +24,10 @@ class Certificate {
     this.txHash,
     this.chain,
     this.isArchived = false,
+    this.shareAddress = true,
+    this.shareCoordinates = true,
+    this.shareTimestamp = true,
+    this.isPublic = true,
   });
 
   final String matricule;
@@ -49,6 +53,12 @@ class Certificate {
 
   final bool isArchived;
 
+  // Confidentialité (Premium)
+  final bool shareAddress;
+  final bool shareCoordinates;
+  final bool shareTimestamp;
+  final bool isPublic;
+
   bool get isMinted => tokenId != null && tokenId!.isNotEmpty;
 
   Certificate copyWith({
@@ -70,6 +80,10 @@ class Certificate {
     String? txHash,
     String? chain,
     bool? isArchived,
+    bool? shareAddress,
+    bool? shareCoordinates,
+    bool? shareTimestamp,
+    bool? isPublic,
   }) {
     return Certificate(
       matricule: matricule ?? this.matricule,
@@ -90,6 +104,10 @@ class Certificate {
       txHash: txHash ?? this.txHash,
       chain: chain ?? this.chain,
       isArchived: isArchived ?? this.isArchived,
+      shareAddress: shareAddress ?? this.shareAddress,
+      shareCoordinates: shareCoordinates ?? this.shareCoordinates,
+      shareTimestamp: shareTimestamp ?? this.shareTimestamp,
+      isPublic: isPublic ?? this.isPublic,
     );
   }
 
@@ -122,6 +140,7 @@ class Certificate {
       txHash: json['nftTransferHash']?.toString(),
       chain: 'Polygon',
       isArchived: json['isArchived'] == true,
+      isPublic: json['isPublic'] != false,
     );
   }
 }

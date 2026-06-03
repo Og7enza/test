@@ -47,6 +47,10 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Generate launcher icon
+        run: dart run flutter_launcher_icons
+        continue-on-error: true
+
       # Analyse non bloquante : on veut l'APK même s'il reste des warnings.
       - name: Analyze
         run: flutter analyze

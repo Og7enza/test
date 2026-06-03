@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
+import '../../account/application/account_providers.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../certificate/application/certificate_providers.dart';
 import '../../certificate/domain/certificate.dart';
@@ -41,15 +42,7 @@ class HomeScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _Hero(onTap: () => context.push('/capture')),
-          const SizedBox(height: 20),
-          certs.maybeWhen(
-            data: (items) => _Stats(
-              total: items.length,
-              minted: items.where((c) => c.isMinted).length,
-            ),
-            orElse: () => const SizedBox.shrink(),
-          ),
+          const _QuotaDashboard(),
           const SizedBox(height: 24),
           const Text(
             'Preuves récentes',
@@ -65,8 +58,10 @@ class HomeScreen extends ConsumerWidget {
             data: (items) => items.isEmpty
                 ? const _EmptyHint()
                 : Column(
-                    children:
-                        items.take(4).map((c) => _RecentTile(certificate: c)).toList(),
+                    children: items
+                        .take(4)
+                        .map((c) => _RecentTile(certificate: c))
+                        .toList(),
                   ),
           ),
         ],
@@ -75,106 +70,115 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _Hero extends StatelessWidget {
-  const _Hero({required this.onTap});
-
-  final VoidCallback onTap;
+class _QuotaDashboard extends ConsumerWidget {
+  const _QuotaDashboard();
 
   @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: AppColors.brandGradient,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Row(
-          children: [
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Certifier une photo',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    'Horodatée, géolocalisée, hachée et scellée par un matricule.',
-                    style: TextStyle(color: Colors.white70, fontSize: 13),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: const BoxDecoration(
-                color: Colors.white24,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.camera_alt, color: Colors.white, size: 28),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Stats extends StatelessWidget {
-  const _Stats({required this.total, required this.minted});
-
-  final int total;
-  final int minted;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: _StatCard(label: 'Preuves', value: '$total', icon: Icons.verified_outlined)),
-        const SizedBox(width: 12),
-        Expanded(child: _StatCard(label: 'NFT mintés', value: '$minted', icon: Icons.token_outlined)),
-      ],
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  const _StatCard({required this.label, required this.value, required this.icon});
-
-  final String label;
-  final String value;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final acc = ref.watch(accountProvider);
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.primary),
-          const SizedBox(height: 10),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+          Row(
+            children: [
+              _PlanBadge(isPremium: acc.isPremium),
+              const Spacer(),
+              TextButton(
+                onPressed: () => context.push('/premium'),
+                child: Text(acc.isPremium ? 'Gérer' : 'Passer Premium'),
+              ),
+            ],
           ),
-          Text(label, style: const TextStyle(color: AppColors.textMuted)),
+          const SizedBox(height: 4),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                '${acc.quotaUsed}',
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
+                ),
+              ),
+              Text(
+                ' / ${acc.quotaTotal} photos',
+                style: const TextStyle(color: AppColors.textMuted),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: acc.quotaFraction,
+              minHeight: 10,
+              backgroundColor: AppColors.background,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${acc.quotaRemaining} restantes',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          if (acc.isPremium && acc.subAccounts.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Icon(Icons.group_outlined,
+                    size: 18, color: AppColors.textMuted),
+                const SizedBox(width: 6),
+                Text(
+                  '${acc.subAccounts.length}/5 sous-comptes partagent ce pool',
+                  style:
+                      const TextStyle(color: AppColors.textMuted, fontSize: 13),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _PlanBadge extends StatelessWidget {
+  const _PlanBadge({required this.isPremium});
+
+  final bool isPremium;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: isPremium ? AppColors.primary : AppColors.background,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isPremium ? Icons.workspace_premium : Icons.person_outline,
+            size: 16,
+            color: isPremium ? Colors.white : AppColors.textMuted,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            isPremium ? 'PREMIUM' : 'FREE',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 12,
+              color: isPremium ? Colors.white : AppColors.textMuted,
+            ),
+          ),
         ],
       ),
     );
@@ -222,7 +226,8 @@ class _Thumb extends StatelessWidget {
     const size = 48.0;
     Widget child;
     if (path != null && File(path!).existsSync()) {
-      child = Image.file(File(path!), width: size, height: size, fit: BoxFit.cover);
+      child =
+          Image.file(File(path!), width: size, height: size, fit: BoxFit.cover);
     } else if (url != null && url!.isNotEmpty) {
       child = Image.network(url!, width: size, height: size, fit: BoxFit.cover);
     } else {
@@ -246,7 +251,8 @@ class _EmptyHint extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       alignment: Alignment.center,
       child: const Text(
-        'Aucune preuve encore. Touchez la carte ci-dessus pour commencer.',
+        'Aucune preuve encore. Touchez le bouton appareil photo en bas '
+        'pour certifier votre première photo.',
         textAlign: TextAlign.center,
         style: TextStyle(color: AppColors.textMuted),
       ),
