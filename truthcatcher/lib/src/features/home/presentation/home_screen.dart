@@ -21,6 +21,11 @@ class HomeScreen extends ConsumerWidget {
     final unread = ref.watch(unreadCountProvider);
     return Scaffold(
       appBar: AppBar(
+        leadingWidth: 44,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: Image.asset('assets/branding/tc_icon.png', height: 28),
+        ),
         title: Text('Bonjour, ${user?.name ?? 'invité'}'),
         actions: [
           IconButton(
@@ -84,7 +89,7 @@ class _Hero extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [AppColors.primary, Color(0xFF5B8DEF)],
+            colors: AppColors.brandGradient,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

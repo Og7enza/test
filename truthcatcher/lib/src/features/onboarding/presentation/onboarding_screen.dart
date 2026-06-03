@@ -55,9 +55,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: TextButton(onPressed: _finish, child: const Text('Passer')),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
+              child: Row(
+                children: [
+                  Image.asset('assets/branding/tc_icon.png', height: 34),
+                  const SizedBox(width: 10),
+                  const Text(
+                    'TruthCatcher',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const Spacer(),
+                  TextButton(onPressed: _finish, child: const Text('Passer')),
+                ],
+              ),
             ),
             Expanded(
               child: PageView.builder(

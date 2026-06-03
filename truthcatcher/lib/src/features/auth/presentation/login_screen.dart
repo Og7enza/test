@@ -48,24 +48,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            const SizedBox(height: 24),
-            Center(
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: AppColors.brandGradient,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(24),
+              ),
               child: Column(
                 children: [
-                  const CircleAvatar(
-                    radius: 36,
-                    backgroundColor: AppColors.primary,
-                    child: Icon(Icons.verified, color: Colors.white, size: 40),
-                  ),
-                  const SizedBox(height: 16),
+                  Image.asset('assets/branding/tc_wordmark.png', height: 46),
+                  const SizedBox(height: 12),
                   const Text(
-                    'TruthCatcher',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Connectez-vous pour certifier vos photos',
-                    style: TextStyle(color: AppColors.textMuted),
+                    'Photos certifiées infalsifiables',
+                    style: TextStyle(color: Colors.white70),
                   ),
                 ],
               ),

@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../../core/theme/app_colors.dart';
 import '../../certificate/application/certificate_providers.dart';
 import '../domain/capture_draft.dart';
 
@@ -135,7 +136,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.primaryDark,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -160,9 +161,9 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
               else
                 _CameraUnavailable(error: snapshot.error),
               if (_busy)
-                const ColoredBox(
-                  color: Colors.black54,
-                  child: Center(
+                ColoredBox(
+                  color: AppColors.primaryDark.withOpacity(0.5),
+                  child: const Center(
                     child: CircularProgressIndicator(color: Colors.white),
                   ),
                 ),

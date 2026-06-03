@@ -54,6 +54,19 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
+            Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: AppColors.brandGradient,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Image.asset('assets/branding/tc_wordmark.png', height: 40),
+            ),
             TextField(
               controller: _name,
               textCapitalization: TextCapitalization.words,

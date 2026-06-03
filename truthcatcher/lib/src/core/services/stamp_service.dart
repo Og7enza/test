@@ -33,7 +33,7 @@ class StampService {
       y1: top,
       x2: w,
       y2: h,
-      color: img.ColorRgba8(0, 0, 0, 150),
+      color: img.ColorRgba8(41, 64, 131, 175),
     );
 
     final titleFont = w >= 1000 ? img.arial48 : img.arial24;
