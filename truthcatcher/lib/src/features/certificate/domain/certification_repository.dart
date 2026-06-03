@@ -13,6 +13,9 @@ abstract interface class CertificationRepository {
   /// Mes preuves certifiées. → `GET /images/all`
   Future<List<Certificate>> fetchCertificates();
 
+  /// Mes preuves archivées. → `GET /images/archive`
+  Future<List<Certificate>> fetchArchived();
+
   /// Certifie une capture (hash + matricule + mint). → `POST /images/upload`
   Future<Certificate> certify(CaptureDraft draft);
 

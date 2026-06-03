@@ -31,6 +31,14 @@ class MockCertificationRepository implements CertificationRepository {
   }
 
   @override
+  Future<List<Certificate>> fetchArchived() async {
+    await _fakeLatency();
+    final archived = _store.where((c) => c.isArchived).toList()
+      ..sort((a, b) => b.certifiedAt.compareTo(a.certifiedAt));
+    return List.unmodifiable(archived);
+  }
+
+  @override
   Future<Certificate> certify(CaptureDraft draft) async {
     await _fakeLatency(ms: 900);
     final certifiedAt = DateTime.now().toUtc();

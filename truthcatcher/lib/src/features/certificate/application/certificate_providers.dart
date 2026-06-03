@@ -56,6 +56,12 @@ class CertificatesNotifier extends AsyncNotifier<List<Certificate>> {
   }
 }
 
+// --- Preuves archivées ---
+final archivedCertificatesProvider =
+    FutureProvider.autoDispose<List<Certificate>>(
+  (ref) => ref.read(certificationRepositoryProvider).fetchArchived(),
+);
+
 // --- Vérification par matricule (deeplink / recherche) ---
 final verifyMatriculeProvider =
     FutureProvider.autoDispose.family<Certificate?, String>(

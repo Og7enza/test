@@ -1,0 +1,55 @@
+name: TruthCatcher APK
+
+on:
+  push:
+    branches: [claude/epic-bell-E1FQl]
+    paths:
+      - "truthcatcher/**"
+      - ".github/workflows/truthcatcher-apk.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: truthcatcher
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      # Génère les dossiers de plateforme (android/) autour du lib/ existant.
+      - name: Generate android project
+        run: flutter create . --platforms=android --project-name truthcatcher --org com.truthcatcher
+
+      # Ajoute les permissions caméra/localisation au manifeste généré.
+      - name: Inject Android permissions
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's#<application#<uses-permission android:name="android.permission.CAMERA"/>\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>\n    <application#' "$M"
+          echo "----- Manifest -----" && cat "$M"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Analyse non bloquante : on veut l'APK même s'il reste des warnings.
+      - name: Analyze
+        run: flutter analyze
+        continue-on-error: true
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: truthcatcher-debug-apk
+          path: truthcatcher/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
