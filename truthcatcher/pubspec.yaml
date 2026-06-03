@@ -1,0 +1,42 @@
+name: truthcatcher
+description: "TruthCatcher — photos infalsifiables : horodatage, géolocalisation, hash SHA-256, matricule unique et mint NFT gas-free sur Polygon."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management (sans codegen)
+  flutter_riverpod: ^2.5.1
+
+  # Navigation + deeplinks (matricule)
+  go_router: ^14.2.7
+
+  # Capture & preuve
+  camera: ^0.11.0+2
+  geolocator: ^13.0.1
+  geocoding: ^3.0.0
+  crypto: ^3.0.5            # SHA-256 on-device
+  path_provider: ^2.1.4
+  path: ^1.9.0
+
+  # UI / utilitaires
+  google_fonts: ^6.2.1
+  intl: ^0.19.0
+  share_plus: ^10.0.2
+  collection: ^1.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  # Décommenter quand les assets seront ajoutés :
+  # assets:
+  #   - assets/images/
