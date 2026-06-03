@@ -138,13 +138,13 @@ class _DetailBody extends StatelessWidget {
                   icon: Icons.account_balance_outlined,
                   label: 'Contrat',
                   value:
-                      c.contractAddress == null ? '—' : shortHash(c.contractAddress!),
+                      c.contractAddress == null ? '—' : shortenHash(c.contractAddress!),
                   monospace: true,
                 ),
                 LabeledValue(
                   icon: Icons.receipt_long_outlined,
                   label: 'Transaction',
-                  value: c.txHash == null ? '—' : shortHash(c.txHash!),
+                  value: c.txHash == null ? '—' : shortenHash(c.txHash!),
                   monospace: true,
                 ),
               ],

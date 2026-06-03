@@ -68,7 +68,7 @@ class ProfileScreen extends ConsumerWidget {
                   const Text('Wallet'),
                   const Spacer(),
                   Text(
-                    shortHash(user!.walletAddress!),
+                    shortenHash(user!.walletAddress!),
                     style: const TextStyle(fontFamily: 'monospace'),
                   ),
                 ],
@@ -94,6 +94,11 @@ class ProfileScreen extends ConsumerWidget {
                   icon: Icons.description_outlined,
                   label: 'Conditions générales',
                   onTap: () => context.push('/profile/terms'),
+                ),
+                _Tile(
+                  icon: Icons.receipt_long_outlined,
+                  label: 'Mes transactions',
+                  onTap: () => context.push('/transactions'),
                 ),
                 _Tile(
                   icon: Icons.archive_outlined,

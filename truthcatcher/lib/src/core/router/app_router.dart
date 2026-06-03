@@ -15,7 +15,9 @@ import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/payment/presentation/payment_simulation_screen.dart';
 import '../../features/profile/presentation/archive_screen.dart';
 import '../../features/profile/presentation/info_page_screen.dart';
+import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/profile/presentation/legal_texts.dart';
+import '../../features/transactions/presentation/transactions_screen.dart';
 import '../../shared/home_shell.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -110,6 +112,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/profile/archive',
         builder: (context, state) => const ArchiveScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/transactions',
+        builder: (context, state) => const TransactionsScreen(),
       ),
     ],
   );

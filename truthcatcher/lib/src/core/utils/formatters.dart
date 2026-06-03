@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 String formatDateTime(DateTime dt) =>
     DateFormat('dd/MM/yyyy · HH:mm:ss').format(dt.toLocal());
 
-String shortHash(String hex, {int head = 10, int tail = 8}) {
+String shortenHash(String hex, {int head = 10, int tail = 8}) {
   if (hex.length <= head + tail + 1) return hex;
   return '${hex.substring(0, head)}…${hex.substring(hex.length - tail)}';
 }

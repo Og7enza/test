@@ -9,6 +9,7 @@ import '../../../core/utils/formatters.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../certificate/application/certificate_providers.dart';
 import '../../certificate/domain/certificate.dart';
+import '../../notifications/application/notification_providers.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -17,8 +18,21 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authStateProvider);
     final certs = ref.watch(certificatesProvider);
+    final unread = ref.watch(unreadCountProvider);
     return Scaffold(
-      appBar: AppBar(title: Text('Bonjour, ${user?.name ?? 'invité'}')),
+      appBar: AppBar(
+        title: Text('Bonjour, ${user?.name ?? 'invité'}'),
+        actions: [
+          IconButton(
+            onPressed: () => context.push('/notifications'),
+            icon: Badge(
+              isLabelVisible: unread > 0,
+              label: Text('$unread'),
+              child: const Icon(Icons.notifications_outlined),
+            ),
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

@@ -27,7 +27,9 @@ jobs:
 
       # Génère les dossiers de plateforme (android/) autour du lib/ existant.
       - name: Generate android project
-        run: flutter create . --platforms=android --project-name truthcatcher --org com.truthcatcher
+        run: |
+          flutter create . --platforms=android --project-name truthcatcher --org com.truthcatcher
+          rm -f test/widget_test.dart
 
       # Ajoute les permissions caméra/localisation au manifeste généré.
       - name: Inject Android permissions

@@ -77,7 +77,7 @@ class _PreviewConfirmScreenState extends State<PreviewConfirmScreen> {
                   LabeledValue(
                     icon: Icons.fingerprint,
                     label: 'Empreinte SHA-256 (image originale)',
-                    value: shortHash(d.sha256Hex),
+                    value: shortenHash(d.sha256Hex),
                     monospace: true,
                   ),
                   LabeledValue(
