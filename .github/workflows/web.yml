@@ -31,12 +31,6 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Configure Pages
-        id: pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
       - name: Generate web project
         run: flutter create . --platforms=web --project-name truthcatcher --org com.truthcatcher
 
@@ -44,7 +38,7 @@ jobs:
         run: flutter pub get
 
       - name: Build web
-        run: flutter build web --release --base-href "${{ steps.pages.outputs.base_path }}/"
+        run: flutter build web --release --base-href "/test/"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
