@@ -1,4 +1,5 @@
 name: TruthCatcher Web (Pages)
+# Redéploiement après activation de GitHub Pages.
 
 on:
   push:
