@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/file_image.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../shared/widgets/labeled_value.dart';
 import '../../capture/domain/location_precision.dart';
@@ -295,9 +294,8 @@ class _Image extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (path != null && File(path!).existsSync()) {
-      return Image.file(File(path!), fit: BoxFit.cover);
-    }
+    final local = localFileImage(path);
+    if (local != null) return local;
     if (url != null && url!.isNotEmpty) {
       return Image.network(url!, fit: BoxFit.cover);
     }

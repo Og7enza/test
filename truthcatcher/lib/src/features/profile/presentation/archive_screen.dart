@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/file_image.dart';
 import '../../../core/utils/formatters.dart';
 import '../../certificate/application/certificate_providers.dart';
 import '../../certificate/domain/certificate.dart';
@@ -88,8 +87,9 @@ class _Thumb extends StatelessWidget {
   Widget build(BuildContext context) {
     const size = 48.0;
     Widget child;
-    if (path != null && File(path!).existsSync()) {
-      child = Image.file(File(path!), width: size, height: size, fit: BoxFit.cover);
+    final local = localFileImage(path, width: size, height: size);
+    if (local != null) {
+      child = local;
     } else if (url != null && url!.isNotEmpty) {
       child = Image.network(url!, width: size, height: size, fit: BoxFit.cover);
     } else {

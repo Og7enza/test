@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/file_image.dart';
 import '../application/certificate_providers.dart';
 import '../domain/certificate.dart';
 
@@ -131,9 +130,8 @@ class _TileImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (path != null && File(path!).existsSync()) {
-      return Image.file(File(path!), fit: BoxFit.cover);
-    }
+    final local = localFileImage(path);
+    if (local != null) return local;
     if (url != null && url!.isNotEmpty) {
       return Image.network(
         url!,

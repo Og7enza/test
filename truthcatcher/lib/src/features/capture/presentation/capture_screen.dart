@@ -1,13 +1,13 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/save_bytes.dart';
 import '../../account/application/account_providers.dart';
 import '../../certificate/application/certificate_providers.dart';
 import '../domain/capture_draft.dart';
@@ -30,7 +30,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
   @override
   void initState() {
     super.initState();
-    _initFuture = _setupCamera();
+    _initFuture = kIsWeb ? Future<void>.value() : _setupCamera();
   }
 
   Future<void> _setupCamera() async {
@@ -72,7 +72,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
           capturedAt: capturedAt,
           location: fix.label,
         );
-    final stampedPath = await _saveJpg(stampedBytes);
+    final stampedPath = await saveTempJpg(stampedBytes);
 
     final draft = CaptureDraft(
       imagePath: stampedPath,
@@ -89,14 +89,6 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
     if (!mounted) return;
     context.push('/preview', extra: draft);
-  }
-
-  Future<String> _saveJpg(Uint8List bytes) async {
-    final dir = await getTemporaryDirectory();
-    final file =
-        File('${dir.path}/tc_${DateTime.now().microsecondsSinceEpoch}.jpg');
-    await file.writeAsBytes(bytes, flush: true);
-    return file.path;
   }
 
   Future<void> _capture() async {
@@ -121,6 +113,22 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (kIsWeb) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Capturer une preuve')),
+        body: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Text(
+              'La capture en direct nécessite l’app mobile (caméra). '
+              'Sur le web, parcourez la galerie et les preuves existantes.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.textMuted),
+            ),
+          ),
+        ),
+      );
+    }
     final remaining = ref.watch(accountProvider).quotaRemaining;
     if (remaining <= 0) {
       return Scaffold(

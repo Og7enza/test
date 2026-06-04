@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/file_image.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../shared/widgets/labeled_value.dart';
 import '../../account/application/account_providers.dart';
@@ -62,9 +61,8 @@ class _PreviewConfirmScreenState extends ConsumerState<PreviewConfirmScreen> {
             borderRadius: BorderRadius.circular(20),
             child: AspectRatio(
               aspectRatio: 3 / 4,
-              child: File(d.imagePath).existsSync()
-                  ? Image.file(File(d.imagePath), fit: BoxFit.cover)
-                  : Container(color: AppColors.background),
+              child: localFileImage(d.imagePath) ??
+                  Container(color: AppColors.background),
             ),
           ),
           const SizedBox(height: 8),
