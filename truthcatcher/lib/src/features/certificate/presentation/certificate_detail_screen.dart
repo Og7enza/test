@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../shared/widgets/labeled_value.dart';
+import '../../capture/domain/location_precision.dart';
 import '../application/certificate_providers.dart';
 import '../domain/certificate.dart';
 
@@ -92,11 +93,8 @@ class _DetailBody extends StatelessWidget {
                 ),
                 LabeledValue(
                   icon: Icons.place_outlined,
-                  label: 'Localisation',
-                  value: c.locationLabel.isEmpty
-                      ? formatCoords(c.latitude, c.longitude)
-                      : '${c.locationLabel}\n'
-                          '${formatCoords(c.latitude, c.longitude)}',
+                  label: 'Localisation partagée',
+                  value: _locationText(c),
                 ),
               ],
             ),
@@ -177,7 +175,10 @@ class _DetailBody extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    _chip('Adresse', c.shareAddress),
+                    _chip(
+                      'Loc : ${c.locationPrecision.shortLabel}',
+                      c.locationPrecision != LocationPrecision.hidden,
+                    ),
                     _chip('Coordonnées GPS', c.shareCoordinates),
                     _chip('Horodatage', c.shareTimestamp),
                   ],
@@ -200,6 +201,16 @@ class _DetailBody extends StatelessWidget {
       ],
     );
   }
+}
+
+String _locationText(Certificate c) {
+  final loc = c.publicLocation;
+  final coords =
+      c.shareCoordinates ? formatCoords(c.latitude, c.longitude) : '';
+  if (loc.isEmpty && coords.isEmpty) return 'Masquée';
+  if (loc.isEmpty) return coords;
+  if (coords.isEmpty) return loc;
+  return '$loc\n$coords';
 }
 
 Widget _chip(String label, bool on) {

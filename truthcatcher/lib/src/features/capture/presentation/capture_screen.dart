@@ -5,7 +5,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -13,9 +12,9 @@ import '../../account/application/account_providers.dart';
 import '../../certificate/application/certificate_providers.dart';
 import '../domain/capture_draft.dart';
 
-/// Écran caméra : capture (ou import galerie), calcule le hash, dérive le
-/// matricule, **l'incruste sur la photo**, récupère heure de confiance + GPS,
-/// puis ouvre l'écran de confirmation.
+/// Écran caméra : capture **en direct uniquement** (pas d'import galerie — c'est
+/// essentiel au concept), calcule le hash, dérive le matricule, l'incruste sur
+/// la photo, récupère heure de confiance + GPS, puis ouvre la confirmation.
 class CaptureScreen extends ConsumerStatefulWidget {
   const CaptureScreen({super.key});
 
@@ -84,6 +83,8 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
       longitude: fix.longitude,
       accuracy: fix.accuracy,
       locationLabel: fix.label,
+      city: fix.city,
+      country: fix.country,
     );
 
     if (!mounted) return;
@@ -92,7 +93,8 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
   Future<String> _saveJpg(Uint8List bytes) async {
     final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/tc_${DateTime.now().microsecondsSinceEpoch}.jpg');
+    final file =
+        File('${dir.path}/tc_${DateTime.now().microsecondsSinceEpoch}.jpg');
     await file.writeAsBytes(bytes, flush: true);
     return file.path;
   }
@@ -104,23 +106,6 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
     try {
       final shot = await controller.takePicture();
       await _processAndGo(await shot.readAsBytes());
-    } catch (e) {
-      _showError(e);
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
-  Future<void> _pickFromGallery() async {
-    if (_busy) return;
-    setState(() => _busy = true);
-    try {
-      final picked = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 2400,
-      );
-      if (picked == null) return;
-      await _processAndGo(await picked.readAsBytes());
     } catch (e) {
       _showError(e);
     } finally {
@@ -200,21 +185,9 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
                 alignment: Alignment.bottomCenter,
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 48),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _RoundIcon(
-                        icon: Icons.photo_library_outlined,
-                        onTap: _busy ? null : _pickFromGallery,
-                      ),
-                      const SizedBox(width: 28),
-                      _ShutterButton(
-                        busy: _busy,
-                        onTap: cameraReady ? _capture : null,
-                      ),
-                      const SizedBox(width: 28),
-                      const SizedBox(width: 52), // équilibre visuel
-                    ],
+                  child: _ShutterButton(
+                    busy: _busy,
+                    onTap: cameraReady ? _capture : null,
                   ),
                 ),
               ),
@@ -239,14 +212,13 @@ class _CameraUnavailable extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.no_photography_outlined,
-              color: Colors.white54,
-              size: 56,
-            ),
+            const Icon(Icons.no_photography_outlined,
+                color: Colors.white54, size: 56),
             const SizedBox(height: 16),
             const Text(
-              'Caméra indisponible.\nUtilisez la galerie pour la démo.',
+              'Caméra indisponible.\n'
+              'La capture doit se faire en direct dans l’app '
+              '(l’import d’images est volontairement désactivé).',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white70),
             ),
@@ -260,29 +232,6 @@ class _CameraUnavailable extends StatelessWidget {
             ],
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _RoundIcon extends StatelessWidget {
-  const _RoundIcon({required this.icon, required this.onTap});
-
-  final IconData icon;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 52,
-        height: 52,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white.withOpacity(0.18),
-        ),
-        child: Icon(icon, color: Colors.white, size: 24),
       ),
     );
   }
@@ -306,7 +255,15 @@ class _ShutterButton extends StatelessWidget {
           color: Colors.white.withOpacity(0.2),
           border: Border.all(color: Colors.white, width: 4),
         ),
-        child: const Icon(Icons.camera, color: Colors.white, size: 40),
+        child: busy
+            ? const Padding(
+                padding: EdgeInsets.all(20),
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 3,
+                ),
+              )
+            : const Icon(Icons.camera, color: Colors.white, size: 40),
       ),
     );
   }

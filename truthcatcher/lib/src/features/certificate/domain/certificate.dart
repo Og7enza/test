@@ -1,3 +1,5 @@
+import '../../capture/domain/location_precision.dart';
+
 /// Statut d'une preuve.
 enum CertificateStatus { draft, certifying, certified, failed }
 
@@ -15,6 +17,8 @@ class Certificate {
     required this.longitude,
     required this.locationLabel,
     required this.status,
+    this.city = '',
+    this.country = '',
     this.id,
     this.authorId,
     this.imageUrl,
@@ -24,7 +28,7 @@ class Certificate {
     this.txHash,
     this.chain,
     this.isArchived = false,
-    this.shareAddress = true,
+    this.locationPrecision = LocationPrecision.full,
     this.shareCoordinates = true,
     this.shareTimestamp = true,
     this.isPublic = true,
@@ -38,6 +42,8 @@ class Certificate {
   final double latitude;
   final double longitude;
   final String locationLabel;
+  final String city;
+  final String country;
   final CertificateStatus status;
 
   final String? id;
@@ -54,12 +60,20 @@ class Certificate {
   final bool isArchived;
 
   // Confidentialité (Premium)
-  final bool shareAddress;
+  final LocationPrecision locationPrecision;
   final bool shareCoordinates;
   final bool shareTimestamp;
   final bool isPublic;
 
   bool get isMinted => tokenId != null && tokenId!.isNotEmpty;
+
+  /// Localisation effectivement partagée (selon la précision choisie).
+  String get publicLocation => sharedLocation(
+        precision: locationPrecision,
+        fullLabel: locationLabel,
+        city: city,
+        country: country,
+      );
 
   Certificate copyWith({
     String? matricule,
@@ -70,6 +84,8 @@ class Certificate {
     double? latitude,
     double? longitude,
     String? locationLabel,
+    String? city,
+    String? country,
     CertificateStatus? status,
     String? id,
     String? authorId,
@@ -80,7 +96,7 @@ class Certificate {
     String? txHash,
     String? chain,
     bool? isArchived,
-    bool? shareAddress,
+    LocationPrecision? locationPrecision,
     bool? shareCoordinates,
     bool? shareTimestamp,
     bool? isPublic,
@@ -94,6 +110,8 @@ class Certificate {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       locationLabel: locationLabel ?? this.locationLabel,
+      city: city ?? this.city,
+      country: country ?? this.country,
       status: status ?? this.status,
       id: id ?? this.id,
       authorId: authorId ?? this.authorId,
@@ -104,7 +122,7 @@ class Certificate {
       txHash: txHash ?? this.txHash,
       chain: chain ?? this.chain,
       isArchived: isArchived ?? this.isArchived,
-      shareAddress: shareAddress ?? this.shareAddress,
+      locationPrecision: locationPrecision ?? this.locationPrecision,
       shareCoordinates: shareCoordinates ?? this.shareCoordinates,
       shareTimestamp: shareTimestamp ?? this.shareTimestamp,
       isPublic: isPublic ?? this.isPublic,
@@ -134,6 +152,8 @@ class Certificate {
       latitude: (json['lat'] as num?)?.toDouble() ?? 0,
       longitude: (json['lng'] as num?)?.toDouble() ?? 0,
       locationLabel: json['location']?.toString() ?? '',
+      city: json['city']?.toString() ?? '',
+      country: json['country']?.toString() ?? '',
       status: CertificateStatus.certified,
       tokenId: json['tokenId']?.toString(),
       contractAddress: json['contractAddress']?.toString(),

@@ -1,19 +1,24 @@
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
-/// Résultat d'une prise de position : coordonnées + précision + adresse lisible.
+/// Résultat d'une prise de position : coordonnées + précision + adresse
+/// (complète, plus ville et pays séparés pour la granularité Premium).
 class GeoFix {
   const GeoFix({
     required this.latitude,
     required this.longitude,
     required this.accuracy,
     required this.label,
+    this.city = '',
+    this.country = '',
   });
 
   final double latitude;
   final double longitude;
   final double accuracy;
   final String label;
+  final String city;
+  final String country;
 }
 
 /// Accès GPS + reverse-geocoding. Vérifie permissions et service activé.
@@ -41,13 +46,7 @@ class LocationService {
       ),
     );
 
-    final label = await _reverseGeocode(position.latitude, position.longitude);
-    return GeoFix(
-      latitude: position.latitude,
-      longitude: position.longitude,
-      accuracy: position.accuracy,
-      label: label,
-    );
+    return _resolve(position.latitude, position.longitude, position.accuracy);
   }
 
   /// Variante « démo » : ne lève jamais d'exception. En cas de refus de
@@ -61,26 +60,44 @@ class LocationService {
         latitude: 48.85837,
         longitude: 2.29448,
         accuracy: 0,
-        label: 'Position simulée (démo)',
+        label: 'Champ de Mars, Paris, France (simulé)',
+        city: 'Paris',
+        country: 'France',
       );
     }
   }
 
-  Future<String> _reverseGeocode(double lat, double lng) async {
+  Future<GeoFix> _resolve(double lat, double lng, double accuracy) async {
+    var label = _coords(lat, lng);
+    var city = '';
+    var country = '';
     try {
       final placemarks = await placemarkFromCoordinates(lat, lng);
-      if (placemarks.isEmpty) return _coords(lat, lng);
-      final p = placemarks.first;
-      final parts = <String?>[
-        p.street,
-        p.locality,
-        p.administrativeArea,
-        p.country,
-      ].where((e) => e != null && e.trim().isNotEmpty).toList();
-      return parts.isEmpty ? _coords(lat, lng) : parts.join(', ');
+      if (placemarks.isNotEmpty) {
+        final p = placemarks.first;
+        city = (p.locality?.trim().isNotEmpty ?? false)
+            ? p.locality!.trim()
+            : (p.subAdministrativeArea?.trim() ?? '');
+        country = p.country?.trim() ?? '';
+        final parts = <String?>[
+          p.street,
+          p.locality,
+          p.administrativeArea,
+          p.country,
+        ].where((e) => e != null && e.trim().isNotEmpty).toList();
+        if (parts.isNotEmpty) label = parts.join(', ');
+      }
     } catch (_) {
-      return _coords(lat, lng);
+      // On garde les coordonnées brutes comme label.
     }
+    return GeoFix(
+      latitude: lat,
+      longitude: lng,
+      accuracy: accuracy,
+      label: label,
+      city: city,
+      country: country,
+    );
   }
 
   String _coords(double lat, double lng) =>

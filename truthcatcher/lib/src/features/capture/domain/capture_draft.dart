@@ -1,8 +1,11 @@
 import 'dart:typed_data';
 
+import 'location_precision.dart';
+
 /// Brouillon de preuve : tout ce qui est capturé localement AVANT certification
 /// (photo, empreinte, géolocalisation, horodatage), plus les choix de
-/// confidentialité (Premium) : quelles infos sont partagées et la visibilité.
+/// confidentialité (Premium) : précision de localisation partagée, infos
+/// partagées et visibilité.
 class CaptureDraft {
   const CaptureDraft({
     required this.imagePath,
@@ -13,8 +16,10 @@ class CaptureDraft {
     required this.longitude,
     required this.accuracy,
     required this.locationLabel,
+    this.city = '',
+    this.country = '',
     this.name = '',
-    this.shareAddress = true,
+    this.locationPrecision = LocationPrecision.full,
     this.shareCoordinates = true,
     this.shareTimestamp = true,
     this.isPublic = true,
@@ -28,17 +33,19 @@ class CaptureDraft {
   final double longitude;
   final double accuracy;
   final String locationLabel;
+  final String city;
+  final String country;
   final String name;
 
   // Confidentialité (Premium)
-  final bool shareAddress;
+  final LocationPrecision locationPrecision;
   final bool shareCoordinates;
   final bool shareTimestamp;
   final bool isPublic;
 
   CaptureDraft copyWith({
     String? name,
-    bool? shareAddress,
+    LocationPrecision? locationPrecision,
     bool? shareCoordinates,
     bool? shareTimestamp,
     bool? isPublic,
@@ -52,8 +59,10 @@ class CaptureDraft {
         longitude: longitude,
         accuracy: accuracy,
         locationLabel: locationLabel,
+        city: city,
+        country: country,
         name: name ?? this.name,
-        shareAddress: shareAddress ?? this.shareAddress,
+        locationPrecision: locationPrecision ?? this.locationPrecision,
         shareCoordinates: shareCoordinates ?? this.shareCoordinates,
         shareTimestamp: shareTimestamp ?? this.shareTimestamp,
         isPublic: isPublic ?? this.isPublic,

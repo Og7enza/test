@@ -9,6 +9,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../shared/widgets/labeled_value.dart';
 import '../../account/application/account_providers.dart';
 import '../domain/capture_draft.dart';
+import '../domain/location_precision.dart';
 
 /// Récapitulatif de la capture (image tamponnée + métadonnées) avant paiement,
 /// avec réglages de confidentialité pour les comptes Premium.
@@ -24,7 +25,7 @@ class PreviewConfirmScreen extends ConsumerStatefulWidget {
 
 class _PreviewConfirmScreenState extends ConsumerState<PreviewConfirmScreen> {
   final _nameController = TextEditingController();
-  bool _shareAddress = true;
+  LocationPrecision _precision = LocationPrecision.full;
   bool _shareCoordinates = true;
   bool _shareTimestamp = true;
   bool _isPublic = true;
@@ -40,7 +41,7 @@ class _PreviewConfirmScreenState extends ConsumerState<PreviewConfirmScreen> {
       '/payment',
       extra: widget.draft.copyWith(
         name: _nameController.text,
-        shareAddress: _shareAddress,
+        locationPrecision: _precision,
         shareCoordinates: _shareCoordinates,
         shareTimestamp: _shareTimestamp,
         isPublic: _isPublic,
@@ -102,11 +103,10 @@ class _PreviewConfirmScreenState extends ConsumerState<PreviewConfirmScreen> {
                   ),
                   LabeledValue(
                     icon: Icons.place_outlined,
-                    label: 'Localisation',
+                    label: 'Localisation captée',
                     value: d.locationLabel.isEmpty
                         ? formatCoords(d.latitude, d.longitude)
-                        : '${d.locationLabel}\n'
-                            '${formatCoords(d.latitude, d.longitude)}',
+                        : d.locationLabel,
                   ),
                 ],
               ),
@@ -128,67 +128,76 @@ class _PreviewConfirmScreenState extends ConsumerState<PreviewConfirmScreen> {
   Widget _privacyCard() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              child: Row(
-                children: [
-                  Icon(Icons.tune, color: AppColors.primary, size: 20),
-                  SizedBox(width: 8),
-                  Text(
-                    'Confidentialité (Premium)',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
+            const Row(
+              children: [
+                Icon(Icons.tune, color: AppColors.primary, size: 20),
+                SizedBox(width: 8),
+                Text(
+                  'Confidentialité (Premium)',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ],
             ),
+            const SizedBox(height: 12),
+            const Text(
+              'Localisation partagée',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: LocationPrecision.values
+                  .map(
+                    (p) => ChoiceChip(
+                      label: Text(p.label),
+                      selected: _precision == p,
+                      onSelected: (_) => setState(() => _precision = p),
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: 4),
             SwitchListTile(
               dense: true,
-              value: _shareAddress,
-              onChanged: (v) => setState(() => _shareAddress = v),
-              title: const Text('Partager l’adresse'),
-            ),
-            SwitchListTile(
-              dense: true,
+              contentPadding: EdgeInsets.zero,
               value: _shareCoordinates,
               onChanged: (v) => setState(() => _shareCoordinates = v),
-              title: const Text('Partager les coordonnées GPS'),
+              title: const Text('Partager les coordonnées GPS exactes'),
             ),
             SwitchListTile(
               dense: true,
+              contentPadding: EdgeInsets.zero,
               value: _shareTimestamp,
               onChanged: (v) => setState(() => _shareTimestamp = v),
               title: const Text('Partager l’horodatage précis'),
             ),
-            const Divider(height: 8),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  const Text('Visibilité'),
-                  const Spacer(),
-                  SegmentedButton<bool>(
-                    segments: const [
-                      ButtonSegment(
-                        value: false,
-                        icon: Icon(Icons.lock_outline),
-                        label: Text('Privé'),
-                      ),
-                      ButtonSegment(
-                        value: true,
-                        icon: Icon(Icons.public),
-                        label: Text('Public'),
-                      ),
-                    ],
-                    selected: {_isPublic},
-                    onSelectionChanged: (s) =>
-                        setState(() => _isPublic = s.first),
-                  ),
-                ],
-              ),
+            const Divider(),
+            Row(
+              children: [
+                const Text('Visibilité'),
+                const Spacer(),
+                SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(
+                      value: false,
+                      icon: Icon(Icons.lock_outline),
+                      label: Text('Privé'),
+                    ),
+                    ButtonSegment(
+                      value: true,
+                      icon: Icon(Icons.public),
+                      label: Text('Public'),
+                    ),
+                  ],
+                  selected: {_isPublic},
+                  onSelectionChanged: (s) => setState(() => _isPublic = s.first),
+                ),
+              ],
             ),
           ],
         ),
@@ -206,8 +215,8 @@ class _PreviewConfirmScreenState extends ConsumerState<PreviewConfirmScreen> {
             const SizedBox(width: 12),
             const Expanded(
               child: Text(
-                'Premium : choisissez les infos partagées (adresse, GPS, '
-                'heure) et la visibilité de la preuve.',
+                'Premium : choisissez la précision de la localisation partagée '
+                '(adresse, ville+pays, pays…) et la visibilité.',
               ),
             ),
             TextButton(
