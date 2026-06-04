@@ -21,7 +21,7 @@ jobs:
       # gradle Groovy) -> limite les conflits avec les dépendances anciennes.
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.19.6
+          flutter-version: 3.44.1
           channel: stable
           cache: true
 
