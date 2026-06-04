@@ -58,9 +58,12 @@ class _DetailBody extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
       children: [
         if (c.localImagePath != null || (c.imageUrl?.isNotEmpty ?? false))
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: _Image(path: c.localImagePath, url: c.imageUrl),
+          Hero(
+            tag: 'cert-${c.matricule}',
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: _Image(path: c.localImagePath, url: c.imageUrl),
+            ),
           ),
         const SizedBox(height: 16),
         _MatriculeBanner(matricule: c.matricule),
