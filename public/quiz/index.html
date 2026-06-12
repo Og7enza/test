@@ -48,7 +48,10 @@
   }
   button.share:hover{background:rgba(91,163,245,.3);transform:translateY(-2px)}
   button.share:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
-  .qcount{font-size:15px;color:var(--ice);opacity:.8;margin-bottom:14px}
+  .qcount{font-size:15px;color:var(--ice);opacity:.8;margin-bottom:10px}
+  .timer{height:6px;background:rgba(255,255,255,.12);border-radius:4px;margin:0 auto 14px;max-width:420px;overflow:hidden}
+  .timer-fill{height:100%;background:var(--cyan);border-radius:4px;width:100%}
+  .timer-fill.low{background:var(--red)}
   .qimg{width:100%;max-height:50vh;object-fit:contain;border-radius:16px;
         box-shadow:0 8px 30px rgba(0,0,0,.4);margin-bottom:22px;background:#0c0f1a}
   .answers{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
@@ -92,7 +95,7 @@
     <p class="lead">Les deepfakes inondent le web. Même les meilleurs outils de détection se trompent.<br>Et vous, feriez-vous mieux ?</p>
     <div class="pills">
       <div class="pill"><b>11</b><small>images</small></div>
-      <div class="pill"><b>2 min</b><small>chrono</small></div>
+      <div class="pill"><b>10 s</b><small>par photo</small></div>
       <div class="pill"><b>Vrai</b><small>ou IA ?</small></div>
     </div>
     <button class="cta" onclick="startQuiz()">Commencer</button>
@@ -101,6 +104,7 @@
   <!-- ÉCRAN QUESTION (réutilisé) -->
   <section class="screen" id="s-question">
     <div class="qcount" id="qcount">Question 1 / 11</div>
+    <div class="timer"><div class="timer-fill" id="timer-fill"></div></div>
     <img class="qimg" id="qimg" src="" alt="Image à évaluer">
     <div class="answers">
       <button class="ans" onclick="answer('REELLE')">Photo réelle</button>
@@ -236,24 +240,46 @@ function show(id){
   window.scrollTo(0,0);
 }
 function startQuiz(){ idx=0; score=0; answers=[]; loadQuestion(); }
+
+// ---- chronomètre : 10 secondes par photo ----
+const TIME_PER_Q = 10000;
+let timerId = null, deadline = 0, locked = false;
+
+function stopTimer(){ if(timerId){ clearInterval(timerId); timerId = null; } }
+function startTimer(){
+  stopTimer();
+  deadline = Date.now() + TIME_PER_Q;
+  const fill = document.getElementById('timer-fill');
+  fill.classList.remove('low');
+  fill.style.width = '100%';
+  timerId = setInterval(() => {
+    const left = deadline - Date.now();
+    if(left <= 0){ stopTimer(); timeUp(); return; }
+    fill.style.width = (100 * left / TIME_PER_Q) + '%';
+    fill.classList.toggle('low', left < 3000);
+  }, 100);
+}
+
 function loadQuestion(){
   const q = QUIZ[idx];
+  locked = false;
   document.getElementById('qcount').textContent = `Question ${idx+1} / ${QUIZ.length}`;
-  document.getElementById('qimg').src = q.img;
+  stopTimer();
+  document.getElementById('timer-fill').style.width = '100%';
+  const img = document.getElementById('qimg');
+  // le chrono ne démarre que lorsque la photo est affichée
+  img.onload = startTimer;
+  img.src = q.img;
+  if(img.complete) startTimer();
   show('s-question');
 }
-function answer(choice){
-  const q = QUIZ[idx];
-  const correct = (choice === q.truth);
-  if(correct) score++;
-  answers.push({q:idx+1, choix:choice, verite:q.truth, correct});
-  // feedback : le badge reflète la réponse du joueur (vert = juste, rouge = faux)
+
+// écran de feedback commun (réponse donnée ou temps écoulé)
+function showFeedback(q, correct, title){
   const badge = document.getElementById('fb-badge');
   badge.className = 'badge ' + (correct ? 'ok' : 'no');
   badge.textContent = correct ? '✓' : '✕';
-  document.getElementById('fb-title').textContent = correct
-    ? (q.truth==="REELLE" ? "Bien vu ! C'était une VRAIE photo" : "Bien vu ! C'était bien une IA")
-    : (q.truth==="REELLE" ? "Raté — c'était une VRAIE photo" : "Piégé — c'était une IA");
+  document.getElementById('fb-title').textContent = title;
   document.getElementById('fb-text').textContent =
     q.truth==="REELLE"
       ? (q.info || "Une image authentique, capturée dans le monde réel.")
@@ -263,6 +289,28 @@ function answer(choice){
   document.getElementById('fb-next').textContent =
     (idx === QUIZ.length-1) ? "Découvrir le résultat" : "Suivant";
   show('s-feedback');
+}
+
+function answer(choice){
+  if(locked) return;
+  locked = true;
+  stopTimer();
+  const q = QUIZ[idx];
+  const correct = (choice === q.truth);
+  if(correct) score++;
+  answers.push({q:idx+1, choix:choice, verite:q.truth, correct});
+  showFeedback(q, correct, correct
+    ? (q.truth==="REELLE" ? "Bien vu ! C'était une VRAIE photo" : "Bien vu ! C'était bien une IA")
+    : (q.truth==="REELLE" ? "Raté — c'était une VRAIE photo" : "Piégé — c'était une IA"));
+}
+
+function timeUp(){
+  if(locked) return;
+  locked = true;
+  const q = QUIZ[idx];
+  answers.push({q:idx+1, choix:"AUCUNE", verite:q.truth, correct:false});
+  showFeedback(q, false,
+    q.truth==="REELLE" ? "Trop tard — c'était une VRAIE photo" : "Trop tard — c'était une IA");
 }
 function nextStep(){
   idx++;
