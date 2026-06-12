@@ -63,7 +63,7 @@
 </style>
 </head>
 <body>
-<button class="langbtn" id="lang-btn" onclick="toggleLang()">EN</button>
+<button class="langbtn" id="lang-btn" onclick="toggleLang()">🇬🇧 EN</button>
 <div class="wrap">
 
   <div class="logo"><img src="logo.png" alt="TruthCatcher"><span>TruthCatcher</span></div>
@@ -213,7 +213,7 @@ if(!I18N[lang]) lang = "fr";
 const t = (k) => (I18N[lang] && I18N[lang][k]) || I18N.fr[k] || k;
 function applyLang(){
   document.documentElement.lang = lang;
-  $("lang-btn").textContent = lang === "fr" ? "EN" : "FR";
+  $("lang-btn").textContent = lang === "fr" ? "🇬🇧 EN" : "🇫🇷 FR";
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const v = I18N[lang][el.dataset.i18n];
     if(v != null) el.innerHTML = v;

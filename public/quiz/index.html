@@ -90,7 +90,7 @@
 </style>
 </head>
 <body>
-<button class="langbtn" id="lang-btn" onclick="toggleLang()">EN</button>
+<button class="langbtn" id="lang-btn" onclick="toggleLang()">🇬🇧 EN</button>
 <div class="wrap">
 
   <!-- ÉCRAN 1 : INTRO -->
@@ -345,7 +345,7 @@ if(!I18N[lang]) lang = "fr";
 function t(k){ return (I18N[lang] && I18N[lang][k]) || I18N.fr[k] || k; }
 function applyLang(){
   document.documentElement.lang = lang;
-  document.getElementById("lang-btn").textContent = lang === "fr" ? "EN" : "FR";
+  document.getElementById("lang-btn").textContent = lang === "fr" ? "🇬🇧 EN" : "🇫🇷 FR";
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const v = I18N[lang][el.dataset.i18n];
     if(v != null) el.innerHTML = v;
