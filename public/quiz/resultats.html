@@ -152,16 +152,16 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebas
 import { getFirestore, collection, onSnapshot }
   from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-// Config de secours, utilisée seulement hors Firebase Hosting (ex. test local).
-// Servi par Firebase Hosting (projet testtruthcatcher), la vraie config est
-// chargée automatiquement via /__/firebase/init.json — rien à coller ici.
+// Config du projet testtruthcatcher (valeurs publiques côté client).
+// Sur Firebase Hosting, /__/firebase/init.json la remplace automatiquement.
 const firebaseConfig = {
-  apiKey: "VOTRE_API_KEY",
+  apiKey: "AIzaSyD3WflmjcDp-ANQM-OxDkf1Ot1UQP3Y_ZQ",
   authDomain: "testtruthcatcher.firebaseapp.com",
   projectId: "testtruthcatcher",
   storageBucket: "testtruthcatcher.firebasestorage.app",
   messagingSenderId: "1010478591130",
-  appId: "VOTRE_APP_ID"
+  appId: "1:1010478591130:web:ff19ff4bfa920fca730323",
+  measurementId: "G-CZP05ZZHXL"
 };
 let cfg = firebaseConfig;
 try {
