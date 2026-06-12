@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vrai ou IA ? — TruthCatcher</title>
+<style>
+  :root{
+    --blue:#206ED2; --night:#18225C; --violet:#2C184E;
+    --cyan:#5BA3F5; --ice:#CADCFC; --btn:#2B6FD6;
+    --green:#27AE60; --red:#E74C3C; --card:rgba(30,46,102,.55);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    color:#fff; min-height:100vh;
+    background:linear-gradient(135deg,var(--blue) 0%,var(--night) 50%,var(--violet) 100%);
+    background-attachment:fixed;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .wrap{width:100%; max-width:760px; text-align:center}
+  .screen{display:none; animation:fade .4s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:24px}
+  .logo img{height:46px}
+  .logo span{font-size:22px;font-weight:700;color:var(--cyan)}
+  h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin-bottom:18px}
+  h2{font-size:clamp(24px,4vw,38px);margin-bottom:14px}
+  p.lead{font-size:clamp(16px,2.5vw,21px);color:var(--ice);line-height:1.5;margin-bottom:14px}
+  p.small{font-size:15px;color:var(--ice);opacity:.85}
+  .pills{display:flex;gap:14px;justify-content:center;margin:28px 0;flex-wrap:wrap}
+  .pill{background:var(--card);border-radius:14px;padding:18px 26px;min-width:130px}
+  .pill b{display:block;font-size:30px;color:var(--cyan)}
+  .pill small{font-size:15px;color:var(--ice)}
+  button.cta{
+    background:var(--btn);color:#fff;border:none;border-radius:14px;
+    padding:16px 38px;font-size:19px;font-weight:700;cursor:pointer;
+    transition:transform .15s,background .15s;margin-top:10px
+  }
+  button.cta:hover{background:#3a82e8;transform:translateY(-2px)}
+  button.cta:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+  .qcount{font-size:15px;color:var(--ice);opacity:.8;margin-bottom:14px}
+  .qimg{width:100%;max-height:50vh;object-fit:contain;border-radius:16px;
+        box-shadow:0 8px 30px rgba(0,0,0,.4);margin-bottom:22px;background:#0c0f1a}
+  .answers{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  button.ans{
+    flex:1;min-width:200px;max-width:300px;padding:20px;font-size:20px;font-weight:700;
+    border:2px solid var(--cyan);border-radius:14px;background:rgba(91,163,245,.12);
+    color:#fff;cursor:pointer;transition:background .15s,transform .15s
+  }
+  button.ans:hover{background:rgba(91,163,245,.3);transform:translateY(-2px)}
+  button.ans:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+  /* feedback */
+  .badge{width:120px;height:120px;border-radius:50%;margin:0 auto 24px;
+         display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:900}
+  .badge.ok{background:var(--green)}
+  .badge.no{background:var(--red)}
+  .field{margin:22px auto;max-width:420px;text-align:left}
+  .field label{display:block;font-size:15px;color:var(--ice);margin-bottom:8px}
+  .field input{width:100%;padding:14px 16px;border-radius:12px;border:2px solid rgba(91,163,245,.4);
+               background:rgba(255,255,255,.06);color:#fff;font-size:16px}
+  .field input:focus{outline:none;border-color:var(--cyan)}
+  .score-num{font-size:72px;font-weight:900;color:var(--cyan);line-height:1}
+  .qr{width:150px;height:150px;border-radius:12px;margin:18px auto;display:block}
+  a.link{color:var(--cyan);font-weight:700;font-size:20px;text-decoration:underline;display:inline-block;margin-top:8px}
+  .icons{display:flex;gap:24px;justify-content:center;margin:24px 0;flex-wrap:wrap}
+  .ico{background:var(--card);border-radius:14px;padding:20px;max-width:210px}
+  .ico .h{font-size:18px;font-weight:700;color:var(--cyan);margin-bottom:8px}
+  .ico .d{font-size:14px;color:var(--ice);line-height:1.4}
+  .muted{font-size:14px;color:var(--ice);opacity:.7;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ÉCRAN 1 : INTRO -->
+  <section class="screen active" id="s-intro">
+    <div class="logo"><img src="logo.png" alt="TruthCatcher"><span>TruthCatcher</span></div>
+    <h1>À l'ère de l'IA, qui sait encore distinguer le vrai du faux ?</h1>
+    <p class="lead">Les deepfakes inondent le web. Même les meilleurs outils de détection se trompent.<br>Et vous, feriez-vous mieux ?</p>
+    <div class="pills">
+      <div class="pill"><b>13</b><small>images</small></div>
+      <div class="pill"><b>2 min</b><small>chrono</small></div>
+      <div class="pill"><b>Vrai</b><small>ou IA ?</small></div>
+    </div>
+    <button class="cta" onclick="startQuiz()">Commencer</button>
+  </section>
+
+  <!-- ÉCRAN QUESTION (réutilisé) -->
+  <section class="screen" id="s-question">
+    <div class="qcount" id="qcount">Question 1 / 13</div>
+    <img class="qimg" id="qimg" src="" alt="Image à évaluer">
+    <div class="answers">
+      <button class="ans" onclick="answer('REELLE')">📷 Photo réelle</button>
+      <button class="ans" onclick="answer('IA')">🤖 Générée par IA</button>
+    </div>
+  </section>
+
+  <!-- ÉCRAN FEEDBACK (réutilisé) -->
+  <section class="screen" id="s-feedback">
+    <div class="badge" id="fb-badge"></div>
+    <h2 id="fb-title"></h2>
+    <p class="lead" id="fb-text"></p>
+    <button class="cta" onclick="nextStep()" id="fb-next">Suivant</button>
+  </section>
+
+  <!-- ÉCRAN EXPLICATION -->
+  <section class="screen" id="s-explain">
+    <div class="logo"><img src="logo.png" alt="TruthCatcher"><span>TruthCatcher</span></div>
+    <h2>Alors, vous avez tout repéré ?</h2>
+    <p class="lead">Si même vous vous êtes fait avoir, imaginez à l'échelle d'un litige, d'une assurance ou d'un média.</p>
+    <div class="icons">
+      <div class="ico"><div class="h">🔒 Preuve à la capture</div><div class="d">Chaque image est scellée au moment où elle est prise — pas après coup.</div></div>
+      <div class="ico"><div class="h">⛓ Gravée sur la blockchain</div><div class="d">Hash SHA-256 + archive IPFS + NFT Polygon. Un pixel modifié, et la preuve casse.</div></div>
+      <div class="ico"><div class="h">🔍 Vérifiable par tous</div><div class="d">N'importe qui contrôle l'authenticité en 5 secondes, sans nous faire confiance.</div></div>
+    </div>
+    <p class="lead"><b>On ne court pas après le faux. On prouve le vrai.</b></p>
+    <button class="cta" onclick="show('s-score')">Voir mon score</button>
+  </section>
+
+  <!-- ÉCRAN SCORE + EMAIL -->
+  <section class="screen" id="s-score">
+    <h2>Votre score</h2>
+    <div class="score-num"><span id="score-val">0</span> / 13</div>
+    <p class="lead" id="score-msg"></p>
+    <div class="field">
+      <label for="email">Rejoindre la bêta de TruthCatcher (facultatif)</label>
+      <input type="email" id="email" placeholder="votre@email.com" autocomplete="email">
+    </div>
+    <p class="small">Pas de formulaire compliqué : un simple e-mail suffit pour être recontacté.</p>
+    <button class="cta" onclick="submitAll()" id="submit-btn">Valider</button>
+  </section>
+
+  <!-- ÉCRAN FINAL CTA -->
+  <section class="screen" id="s-cta">
+    <div class="logo"><img src="logo.png" alt="TruthCatcher"><span>TruthCatcher</span></div>
+    <h2>Merci d'avoir joué !</h2>
+    <p class="lead">Pas si facile de distinguer le vrai du faux, non ?<br>C'est exactement le problème que nous résolvons.</p>
+    <img class="qr" src="qr.png" alt="QR vers TruthCatcher">
+    <a class="link" href="https://linktr.ee/TruthCatcher" target="_blank" rel="noopener">https://linktr.ee/TruthCatcher</a>
+    <p class="muted" id="final-status"></p>
+  </section>
+
+</div>
+
+<!-- ============ FIREBASE ============ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+// Config de secours, utilisée seulement hors Firebase Hosting (ex. test local).
+// Sur truthcatcher-sequence.web.app, la vraie config est chargée automatiquement
+// via l'URL réservée /__/firebase/init.json — rien à coller ici.
+const firebaseConfig = {
+  apiKey: "VOTRE_API_KEY",
+  authDomain: "truthcatcher-sequence.firebaseapp.com",
+  projectId: "truthcatcher-sequence",
+  storageBucket: "truthcatcher-sequence.appspot.com",
+  messagingSenderId: "VOTRE_SENDER_ID",
+  appId: "VOTRE_APP_ID"
+};
+let cfg = firebaseConfig;
+try {
+  const r = await fetch("/__/firebase/init.json");
+  if (r.ok) cfg = await r.json();
+} catch (_) { /* hors Firebase Hosting : on garde la config de secours */ }
+const app = initializeApp(cfg);
+const db = getFirestore(app);
+window.__saveResult = async (data) => {
+  return addDoc(collection(db, "quiz_reponses"), { ...data, createdAt: serverTimestamp() });
+};
+</script>
+
+<!-- ============ LOGIQUE QUIZ ============ -->
+<script>
+// Ordre des bonnes réponses (REELLE / IA)
+const QUIZ = [
+  {img:"q1.jpg",  truth:"REELLE"},
+  {img:"q2.jpg",  truth:"IA"},
+  {img:"q3.jpg",  truth:"REELLE"},
+  {img:"q4.jpg",  truth:"IA"},
+  {img:"q5.jpg",  truth:"REELLE"},
+  {img:"q6.jpg",  truth:"IA"},
+  {img:"q7.jpg",  truth:"REELLE"},
+  {img:"q8.jpg",  truth:"IA"},
+  {img:"q9.jpg",  truth:"IA"},
+  {img:"q10.jpg", truth:"IA"},
+  {img:"q11.jpg", truth:"IA"},
+  {img:"q12.jpg", truth:"IA"},
+  {img:"q13.jpg", truth:"IA"},
+];
+
+let idx = 0, score = 0, answers = [];
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function startQuiz(){ idx=0; score=0; answers=[]; loadQuestion(); }
+function loadQuestion(){
+  const q = QUIZ[idx];
+  document.getElementById('qcount').textContent = `Question ${idx+1} / ${QUIZ.length}`;
+  document.getElementById('qimg').src = q.img;
+  show('s-question');
+}
+function answer(choice){
+  const q = QUIZ[idx];
+  const correct = (choice === q.truth);
+  if(correct) score++;
+  answers.push({q:idx+1, choix:choice, verite:q.truth, correct});
+  // feedback
+  const badge = document.getElementById('fb-badge');
+  badge.className = 'badge ' + (q.truth==="REELLE" ? 'ok' : 'no');
+  badge.textContent = q.truth==="REELLE" ? '✓' : '✕';
+  document.getElementById('fb-title').textContent =
+    q.truth==="REELLE" ? "C'était une VRAIE photo" : "C'était une IA";
+  document.getElementById('fb-text').textContent =
+    q.truth==="REELLE"
+      ? "Une image authentique, capturée dans le monde réel."
+      : "Cette image n'existe pas. Elle a été générée par une IA.";
+  document.getElementById('fb-next').textContent =
+    (idx === QUIZ.length-1) ? "Découvrir le résultat" : "Suivant";
+  show('s-feedback');
+}
+function nextStep(){
+  idx++;
+  if(idx < QUIZ.length){ loadQuestion(); }
+  else { show('s-explain'); }
+}
+// score + message
+function fillScore(){
+  document.getElementById('score-val').textContent = score;
+  let msg;
+  if(score >= 11) msg = "Impressionnant ! Vous avez l'œil… mais l'IA progresse vite.";
+  else if(score >= 7) msg = "Pas mal, mais l'IA vous a quand même piégé plusieurs fois.";
+  else msg = "L'IA vous a bien eu. C'est exactement pour ça que TruthCatcher existe.";
+  document.getElementById('score-msg').textContent = msg;
+}
+async function submitAll(){
+  const email = document.getElementById('email').value.trim();
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = "Envoi…";
+  const payload = { score, total: QUIZ.length, email: email || null, answers };
+  try{
+    if(!window.__saveResult) throw new Error("Firebase non initialisé");
+    await window.__saveResult(payload);
+    document.getElementById('final-status').textContent =
+      email ? "Vos réponses sont enregistrées. On vous recontacte bientôt !" : "Vos réponses sont enregistrées. Merci !";
+  }catch(e){
+    document.getElementById('final-status').textContent =
+      "⚠️ Réponses non enregistrées (config Firebase à vérifier), mais merci d'avoir joué !";
+    console.error(e);
+  }
+  show('s-cta');
+}
+// remplir le score quand on arrive dessus
+const _show = show;
+show = function(id){ if(id==='s-score') fillScore(); _show(id); };
+
+// exposer au scope global pour les onclick
+window.startQuiz=startQuiz; window.answer=answer; window.nextStep=nextStep;
+window.show=show; window.submitAll=submitAll;
+</script>
+</body>
+</html>

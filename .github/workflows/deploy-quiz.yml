@@ -1,0 +1,35 @@
+name: Déployer le quiz (Firebase)
+
+# Déclenchement manuel uniquement : onglet Actions → ce workflow → "Run workflow".
+# Prérequis : secret FIREBASE_SERVICE_ACCOUNT (JSON d'un compte de service du
+# projet truthcatcher-sequence, rôles "Firebase Hosting Admin" + "Firebase
+# Rules Admin"), à créer dans Settings → Secrets and variables → Actions.
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_rules:
+        description: "Déployer aussi les règles Firestore"
+        type: boolean
+        default: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Écrire les identifiants du compte de service
+        env:
+          SA_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: printf '%s' "$SA_JSON" > "$RUNNER_TEMP/firebase-sa.json"
+      - name: Déployer
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+        run: |
+          npx firebase-tools@latest deploy \
+            --project truthcatcher-sequence \
+            --only "hosting${{ inputs.deploy_rules && ',firestore:rules' || '' }}" \
+            --non-interactive
