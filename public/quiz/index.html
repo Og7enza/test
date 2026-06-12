@@ -151,7 +151,8 @@ import { getFirestore, collection, addDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 // Config de secours, utilisée seulement hors Firebase Hosting (ex. test local).
-// Sur truthcatcher-sequence.web.app, la vraie config est chargée automatiquement
+// Servi par Firebase Hosting (site dédié truthcatcher-quiz, projet
+// truthcatcher-sequence), la vraie config est chargée automatiquement
 // via l'URL réservée /__/firebase/init.json — rien à coller ici.
 const firebaseConfig = {
   apiKey: "VOTRE_API_KEY",
