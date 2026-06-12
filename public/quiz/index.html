@@ -41,6 +41,13 @@
   }
   button.cta:hover, a.cta:hover{background:#3a82e8;transform:translateY(-2px)}
   button.cta:focus-visible, a.cta:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+  button.share{
+    background:rgba(91,163,245,.12);border:2px solid var(--cyan);color:#fff;
+    border-radius:14px;padding:13px 30px;font-size:17px;font-weight:700;
+    cursor:pointer;margin-top:4px;transition:background .15s,transform .15s
+  }
+  button.share:hover{background:rgba(91,163,245,.3);transform:translateY(-2px)}
+  button.share:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
   .qcount{font-size:15px;color:var(--ice);opacity:.8;margin-bottom:14px}
   .qimg{width:100%;max-height:50vh;object-fit:contain;border-radius:16px;
         box-shadow:0 8px 30px rgba(0,0,0,.4);margin-bottom:22px;background:#0c0f1a}
@@ -70,9 +77,6 @@
   .ico .h{font-size:18px;font-weight:700;color:var(--cyan);margin-bottom:8px}
   .ico .d{font-size:14px;color:var(--ice);line-height:1.4}
   .muted{font-size:14px;color:var(--ice);opacity:.7;margin-top:16px}
-  .invite{background:var(--card);border-radius:16px;padding:24px;margin:26px auto 4px;max-width:580px}
-  .invite .h{font-size:21px;font-weight:700;color:var(--cyan);margin-bottom:10px}
-  .invite p{font-size:16px;color:var(--ice);line-height:1.55;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -128,6 +132,7 @@
     <h2>Votre score</h2>
     <div class="score-num"><span id="score-val">0</span> / 13</div>
     <p class="lead" id="score-msg"></p>
+    <button class="share" onclick="shareScore()" id="share-btn">📸 Partager mon score en image</button>
     <p class="small">Participation 100 % anonyme : aucune donnée personnelle n'est collectée.</p>
     <button class="cta" onclick="submitAll()" id="submit-btn">Continuer</button>
   </section>
@@ -139,20 +144,13 @@
     <p class="lead">Pas si facile de distinguer le vrai du faux, non ?<br>C'est exactement le problème que nous résolvons.</p>
     <img class="qr" src="qr.png" alt="QR vers TruthCatcher">
     <a class="link" href="https://linktr.ee/TruthCatcher" target="_blank" rel="noopener">https://linktr.ee/TruthCatcher</a>
+    <p class="lead" style="font-size:17px;margin-top:12px">💌 <b>Wishlist &amp; accès bêta</b> : tout se passe ici — scannez ou cliquez, c'est vous qui choisissez.</p>
 
     <p class="lead" style="margin-top:30px"><b>TruthCatcher</b>, c'est la photo qui fait preuve :</p>
     <div class="icons">
       <div class="ico"><div class="h">📸 Capture brute</div><div class="d">Image, heure, position GPS : tout est saisi tel quel, sans la moindre modification possible.</div></div>
       <div class="ico"><div class="h">⛓ Information inaltérable</div><div class="d">Notre système scelle chaque preuve (empreinte SHA-256, blockchain) : un pixel changé, et la preuve casse.</div></div>
       <div class="ico"><div class="h">🔍 Consultation &amp; vérification</div><div class="d">Chacun peut contrôler l'authenticité en quelques secondes, par plusieurs moyens indépendants.</div></div>
-    </div>
-
-    <div class="invite">
-      <div class="h">💌 Wishlist &amp; accès bêta</div>
-      <p>Envie de voir TruthCatcher en premier ? <b>Un e-mail suffit — même vide.</b><br>
-      Et si le cœur vous en dit, racontez-nous : votre plus belle plume est la bienvenue.</p>
-      <a class="cta" href="mailto:1989.mathieu.charles@gmail.com?subject=Wishlist%20%2F%20B%C3%AAta%20TruthCatcher&body=Bonjour%20!%0A%0AJe%20veux%20rejoindre%20la%20wishlist%20et%20tester%20la%20b%C3%AAta%20de%20TruthCatcher.%0A%0A(Vous%20pouvez%20envoyer%20cet%20e-mail%20tel%20quel%20%E2%80%94%20ou%20ajouter%20un%20mot%20!)">✉️ Rejoindre la wishlist / bêta</a>
-      <p class="small" style="margin-top:12px">Démarche 100&nbsp;% volontaire : c'est vous qui nous écrivez — le quiz, lui, n'a collecté aucune donnée.</p>
     </div>
 
     <br><a class="link" href="resultats.html" style="font-size:17px">📊 Voir les réponses de tous les participants</a>
@@ -249,13 +247,72 @@ function nextStep(){
   else { show('s-explain'); }
 }
 // score + message
+function scoreMessage(){
+  if(score >= 11) return "Impressionnant ! Vous avez l'œil… mais l'IA progresse vite.";
+  if(score >= 7)  return "Pas mal, mais l'IA vous a quand même piégé plusieurs fois.";
+  return "L'IA vous a bien eu. C'est exactement pour ça que TruthCatcher existe.";
+}
 function fillScore(){
   document.getElementById('score-val').textContent = score;
-  let msg;
-  if(score >= 11) msg = "Impressionnant ! Vous avez l'œil… mais l'IA progresse vite.";
-  else if(score >= 7) msg = "Pas mal, mais l'IA vous a quand même piégé plusieurs fois.";
-  else msg = "L'IA vous a bien eu. C'est exactement pour ça que TruthCatcher existe.";
-  document.getElementById('score-msg').textContent = msg;
+  document.getElementById('score-msg').textContent = scoreMessage();
+}
+// ---- carte de score partageable (PNG 1080×1080) ----
+const loadImage = (src) => new Promise((ok, ko) => {
+  const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = src;
+});
+function wrapText(x, text, cx, y, maxW, lh){
+  let line = '';
+  for(const w of text.split(' ')){
+    const t = line ? line + ' ' + w : w;
+    if(x.measureText(t).width > maxW && line){ x.fillText(line, cx, y); y += lh; line = w; }
+    else line = t;
+  }
+  if(line) x.fillText(line, cx, y);
+}
+async function shareScore(){
+  const btn = document.getElementById('share-btn');
+  const old = btn.textContent;
+  btn.disabled = true; btn.textContent = "Création de l'image…";
+  try{
+    const W = 1080, H = 1080;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = c.getContext('2d');
+    const F = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif";
+    const g = x.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, '#206ED2'); g.addColorStop(.5, '#18225C'); g.addColorStop(1, '#2C184E');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    x.textAlign = 'center';
+    try{
+      const logo = await loadImage('logo.png');
+      const lh = 120, lw = logo.width * lh / logo.height;
+      x.drawImage(logo, (W - lw) / 2, 64, lw, lh);
+    }catch(_){ /* sans logo si introuvable */ }
+    x.fillStyle = '#5BA3F5'; x.font = '700 54px ' + F;
+    x.fillText('TruthCatcher', W / 2, 248);
+    x.fillStyle = '#fff'; x.font = '800 66px ' + F;
+    x.fillText('Quiz « Vrai ou IA ? »', W / 2, 356);
+    x.fillStyle = '#5BA3F5'; x.font = '900 220px ' + F;
+    x.fillText(score + ' / ' + QUIZ.length, W / 2, 616);
+    x.fillStyle = '#CADCFC'; x.font = '400 40px ' + F;
+    wrapText(x, scoreMessage(), W / 2, 724, 900, 54);
+    x.fillStyle = '#fff'; x.font = '700 46px ' + F;
+    x.fillText('Et vous, feriez-vous mieux ?', W / 2, 930);
+    x.fillStyle = '#5BA3F5'; x.font = '700 40px ' + F;
+    x.fillText(location.host || 'testtruthcatcher.web.app', W / 2, 1000);
+    const blob = await new Promise((ok) => c.toBlob(ok, 'image/png'));
+    const file = new File([blob], 'truthcatcher-score.png', { type: 'image/png' });
+    // partage natif (mobile) si possible, sinon téléchargement
+    if(navigator.canShare && navigator.canShare({ files: [file] })){
+      try{ await navigator.share({ files: [file], title: 'Mon score au quiz « Vrai ou IA ? »' }); return; }
+      catch(e){ if(e.name === 'AbortError') return; }
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'truthcatcher-score.png';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }finally{
+    btn.disabled = false; btn.textContent = old;
+  }
 }
 async function submitAll(){
   const btn = document.getElementById('submit-btn');
@@ -279,7 +336,7 @@ show = function(id){ if(id==='s-score') fillScore(); _show(id); };
 
 // exposer au scope global pour les onclick
 window.startQuiz=startQuiz; window.answer=answer; window.nextStep=nextStep;
-window.show=show; window.submitAll=submitAll;
+window.show=show; window.submitAll=submitAll; window.shareScore=shareScore;
 </script>
 </body>
 </html>
