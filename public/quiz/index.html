@@ -113,6 +113,7 @@
     <div class="badge" id="fb-badge"></div>
     <h2 id="fb-title"></h2>
     <p class="lead" id="fb-text"></p>
+    <p class="muted" id="fb-credit" style="margin-top:4px"></p>
     <button class="cta" onclick="nextStep()" id="fb-next">Suivant</button>
   </section>
 
@@ -202,15 +203,25 @@ window.__saveResult = async (data) => {
 
 <!-- ============ LOGIQUE QUIZ ============ -->
 <script>
-// Ordre des bonnes réponses (REELLE / IA)
+// Ordre des bonnes réponses (REELLE / IA).
+// info  : courte explication affichée après la réponse (photos réelles)
+// credit: crédit photo affiché sous l'explication (laisser "" si inconnu)
 const QUIZ = [
-  {img:"q1.jpg",  truth:"REELLE"},
+  {img:"q1.jpg",  truth:"REELLE",
+   info:"Le lac Hillier, en Australie-Occidentale. Son rose bubble-gum est 100 % naturel : il est dû à une algue (Dunaliella salina) et à des bactéries amies du sel.",
+   credit:""},
   {img:"q2.jpg",  truth:"IA"},
-  {img:"q3.jpg",  truth:"REELLE"},
+  {img:"q3.jpg",  truth:"REELLE",
+   info:"Des nuages irisés : la lumière du soleil, diffractée par de minuscules gouttelettes ou cristaux de glace, peint le nuage aux couleurs de l'arc-en-ciel.",
+   credit:""},
   {img:"q4.jpg",  truth:"IA"},
-  {img:"q5.jpg",  truth:"REELLE"},
+  {img:"q5.jpg",  truth:"REELLE",
+   info:"La Casa Batlló d'Antoni Gaudí, à Barcelone. Aucun trucage : cette façade ondulée couverte de mosaïques existe vraiment — elle est classée à l'UNESCO.",
+   credit:""},
   {img:"q6.jpg",  truth:"IA"},
-  {img:"q7.jpg",  truth:"REELLE"},
+  {img:"q7.jpg",  truth:"REELLE",
+   info:"Un rat-taupe nu, bien réel. Ce rongeur fascine les scientifiques : quasi insensible à la douleur et étonnamment résistant au cancer.",
+   credit:""},
   {img:"q8.jpg",  truth:"IA"},
   {img:"q9.jpg",  truth:"IA"},
   {img:"q10.jpg", truth:"IA"},
@@ -244,8 +255,10 @@ function answer(choice){
     q.truth==="REELLE" ? "C'était une VRAIE photo" : "C'était une IA";
   document.getElementById('fb-text').textContent =
     q.truth==="REELLE"
-      ? "Une image authentique, capturée dans le monde réel."
+      ? (q.info || "Une image authentique, capturée dans le monde réel.")
       : "Cette image n'existe pas. Elle a été générée par une IA.";
+  document.getElementById('fb-credit').textContent =
+    (q.truth==="REELLE" && q.credit) ? "📷 Crédit photo : " + q.credit : "";
   document.getElementById('fb-next').textContent =
     (idx === QUIZ.length-1) ? "Découvrir le résultat" : "Suivant";
   show('s-feedback');
