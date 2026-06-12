@@ -1,0 +1,35 @@
+name: Remettre les réponses du quiz à zéro
+
+# Déclenchement manuel : onglet Actions → ce workflow → "Run workflow"
+# → taper OUI dans le champ de confirmation.
+# Efface TOUTES les réponses enregistrées (collection quiz_reponses) :
+# le compteur de participants et toutes les statistiques repartent de zéro.
+# Utilise le même secret FIREBASE_SERVICE_ACCOUNT que le déploiement.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmer:
+        description: "⚠️ Efface TOUTES les réponses du quiz, définitivement. Tapez OUI (en majuscules) pour confirmer."
+        required: true
+        default: ""
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirmer == 'OUI'
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Écrire les identifiants du compte de service
+        env:
+          SA_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: printf '%s' "$SA_JSON" > "$RUNNER_TEMP/firebase-sa.json"
+      - name: Effacer la collection quiz_reponses
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+        run: |
+          npx firebase-tools@latest firestore:delete quiz_reponses \
+            --project testtruthcatcher --recursive --force
+          echo "✅ Toutes les réponses ont été effacées — compteurs à zéro."
