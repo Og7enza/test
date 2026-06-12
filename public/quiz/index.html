@@ -77,6 +77,9 @@
   .ico .h{font-size:18px;font-weight:700;color:var(--cyan);margin-bottom:8px}
   .ico .d{font-size:14px;color:var(--ice);line-height:1.4}
   .muted{font-size:14px;color:var(--ice);opacity:.7;margin-top:16px}
+  .invite{background:var(--card);border-radius:16px;padding:24px;margin:26px auto 4px;max-width:580px}
+  .invite .h{font-size:21px;font-weight:700;color:var(--cyan);margin-bottom:10px}
+  .invite p{font-size:16px;color:var(--ice);line-height:1.55;margin-bottom:14px}
 </style>
 </head>
 <body>
@@ -88,7 +91,7 @@
     <h1>À l'ère de l'IA, qui sait encore distinguer le vrai du faux ?</h1>
     <p class="lead">Les deepfakes inondent le web. Même les meilleurs outils de détection se trompent.<br>Et vous, feriez-vous mieux ?</p>
     <div class="pills">
-      <div class="pill"><b>13</b><small>images</small></div>
+      <div class="pill"><b>11</b><small>images</small></div>
       <div class="pill"><b>2 min</b><small>chrono</small></div>
       <div class="pill"><b>Vrai</b><small>ou IA ?</small></div>
     </div>
@@ -130,7 +133,7 @@
   <!-- ÉCRAN SCORE -->
   <section class="screen" id="s-score">
     <h2>Votre score</h2>
-    <div class="score-num"><span id="score-val">0</span> / 13</div>
+    <div class="score-num"><span id="score-val">0</span> / 11</div>
     <p class="lead" id="score-msg"></p>
     <button class="share" onclick="shareScore()" id="share-btn">📸 Partager mon score en image</button>
     <p class="small">Participation 100 % anonyme : aucune donnée personnelle n'est collectée.</p>
@@ -144,7 +147,15 @@
     <p class="lead">Pas si facile de distinguer le vrai du faux, non ?<br>C'est exactement le problème que nous résolvons.</p>
     <img class="qr" src="qr.png" alt="QR vers TruthCatcher">
     <a class="link" href="https://linktr.ee/TruthCatcher" target="_blank" rel="noopener">https://linktr.ee/TruthCatcher</a>
-    <p class="lead" style="font-size:17px;margin-top:12px">💌 <b>Wishlist &amp; accès bêta</b> : tout se passe ici — scannez ou cliquez, c'est vous qui choisissez.</p>
+
+    <div class="invite">
+      <div class="h">💌 Rejoindre la wishlist &amp; la bêta</div>
+      <p><b>Pas de formulaire, pas d'inscription : un simple e-mail — même vide — suffit.</b><br>
+      Scannez le QR ci-dessus ou touchez le bouton : notre Linktree vous donne l'adresse.
+      Appuyez sur «&nbsp;Envoyer&nbsp;», et vous êtes sur la liste.</p>
+      <a class="cta" href="https://linktr.ee/TruthCatcher" target="_blank" rel="noopener">💌 Rejoindre la liste</a>
+      <p class="small" style="margin-top:12px">Envie d'en dire plus ? Votre plus belle plume est la bienvenue — on lit tout.</p>
+    </div>
 
     <p class="lead" style="margin-top:30px"><b>TruthCatcher</b>, c'est la photo qui fait preuve :</p>
     <div class="icons">
@@ -203,8 +214,6 @@ const QUIZ = [
   {img:"q8.jpg",  truth:"IA"},
   {img:"q9.jpg",  truth:"IA"},
   {img:"q10.jpg", truth:"IA"},
-  {img:"q11.jpg", truth:"IA"},
-  {img:"q12.jpg", truth:"IA"},
   {img:"q13.jpg", truth:"IA"},
 ];
 
@@ -248,8 +257,8 @@ function nextStep(){
 }
 // score + message
 function scoreMessage(){
-  if(score >= 11) return "Impressionnant ! Vous avez l'œil… mais l'IA progresse vite.";
-  if(score >= 7)  return "Pas mal, mais l'IA vous a quand même piégé plusieurs fois.";
+  if(score >= 9) return "Impressionnant ! Vous avez l'œil… mais l'IA progresse vite.";
+  if(score >= 6) return "Pas mal, mais l'IA vous a quand même piégé plusieurs fois.";
   return "L'IA vous a bien eu. C'est exactement pour ça que TruthCatcher existe.";
 }
 function fillScore(){
