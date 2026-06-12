@@ -56,44 +56,48 @@
   .empty{background:var(--card);border-radius:16px;padding:38px 22px;margin:24px 0}
   a.link{color:var(--cyan);font-weight:700;font-size:18px;text-decoration:underline;display:inline-block;margin-top:14px}
   .muted{font-size:13px;color:var(--ice);opacity:.7;margin-top:18px;line-height:1.5}
+  .langbtn{position:fixed;top:14px;right:14px;z-index:10;background:rgba(30,46,102,.75);
+    border:1.5px solid var(--cyan);color:#fff;border-radius:10px;padding:7px 14px;
+    font-size:14px;font-weight:700;cursor:pointer;transition:background .15s}
+  .langbtn:hover{background:rgba(91,163,245,.3)}
 </style>
 </head>
 <body>
+<button class="langbtn" id="lang-btn" onclick="toggleLang()">EN</button>
 <div class="wrap">
 
   <div class="logo"><img src="logo.png" alt="TruthCatcher"><span>TruthCatcher</span></div>
-  <h1>Les réponses de tous les participants</h1>
-  <p class="lead">Qui s'est fait piéger par l'IA ? Statistiques anonymes du quiz « Vrai ou IA ? ».</p>
-  <div class="live" id="live">Connexion…</div>
+  <h1 data-i18n="r_h1">Les réponses de tous les participants</h1>
+  <p class="lead" data-i18n="r_lead">Qui s'est fait piéger par l'IA ? Statistiques anonymes du quiz « Vrai ou IA ? ».</p>
+  <div class="live" id="live" data-i18n="r_connecting">Connexion…</div>
 
   <!-- état vide -->
   <section class="empty" id="empty" hidden>
-    <p class="lead">Aucune réponse enregistrée pour l'instant.</p>
-    <p class="lead"><b>Soyez le premier à jouer !</b></p>
+    <p class="lead" data-i18n="r_empty1">Aucune réponse enregistrée pour l'instant.</p>
+    <p class="lead" data-i18n="r_empty2"><b>Soyez le premier à jouer !</b></p>
   </section>
 
   <!-- statistiques -->
   <div id="stats" hidden>
     <div class="pills">
-      <div class="pill"><b id="st-n">–</b><small>participants</small></div>
-      <div class="pill"><b id="st-avg">–</b><small>score moyen / 11</small></div>
-      <div class="pill"><b id="st-rate">–</b><small>de bonnes réponses</small></div>
+      <div class="pill"><b id="st-n">–</b><small data-i18n="r_participants">participants</small></div>
+      <div class="pill"><b id="st-avg">–</b><small data-i18n="r_avg">score moyen / 11</small></div>
+      <div class="pill"><b id="st-rate">–</b><small data-i18n="r_rate">de bonnes réponses</small></div>
     </div>
 
     <section class="panel">
-      <h3>Répartition des scores</h3>
+      <h3 data-i18n="r_dist">Répartition des scores</h3>
       <div id="dist"></div>
     </section>
 
     <section class="panel">
-      <h3>Question par question — qui a vu juste ?</h3>
+      <h3 data-i18n="r_perq">Question par question — qui a vu juste ?</h3>
       <div class="qgrid" id="qgrid"></div>
     </section>
   </div>
 
-  <a class="link" href="./">Jouer au quiz</a>
-  <p class="muted">Aucune donnée personnelle n'est affichée : ni nom, ni e-mail —
-  uniquement des statistiques anonymes, mises à jour en direct.</p>
+  <a class="link" href="./" data-i18n="r_play">Jouer au quiz</a>
+  <p class="muted" data-i18n="r_muted">Aucune donnée personnelle n'est affichée : ni nom, ni e-mail — uniquement des statistiques anonymes, mises à jour en direct.</p>
 
 </div>
 
@@ -170,6 +174,63 @@ try {
 const {QUIZ, aggregate} = window.QUIZ_RESULTATS;
 const $ = (id) => document.getElementById(id);
 
+// ---- langues : FR / EN ----
+const I18N = {
+fr: {
+  r_h1:"Les réponses de tous les participants",
+  r_lead:"Qui s'est fait piéger par l'IA ? Statistiques anonymes du quiz « Vrai ou IA ? ».",
+  r_connecting:"Connexion…",
+  r_empty1:"Aucune réponse enregistrée pour l'instant.", r_empty2:"<b>Soyez le premier à jouer !</b>",
+  r_participants:"participants", r_avg:"score moyen / 11", r_rate:"de bonnes réponses",
+  r_dist:"Répartition des scores", r_perq:"Question par question — qui a vu juste ?",
+  r_play:"Jouer au quiz",
+  r_muted:"Aucune donnée personnelle n'est affichée : ni nom, ni e-mail — uniquement des statistiques anonymes, mises à jour en direct.",
+  r_real:"VRAIE PHOTO", r_ia:"IA", r_trap:"La plus trompeuse",
+  r_pct_tpl:"{p} % de bonnes réponses ({ok}/{tot})", r_norep:"pas encore de réponse",
+  r_live:"En direct — mise à jour automatique",
+  r_err_rules:"⚠ Impossible de charger les résultats (Firestore ou règles à vérifier).",
+  r_err_cfg:"⚠ Impossible de charger les résultats (config Firebase à vérifier)."
+},
+en: {
+  r_h1:"Everyone's answers",
+  r_lead:"Who got fooled by AI? Anonymous statistics from the “Real or AI?” quiz.",
+  r_connecting:"Connecting…",
+  r_empty1:"No answers recorded yet.", r_empty2:"<b>Be the first to play!</b>",
+  r_participants:"participants", r_avg:"average score / 11", r_rate:"correct answers",
+  r_dist:"Score distribution", r_perq:"Question by question — who got it right?",
+  r_play:"Play the quiz",
+  r_muted:"No personal data is shown: no names, no emails — only anonymous statistics, updated live.",
+  r_real:"REAL PHOTO", r_ia:"AI", r_trap:"Most deceptive",
+  r_pct_tpl:"{p}% correct answers ({ok}/{tot})", r_norep:"no answers yet",
+  r_live:"Live — updates automatically",
+  r_err_rules:"⚠ Couldn't load results (check Firestore or its rules).",
+  r_err_cfg:"⚠ Couldn't load results (check the Firebase config)."
+}
+};
+let lang = ((navigator.language || "fr").toLowerCase().startsWith("fr")) ? "fr" : "en";
+try{ lang = localStorage.getItem("tc-lang") || lang; }catch(_){}
+if(!I18N[lang]) lang = "fr";
+const t = (k) => (I18N[lang] && I18N[lang][k]) || I18N.fr[k] || k;
+function applyLang(){
+  document.documentElement.lang = lang;
+  $("lang-btn").textContent = lang === "fr" ? "EN" : "FR";
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const v = I18N[lang][el.dataset.i18n];
+    if(v != null) el.innerHTML = v;
+  });
+}
+let lastDocs = [], liveOk = false;
+window.toggleLang = () => {
+  lang = lang === "fr" ? "en" : "fr";
+  try{ localStorage.setItem("tc-lang", lang); }catch(_){}
+  applyLang();
+  if(liveOk){
+    render(aggregate(QUIZ, lastDocs));
+    $("live").innerHTML = '<span class="dot"></span>' + t("r_live");
+  }
+};
+applyLang();
+
 function render(stats){
   const {n, nScore, sumScore, dist, perQ, totA, totC, trapIdx} = stats;
   $('empty').hidden = n > 0;
@@ -196,12 +257,12 @@ function render(stats){
     const real = q.truth === 'REELLE';
     return `
     <div class="qcard">
-      ${i === trapIdx ? '<div class="trap">La plus trompeuse</div>' : ''}
+      ${i === trapIdx ? `<div class="trap">${t('r_trap')}</div>` : ''}
       <img src="${q.img}" alt="Question ${i + 1}" loading="lazy">
       <div class="qtop"><b>Question ${i + 1}</b>
-        <span class="tag ${real ? 'real' : 'ia'}">${real ? 'VRAIE PHOTO' : 'IA'}</span></div>
+        <span class="tag ${real ? 'real' : 'ia'}">${real ? t('r_real') : t('r_ia')}</span></div>
       <div class="rate"><div class="rate-fill" style="width:${pct}%"></div></div>
-      <div class="qpct">${tot ? `${pct} % de bonnes réponses (${ok}/${tot})` : 'pas encore de réponse'}</div>
+      <div class="qpct">${tot ? t('r_pct_tpl').replace('{p}',pct).replace('{ok}',ok).replace('{tot}',tot) : t('r_norep')}</div>
     </div>`;
   }).join('');
 }
@@ -211,16 +272,19 @@ try {
   const db = getFirestore(app);
   onSnapshot(collection(db, "quiz_reponses"),
     (snap) => {
-      render(aggregate(QUIZ, snap.docs.map(d => d.data())));
-      $('live').innerHTML = '<span class="dot"></span>En direct — mise à jour automatique';
+      lastDocs = snap.docs.map(d => d.data());
+      liveOk = true;
+      render(aggregate(QUIZ, lastDocs));
+      $('live').innerHTML = '<span class="dot"></span>' + t("r_live");
     },
     (err) => {
       console.error(err);
-      $('live').textContent = "⚠️ Impossible de charger les résultats (Firestore ou règles à vérifier).";
+      liveOk = false;
+      $('live').textContent = t("r_err_rules");
     });
 } catch (e) {
   console.error(e);
-  $('live').textContent = "⚠️ Impossible de charger les résultats (config Firebase à vérifier).";
+  $('live').textContent = t("r_err_cfg");
 }
 </script>
 </body>

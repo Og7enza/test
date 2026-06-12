@@ -83,22 +83,27 @@
   .invite{background:var(--card);border-radius:16px;padding:24px;margin:26px auto 4px;max-width:580px}
   .invite .h{font-size:21px;font-weight:700;color:var(--cyan);margin-bottom:10px}
   .invite p{font-size:16px;color:var(--ice);line-height:1.55;margin-bottom:14px}
+  .langbtn{position:fixed;top:14px;right:14px;z-index:10;background:rgba(30,46,102,.75);
+    border:1.5px solid var(--cyan);color:#fff;border-radius:10px;padding:7px 14px;
+    font-size:14px;font-weight:700;cursor:pointer;transition:background .15s}
+  .langbtn:hover{background:rgba(91,163,245,.3)}
 </style>
 </head>
 <body>
+<button class="langbtn" id="lang-btn" onclick="toggleLang()">EN</button>
 <div class="wrap">
 
   <!-- ÉCRAN 1 : INTRO -->
   <section class="screen active" id="s-intro">
     <div class="logo"><img src="logo.png" alt="TruthCatcher"><span>TruthCatcher</span></div>
-    <h1>À l'ère de l'IA, qui sait encore distinguer le vrai du faux ?</h1>
-    <p class="lead">Les deepfakes inondent le web. Même les meilleurs outils de détection se trompent.<br>Et vous, feriez-vous mieux ?</p>
+    <h1 data-i18n="intro_h1">À l'ère de l'IA, qui sait encore distinguer le vrai du faux ?</h1>
+    <p class="lead" data-i18n="intro_lead">Les deepfakes inondent le web. Même les meilleurs outils de détection se trompent.<br>Et vous, feriez-vous mieux ?</p>
     <div class="pills">
-      <div class="pill"><b>11</b><small>images</small></div>
-      <div class="pill"><b>10 s</b><small>par photo</small></div>
-      <div class="pill"><b>Vrai</b><small>ou IA ?</small></div>
+      <div class="pill"><b>11</b><small data-i18n="pill_images">images</small></div>
+      <div class="pill"><b>10 s</b><small data-i18n="pill_perphoto">par photo</small></div>
+      <div class="pill"><b data-i18n="pill_real">Vrai</b><small data-i18n="pill_orai">ou IA ?</small></div>
     </div>
-    <button class="cta" onclick="startQuiz()">Commencer</button>
+    <button class="cta" onclick="startQuiz()" data-i18n="btn_start">Commencer</button>
   </section>
 
   <!-- ÉCRAN QUESTION (réutilisé) -->
@@ -107,8 +112,8 @@
     <div class="timer"><div class="timer-fill" id="timer-fill"></div></div>
     <img class="qimg" id="qimg" src="" alt="Image à évaluer">
     <div class="answers">
-      <button class="ans" onclick="answer('REELLE')">Photo réelle</button>
-      <button class="ans" onclick="answer('IA')">Générée par IA</button>
+      <button class="ans" onclick="answer('REELLE')" data-i18n="ans_real">Photo réelle</button>
+      <button class="ans" onclick="answer('IA')" data-i18n="ans_ai">Générée par IA</button>
     </div>
   </section>
 
@@ -124,52 +129,52 @@
   <!-- ÉCRAN EXPLICATION -->
   <section class="screen" id="s-explain">
     <div class="logo"><img src="logo.png" alt="TruthCatcher"><span>TruthCatcher</span></div>
-    <h2>Alors, vous avez tout repéré ?</h2>
-    <p class="lead">Si même vous vous êtes fait avoir, imaginez à l'échelle d'un litige, d'une assurance ou d'un média.</p>
+    <h2 data-i18n="ex_h2">Alors, vous avez tout repéré ?</h2>
+    <p class="lead" data-i18n="ex_lead">Si même vous vous êtes fait avoir, imaginez à l'échelle d'un litige, d'une assurance ou d'un média.</p>
     <div class="icons">
-      <div class="ico"><div class="h">Preuve à la capture</div><div class="d">Photo, heure et position GPS scellées à l'instant de la prise — rien ne peut être modifié après coup.</div></div>
-      <div class="ico"><div class="h">Gravée sur la blockchain</div><div class="d">Hash SHA-256 + archive IPFS + NFT Polygon. Un pixel modifié, et la preuve casse.</div></div>
-      <div class="ico"><div class="h">Vérifiable par tous</div><div class="d">N'importe qui contrôle l'authenticité en 5 secondes, sans nous faire confiance.</div></div>
+      <div class="ico"><div class="h" data-i18n="ex1_h">Preuve à la capture</div><div class="d" data-i18n="ex1_d">Photo, heure et position GPS scellées à l'instant de la prise — rien ne peut être modifié après coup.</div></div>
+      <div class="ico"><div class="h" data-i18n="ex2_h">Gravée sur la blockchain</div><div class="d" data-i18n="ex2_d">Hash SHA-256 + archive IPFS + NFT Polygon. Un pixel modifié, et la preuve casse.</div></div>
+      <div class="ico"><div class="h" data-i18n="ex3_h">Vérifiable par tous</div><div class="d" data-i18n="ex3_d">N'importe qui contrôle l'authenticité en 5 secondes, sans nous faire confiance.</div></div>
     </div>
-    <p class="lead"><b>On ne court pas après le faux. On prouve le vrai.</b></p>
-    <button class="cta" onclick="show('s-score')">Voir mon score</button>
+    <p class="lead" data-i18n="ex_bold"><b>On ne court pas après le faux. On prouve le vrai.</b></p>
+    <button class="cta" onclick="show('s-score')" data-i18n="btn_seescore">Voir mon score</button>
   </section>
 
   <!-- ÉCRAN SCORE -->
   <section class="screen" id="s-score">
-    <h2>Votre score</h2>
+    <h2 data-i18n="sc_h2">Votre score</h2>
     <div class="score-num"><span id="score-val">0</span> / 11</div>
     <p class="lead" id="score-msg"></p>
-    <button class="share" onclick="shareScore()" id="share-btn">Partager mon score</button>
-    <p class="small">Participation 100 % anonyme : aucune donnée personnelle n'est collectée.</p>
-    <button class="cta" onclick="submitAll()" id="submit-btn">Continuer</button>
+    <button class="share" onclick="shareScore()" id="share-btn" data-i18n="btn_share">Partager mon score</button>
+    <p class="small" data-i18n="sc_anon">Participation 100 % anonyme : aucune donnée personnelle n'est collectée.</p>
+    <button class="cta" onclick="submitAll()" id="submit-btn" data-i18n="btn_continue">Continuer</button>
   </section>
 
   <!-- ÉCRAN FINAL CTA -->
   <section class="screen" id="s-cta">
     <div class="logo"><img src="logo.png" alt="TruthCatcher"><span>TruthCatcher</span></div>
-    <h2>Merci d'avoir joué !</h2>
-    <p class="lead">Pas si facile de distinguer le vrai du faux, non ?<br>C'est exactement le problème que nous résolvons.</p>
+    <h2 data-i18n="cta_h2">Merci d'avoir joué !</h2>
+    <p class="lead" data-i18n="cta_lead">Pas si facile de distinguer le vrai du faux, non ?<br>C'est exactement le problème que nous résolvons.</p>
     <img class="qr" src="qr.png" alt="QR vers TruthCatcher">
     <a class="link" href="https://linktr.ee/TruthCatcher" target="_blank" rel="noopener">https://linktr.ee/TruthCatcher</a>
 
     <div class="invite">
-      <div class="h">Rejoindre la wishlist &amp; la bêta</div>
-      <p><b>Pas de formulaire, pas d'inscription : un simple e-mail — même vide — suffit.</b><br>
+      <div class="h" data-i18n="inv_h">Rejoindre la wishlist &amp; la bêta</div>
+      <p data-i18n="inv_p"><b>Pas de formulaire, pas d'inscription : un simple e-mail — même vide — suffit.</b><br>
       Scannez le QR ci-dessus ou touchez le bouton : notre Linktree vous donne l'adresse.
       Appuyez sur «&nbsp;Envoyer&nbsp;», et vous êtes sur la liste.</p>
-      <a class="cta" href="https://linktr.ee/TruthCatcher" target="_blank" rel="noopener">Rejoindre la liste</a>
-      <p class="small" style="margin-top:12px">Envie d'en dire plus ? Votre plus belle plume est la bienvenue — on lit tout.</p>
+      <a class="cta" href="https://linktr.ee/TruthCatcher" target="_blank" rel="noopener" data-i18n="inv_btn">Rejoindre la liste</a>
+      <p class="small" style="margin-top:12px" data-i18n="inv_small">Envie d'en dire plus ? Votre plus belle plume est la bienvenue — on lit tout.</p>
     </div>
 
-    <p class="lead" style="margin-top:30px"><b>TruthCatcher</b>, c'est la photo qui fait preuve :</p>
+    <p class="lead" style="margin-top:30px" data-i18n="pil_intro"><b>TruthCatcher</b>, c'est la photo qui fait preuve :</p>
     <div class="icons">
-      <div class="ico"><div class="h">Capture brute</div><div class="d">Image, heure, position GPS : tout est saisi tel quel, sans la moindre modification possible.</div></div>
-      <div class="ico"><div class="h">Information inaltérable</div><div class="d">Notre système scelle chaque preuve (empreinte SHA-256, blockchain) : un pixel changé, et la preuve casse.</div></div>
-      <div class="ico"><div class="h">Consultation &amp; vérification</div><div class="d">Chacun peut contrôler l'authenticité en quelques secondes, par plusieurs moyens indépendants.</div></div>
+      <div class="ico"><div class="h" data-i18n="pi1_h">Capture brute</div><div class="d" data-i18n="pi1_d">Image, heure, position GPS : tout est saisi tel quel, sans la moindre modification possible.</div></div>
+      <div class="ico"><div class="h" data-i18n="pi2_h">Information inaltérable</div><div class="d" data-i18n="pi2_d">Notre système scelle chaque preuve (empreinte SHA-256, blockchain) : un pixel changé, et la preuve casse.</div></div>
+      <div class="ico"><div class="h" data-i18n="pi3_h">Consultation &amp; vérification</div><div class="d" data-i18n="pi3_d">Chacun peut contrôler l'authenticité en quelques secondes, par plusieurs moyens indépendants.</div></div>
     </div>
 
-    <br><a class="link" href="resultats.html" style="font-size:17px">Voir les réponses de tous les participants</a>
+    <br><a class="link" href="resultats.html" style="font-size:17px" data-i18n="link_results">Voir les réponses de tous les participants</a>
     <p class="muted" id="final-status"></p>
   </section>
 
@@ -213,24 +218,144 @@ window.__saveResult = async (data) => {
 const QUIZ = [
   {img:"q1.jpg",  truth:"REELLE",
    info:"Le lac Hillier, en Australie-Occidentale. Son rose bubble-gum est 100 % naturel : il est dû à une algue (Dunaliella salina) et à des bactéries amies du sel.",
+   info_en:"Lake Hillier, Western Australia. Its bubble-gum pink is 100% natural, caused by an alga (Dunaliella salina) and salt-loving bacteria.",
    credit:"Yodaobione (Wikimedia Commons, CC BY-SA 4.0)"},
   {img:"q2.jpg",  truth:"IA"},
   {img:"q3.jpg",  truth:"REELLE",
    info:"Un vrai arc circumhorizontal, photographié au-dessus de l'Alentejo (Portugal) : le soleil, réfracté par des cristaux de glace en altitude, peint le nuage aux couleurs de l'arc-en-ciel.",
+   info_en:"A real circumhorizontal arc photographed over Alentejo, Portugal: sunlight refracted by high-altitude ice crystals paints the cloud in rainbow colours.",
    credit:"Nbarr (Wikimedia Commons, CC BY-SA 3.0)"},
   {img:"q4.jpg",  truth:"IA"},
   {img:"q5.jpg",  truth:"REELLE",
    info:"La Casa Batlló d'Antoni Gaudí, à Barcelone. Aucun trucage : cette façade ondulée couverte de mosaïques existe vraiment — elle est classée à l'UNESCO.",
+   info_en:"Antoni Gaudí's Casa Batlló in Barcelona. No trickery: this rippling, mosaic-covered façade is real — and UNESCO-listed.",
    credit:"tato grasso (Wikimedia Commons, CC BY-SA 2.5)"},
   {img:"q6.jpg",  truth:"IA"},
   {img:"q7.jpg",  truth:"REELLE",
    info:"Un rat-taupe nu, bien réel. Ce rongeur fascine les scientifiques : quasi insensible à la douleur et étonnamment résistant au cancer.",
+   info_en:"A naked mole-rat — very real. This rodent fascinates scientists: nearly immune to pain and remarkably resistant to cancer.",
    credit:"Roman Klementschitz (Wikimedia Commons, CC BY-SA 3.0)"},
   {img:"q8.jpg",  truth:"IA"},
   {img:"q9.jpg",  truth:"IA"},
   {img:"q10.jpg", truth:"IA"},
   {img:"q13.jpg", truth:"IA"},
 ];
+
+// ---- langues : FR / EN ----
+const I18N = {
+fr: {
+  intro_h1:"À l'ère de l'IA, qui sait encore distinguer le vrai du faux ?",
+  intro_lead:"Les deepfakes inondent le web. Même les meilleurs outils de détection se trompent.<br>Et vous, feriez-vous mieux ?",
+  pill_images:"images", pill_perphoto:"par photo", pill_real:"Vrai", pill_orai:"ou IA ?",
+  btn_start:"Commencer", ans_real:"Photo réelle", ans_ai:"Générée par IA",
+  ex_h2:"Alors, vous avez tout repéré ?",
+  ex_lead:"Si même vous vous êtes fait avoir, imaginez à l'échelle d'un litige, d'une assurance ou d'un média.",
+  ex1_h:"Preuve à la capture",
+  ex1_d:"Photo, heure et position GPS scellées à l'instant de la prise — rien ne peut être modifié après coup.",
+  ex2_h:"Gravée sur la blockchain",
+  ex2_d:"Hash SHA-256 + archive IPFS + NFT Polygon. Un pixel modifié, et la preuve casse.",
+  ex3_h:"Vérifiable par tous",
+  ex3_d:"N'importe qui contrôle l'authenticité en 5 secondes, sans nous faire confiance.",
+  ex_bold:"<b>On ne court pas après le faux. On prouve le vrai.</b>",
+  btn_seescore:"Voir mon score", sc_h2:"Votre score",
+  sc_anon:"Participation 100 % anonyme : aucune donnée personnelle n'est collectée.",
+  btn_share:"Partager mon score", btn_continue:"Continuer",
+  cta_h2:"Merci d'avoir joué !",
+  cta_lead:"Pas si facile de distinguer le vrai du faux, non ?<br>C'est exactement le problème que nous résolvons.",
+  inv_h:"Rejoindre la wishlist &amp; la bêta",
+  inv_p:"<b>Pas de formulaire, pas d'inscription : un simple e-mail — même vide — suffit.</b><br>Scannez le QR ci-dessus ou touchez le bouton : notre Linktree vous donne l'adresse. Appuyez sur «&nbsp;Envoyer&nbsp;», et vous êtes sur la liste.",
+  inv_btn:"Rejoindre la liste",
+  inv_small:"Envie d'en dire plus ? Votre plus belle plume est la bienvenue — on lit tout.",
+  pil_intro:"<b>TruthCatcher</b>, c'est la photo qui fait preuve :",
+  pi1_h:"Capture brute",
+  pi1_d:"Image, heure, position GPS : tout est saisi tel quel, sans la moindre modification possible.",
+  pi2_h:"Information inaltérable",
+  pi2_d:"Notre système scelle chaque preuve (empreinte SHA-256, blockchain) : un pixel changé, et la preuve casse.",
+  pi3_h:"Consultation &amp; vérification",
+  pi3_d:"Chacun peut contrôler l'authenticité en quelques secondes, par plusieurs moyens indépendants.",
+  link_results:"Voir les réponses de tous les participants",
+  fb_win_real:"Bien vu ! C'était une VRAIE photo", fb_win_ia:"Bien vu ! C'était bien une IA",
+  fb_lose_real:"Raté — c'était une VRAIE photo", fb_lose_ia:"Piégé — c'était une IA",
+  fb_late_real:"Trop tard — c'était une VRAIE photo", fb_late_ia:"Trop tard — c'était une IA",
+  fb_generic_real:"Une image authentique, capturée dans le monde réel.",
+  fb_generic_ia:"Cette image n'existe pas. Elle a été générée par une IA.",
+  credit_prefix:"Crédit photo : ", btn_next:"Suivant", btn_result:"Découvrir le résultat",
+  msg_high:"Impressionnant ! Vous avez l'œil… mais l'IA progresse vite.",
+  msg_mid:"Pas mal, mais l'IA vous a quand même piégé plusieurs fois.",
+  msg_low:"L'IA vous a bien eu. C'est exactement pour ça que TruthCatcher existe.",
+  sending:"Envoi…",
+  saved:"Vos réponses anonymes sont enregistrées. Merci d'avoir joué !",
+  not_saved:"⚠ Réponses non enregistrées (config Firebase à vérifier), mais merci d'avoir joué !",
+  share_title:"Vrai ou IA ? — TruthCatcher",
+  share_text:"J'ai fait {s} / {t} au quiz « Vrai ou IA ? » de TruthCatcher. Et vous, sauriez-vous distinguer le vrai du faux ?",
+  copied:"Lien copié !", copy_prompt:"Copiez le lien :"
+},
+en: {
+  intro_h1:"In the age of AI, who can still tell real from fake?",
+  intro_lead:"Deepfakes are flooding the web. Even the best detection tools get it wrong.<br>Would you do better?",
+  pill_images:"images", pill_perphoto:"per photo", pill_real:"Real", pill_orai:"or AI?",
+  btn_start:"Start", ans_real:"Real photo", ans_ai:"AI-generated",
+  ex_h2:"So, did you spot them all?",
+  ex_lead:"If even you got fooled, imagine the stakes in a lawsuit, an insurance claim or a newsroom.",
+  ex1_h:"Proof at capture",
+  ex1_d:"Photo, time and GPS position sealed the instant the shot is taken — nothing can be altered afterwards.",
+  ex2_h:"Etched on the blockchain",
+  ex2_d:"SHA-256 hash + IPFS archive + Polygon NFT. Change one pixel and the proof breaks.",
+  ex3_h:"Verifiable by anyone",
+  ex3_d:"Anyone can check authenticity in 5 seconds, without trusting us.",
+  ex_bold:"<b>We don't chase the fake. We prove the real.</b>",
+  btn_seescore:"See my score", sc_h2:"Your score",
+  sc_anon:"100% anonymous: no personal data is collected.",
+  btn_share:"Share my score", btn_continue:"Continue",
+  cta_h2:"Thanks for playing!",
+  cta_lead:"Not so easy to tell real from fake, is it?<br>That's exactly the problem we solve.",
+  inv_h:"Join the wishlist &amp; beta",
+  inv_p:"<b>No form, no sign-up: a single email — even an empty one — is enough.</b><br>Scan the QR above or tap the button: our Linktree gives you the address. Hit “Send”, and you're on the list.",
+  inv_btn:"Join the list",
+  inv_small:"Want to say more? Your finest words are welcome — we read everything.",
+  pil_intro:"<b>TruthCatcher</b> is photography that stands as proof:",
+  pi1_h:"Raw capture",
+  pi1_d:"Image, time, GPS position: everything is captured as-is, impossible to modify.",
+  pi2_h:"Tamper-proof information",
+  pi2_d:"Our system seals every proof (SHA-256 fingerprint, blockchain): change one pixel and the proof breaks.",
+  pi3_h:"Check &amp; verify",
+  pi3_d:"Anyone can verify authenticity in seconds, through several independent means.",
+  link_results:"See everyone's answers",
+  fb_win_real:"Well spotted! It was a REAL photo", fb_win_ia:"Well spotted! It really was AI",
+  fb_lose_real:"Missed — it was a REAL photo", fb_lose_ia:"Fooled — it was AI",
+  fb_late_real:"Too late — it was a REAL photo", fb_late_ia:"Too late — it was AI",
+  fb_generic_real:"An authentic image, captured in the real world.",
+  fb_generic_ia:"This image doesn't exist. It was generated by AI.",
+  credit_prefix:"Photo credit: ", btn_next:"Next", btn_result:"See my result",
+  msg_high:"Impressive! You've got the eye… but AI is getting better fast.",
+  msg_mid:"Not bad, but AI still fooled you more than once.",
+  msg_low:"AI got you good. That's exactly why TruthCatcher exists.",
+  sending:"Sending…",
+  saved:"Your anonymous answers have been saved. Thanks for playing!",
+  not_saved:"⚠ Answers not saved (Firebase configuration issue), but thanks for playing!",
+  share_title:"Real or AI? — TruthCatcher",
+  share_text:"I scored {s} / {t} on TruthCatcher's “Real or AI?” quiz. Could you tell real from fake?",
+  copied:"Link copied!", copy_prompt:"Copy the link:"
+}
+};
+function detectLang(){ return ((navigator.language || "fr").toLowerCase().startsWith("fr")) ? "fr" : "en"; }
+let lang = detectLang();
+try{ lang = localStorage.getItem("tc-lang") || lang; }catch(_){}
+if(!I18N[lang]) lang = "fr";
+function t(k){ return (I18N[lang] && I18N[lang][k]) || I18N.fr[k] || k; }
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.getElementById("lang-btn").textContent = lang === "fr" ? "EN" : "FR";
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const v = I18N[lang][el.dataset.i18n];
+    if(v != null) el.innerHTML = v;
+  });
+}
+function toggleLang(){
+  lang = lang === "fr" ? "en" : "fr";
+  try{ localStorage.setItem("tc-lang", lang); }catch(_){}
+  applyLang();
+}
 
 let idx = 0, score = 0, answers = [];
 
@@ -275,19 +400,18 @@ function loadQuestion(){
 }
 
 // écran de feedback commun (réponse donnée ou temps écoulé)
-function showFeedback(q, correct, title){
+function showFeedback(q, correct, titleKey){
   const badge = document.getElementById('fb-badge');
   badge.className = 'badge ' + (correct ? 'ok' : 'no');
   badge.textContent = correct ? '✓' : '✕';
-  document.getElementById('fb-title').textContent = title;
+  document.getElementById('fb-title').textContent = t(titleKey);
+  const info = (lang === "en") ? (q.info_en || q.info) : q.info;
   document.getElementById('fb-text').textContent =
-    q.truth==="REELLE"
-      ? (q.info || "Une image authentique, capturée dans le monde réel.")
-      : "Cette image n'existe pas. Elle a été générée par une IA.";
+    q.truth==="REELLE" ? (info || t("fb_generic_real")) : t("fb_generic_ia");
   document.getElementById('fb-credit').textContent =
-    (q.truth==="REELLE" && q.credit) ? "Crédit photo : " + q.credit : "";
+    (q.truth==="REELLE" && q.credit) ? t("credit_prefix") + q.credit : "";
   document.getElementById('fb-next').textContent =
-    (idx === QUIZ.length-1) ? "Découvrir le résultat" : "Suivant";
+    (idx === QUIZ.length-1) ? t("btn_result") : t("btn_next");
   show('s-feedback');
 }
 
@@ -300,8 +424,8 @@ function answer(choice){
   if(correct) score++;
   answers.push({q:idx+1, choix:choice, verite:q.truth, correct});
   showFeedback(q, correct, correct
-    ? (q.truth==="REELLE" ? "Bien vu ! C'était une VRAIE photo" : "Bien vu ! C'était bien une IA")
-    : (q.truth==="REELLE" ? "Raté — c'était une VRAIE photo" : "Piégé — c'était une IA"));
+    ? (q.truth==="REELLE" ? "fb_win_real" : "fb_win_ia")
+    : (q.truth==="REELLE" ? "fb_lose_real" : "fb_lose_ia"));
 }
 
 function timeUp(){
@@ -309,8 +433,7 @@ function timeUp(){
   locked = true;
   const q = QUIZ[idx];
   answers.push({q:idx+1, choix:"AUCUNE", verite:q.truth, correct:false});
-  showFeedback(q, false,
-    q.truth==="REELLE" ? "Trop tard — c'était une VRAIE photo" : "Trop tard — c'était une IA");
+  showFeedback(q, false, q.truth==="REELLE" ? "fb_late_real" : "fb_late_ia");
 }
 function nextStep(){
   idx++;
@@ -319,9 +442,9 @@ function nextStep(){
 }
 // score + message
 function scoreMessage(){
-  if(score >= 9) return "Impressionnant ! Vous avez l'œil… mais l'IA progresse vite.";
-  if(score >= 6) return "Pas mal, mais l'IA vous a quand même piégé plusieurs fois.";
-  return "L'IA vous a bien eu. C'est exactement pour ça que TruthCatcher existe.";
+  if(score >= 9) return t("msg_high");
+  if(score >= 6) return t("msg_mid");
+  return t("msg_low");
 }
 function fillScore(){
   document.getElementById('score-val').textContent = score;
@@ -331,33 +454,31 @@ function fillScore(){
 async function shareScore(){
   const btn = document.getElementById('share-btn');
   const url = location.protocol.startsWith('http') ? location.origin : location.href;
-  const text = `J'ai fait ${score} / ${QUIZ.length} au quiz « Vrai ou IA ? » de TruthCatcher. Et vous, sauriez-vous distinguer le vrai du faux ?`;
+  const text = t("share_text").replace("{s}", score).replace("{t}", QUIZ.length);
   // menu de partage natif (mobile) si disponible, sinon copie du lien
   if(navigator.share){
-    try{ await navigator.share({ title: "Vrai ou IA ? — TruthCatcher", text, url }); return; }
+    try{ await navigator.share({ title: t("share_title"), text, url }); return; }
     catch(e){ if(e.name === 'AbortError') return; }
   }
   try{
     await navigator.clipboard.writeText(text + " " + url);
     const old = btn.textContent;
-    btn.textContent = "Lien copié !";
+    btn.textContent = t("copied");
     setTimeout(() => { btn.textContent = old; }, 2000);
   }catch(_){
-    prompt("Copiez le lien :", url);
+    prompt(t("copy_prompt"), url);
   }
 }
 async function submitAll(){
   const btn = document.getElementById('submit-btn');
-  btn.disabled = true; btn.textContent = "Envoi…";
+  btn.disabled = true; btn.textContent = t("sending");
   const payload = { score, total: QUIZ.length, answers };
   try{
     if(!window.__saveResult) throw new Error("Firebase non initialisé");
     await window.__saveResult(payload);
-    document.getElementById('final-status').textContent =
-      "Vos réponses anonymes sont enregistrées. Merci d'avoir joué !";
+    document.getElementById('final-status').textContent = t("saved");
   }catch(e){
-    document.getElementById('final-status').textContent =
-      "⚠️ Réponses non enregistrées (config Firebase à vérifier), mais merci d'avoir joué !";
+    document.getElementById('final-status').textContent = t("not_saved");
     console.error(e);
   }
   show('s-cta');
@@ -369,6 +490,8 @@ show = function(id){ if(id==='s-score') fillScore(); _show(id); };
 // exposer au scope global pour les onclick
 window.startQuiz=startQuiz; window.answer=answer; window.nextStep=nextStep;
 window.show=show; window.submitAll=submitAll; window.shareScore=shareScore;
+window.toggleLang=toggleLang;
+applyLang();
 </script>
 </body>
 </html>
