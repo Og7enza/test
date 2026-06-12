@@ -1,9 +1,21 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Réponses du quiz : 100 % anonymes (score + détail des réponses).
+    // hasOnly(...) garantit qu'AUCUNE donnée personnelle (e-mail, nom…)
+    // ne peut être enregistrée dans cette collection.
+    // Lecture publique : la page resultats.html affiche les statistiques.
     match /quiz_reponses/{doc} {
-      allow create: if true;
-      allow read, update, delete: if false;
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['score', 'total', 'answers', 'createdAt'])
+                    && request.resource.data.score is int
+                    && request.resource.data.total is int
+                    && request.resource.data.score >= 0
+                    && request.resource.data.score <= request.resource.data.total
+                    && request.resource.data.answers is list
+                    && request.resource.data.answers.size() <= 50;
+      allow update, delete: if false;
     }
   }
 }

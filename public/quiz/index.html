@@ -119,17 +119,13 @@
     <button class="cta" onclick="show('s-score')">Voir mon score</button>
   </section>
 
-  <!-- ÉCRAN SCORE + EMAIL -->
+  <!-- ÉCRAN SCORE -->
   <section class="screen" id="s-score">
     <h2>Votre score</h2>
     <div class="score-num"><span id="score-val">0</span> / 13</div>
     <p class="lead" id="score-msg"></p>
-    <div class="field">
-      <label for="email">Rejoindre la bêta de TruthCatcher (facultatif)</label>
-      <input type="email" id="email" placeholder="votre@email.com" autocomplete="email">
-    </div>
-    <p class="small">Pas de formulaire compliqué : un simple e-mail suffit pour être recontacté.</p>
-    <button class="cta" onclick="submitAll()" id="submit-btn">Valider</button>
+    <p class="small">Participation 100 % anonyme : aucune donnée personnelle n'est collectée.</p>
+    <button class="cta" onclick="submitAll()" id="submit-btn">Continuer</button>
   </section>
 
   <!-- ÉCRAN FINAL CTA -->
@@ -139,6 +135,7 @@
     <p class="lead">Pas si facile de distinguer le vrai du faux, non ?<br>C'est exactement le problème que nous résolvons.</p>
     <img class="qr" src="qr.png" alt="QR vers TruthCatcher">
     <a class="link" href="https://linktr.ee/TruthCatcher" target="_blank" rel="noopener">https://linktr.ee/TruthCatcher</a>
+    <br><a class="link" href="resultats.html" style="font-size:17px">📊 Voir les réponses de tous les participants</a>
     <p class="muted" id="final-status"></p>
   </section>
 
@@ -169,6 +166,7 @@ try {
 } catch (_) { /* hors Firebase Hosting : on garde la config de secours */ }
 const app = initializeApp(cfg);
 const db = getFirestore(app);
+// Données 100 % anonymes : score + détail des réponses, aucune info personnelle.
 window.__saveResult = async (data) => {
   return addDoc(collection(db, "quiz_reponses"), { ...data, createdAt: serverTimestamp() });
 };
@@ -241,15 +239,14 @@ function fillScore(){
   document.getElementById('score-msg').textContent = msg;
 }
 async function submitAll(){
-  const email = document.getElementById('email').value.trim();
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = "Envoi…";
-  const payload = { score, total: QUIZ.length, email: email || null, answers };
+  const payload = { score, total: QUIZ.length, answers };
   try{
     if(!window.__saveResult) throw new Error("Firebase non initialisé");
     await window.__saveResult(payload);
     document.getElementById('final-status').textContent =
-      email ? "Vos réponses sont enregistrées. On vous recontacte bientôt !" : "Vos réponses sont enregistrées. Merci !";
+      "Vos réponses anonymes sont enregistrées. Merci d'avoir joué !";
   }catch(e){
     document.getElementById('final-status').textContent =
       "⚠️ Réponses non enregistrées (config Firebase à vérifier), mais merci d'avoir joué !";

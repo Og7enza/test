@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Résultats des participants — Vrai ou IA ? — TruthCatcher</title>
+<style>
+  :root{
+    --blue:#206ED2; --night:#18225C; --violet:#2C184E;
+    --cyan:#5BA3F5; --ice:#CADCFC; --btn:#2B6FD6;
+    --green:#27AE60; --red:#E74C3C; --card:rgba(30,46,102,.55);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    color:#fff; min-height:100vh;
+    background:linear-gradient(135deg,var(--blue) 0%,var(--night) 50%,var(--violet) 100%);
+    background-attachment:fixed; padding:32px 16px;
+  }
+  .wrap{max-width:880px;margin:0 auto;text-align:center}
+  .logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px}
+  .logo img{height:46px}
+  .logo span{font-size:22px;font-weight:700;color:var(--cyan)}
+  h1{font-size:clamp(26px,4.5vw,40px);line-height:1.15;margin-bottom:10px}
+  p.lead{font-size:clamp(15px,2.3vw,19px);color:var(--ice);line-height:1.5;margin-bottom:8px}
+  .live{font-size:14px;color:var(--ice);opacity:.85;margin-bottom:20px}
+  .live .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);
+             margin-right:6px;animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .pills{display:flex;gap:14px;justify-content:center;margin:22px 0;flex-wrap:wrap}
+  .pill{background:var(--card);border-radius:14px;padding:18px 26px;min-width:150px}
+  .pill b{display:block;font-size:30px;color:var(--cyan)}
+  .pill small{font-size:14px;color:var(--ice)}
+  .panel{background:var(--card);border-radius:16px;padding:22px;margin:18px 0;text-align:left}
+  .panel h3{font-size:19px;margin-bottom:14px;color:var(--cyan)}
+  /* répartition des scores */
+  .dist-row{display:flex;align-items:center;gap:10px;margin:5px 0}
+  .dist-label{width:58px;font-size:14px;color:var(--ice);text-align:right;flex-shrink:0}
+  .dist-bar{flex:1;background:rgba(255,255,255,.08);border-radius:8px;height:18px;overflow:hidden}
+  .dist-fill{height:100%;background:var(--cyan);border-radius:8px;width:0;transition:width .5s}
+  .dist-count{width:38px;font-size:13px;color:var(--ice);flex-shrink:0}
+  /* cartes par question */
+  .qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .qcard{background:rgba(255,255,255,.06);border-radius:14px;padding:12px;text-align:left;position:relative}
+  .qcard img{width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:10px;background:#0c0f1a}
+  .qtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .qtop b{font-size:15px}
+  .tag{font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px}
+  .tag.real{background:var(--green)}
+  .tag.ia{background:var(--red)}
+  .rate{background:rgba(255,255,255,.08);border-radius:8px;height:12px;overflow:hidden;margin-bottom:6px}
+  .rate-fill{height:100%;background:var(--green);border-radius:8px;width:0;transition:width .5s}
+  .qpct{font-size:13px;color:var(--ice)}
+  .trap{position:absolute;top:8px;right:8px;background:var(--red);font-size:12px;font-weight:700;
+        padding:4px 10px;border-radius:20px;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+  .empty{background:var(--card);border-radius:16px;padding:38px 22px;margin:24px 0}
+  a.link{color:var(--cyan);font-weight:700;font-size:18px;text-decoration:underline;display:inline-block;margin-top:14px}
+  .muted{font-size:13px;color:var(--ice);opacity:.7;margin-top:18px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="logo"><img src="logo.png" alt="TruthCatcher"><span>TruthCatcher</span></div>
+  <h1>Les réponses de tous les participants</h1>
+  <p class="lead">Qui s'est fait piéger par l'IA ? Statistiques anonymes du quiz « Vrai ou IA ? ».</p>
+  <div class="live" id="live">Connexion…</div>
+
+  <!-- état vide -->
+  <section class="empty" id="empty" hidden>
+    <p class="lead">Aucune réponse enregistrée pour l'instant.</p>
+    <p class="lead"><b>Soyez le premier à jouer !</b></p>
+  </section>
+
+  <!-- statistiques -->
+  <div id="stats" hidden>
+    <div class="pills">
+      <div class="pill"><b id="st-n">–</b><small>participants</small></div>
+      <div class="pill"><b id="st-avg">–</b><small>score moyen / 13</small></div>
+      <div class="pill"><b id="st-rate">–</b><small>de bonnes réponses</small></div>
+    </div>
+
+    <section class="panel">
+      <h3>📊 Répartition des scores</h3>
+      <div id="dist"></div>
+    </section>
+
+    <section class="panel">
+      <h3>🖼️ Question par question — qui a vu juste ?</h3>
+      <div class="qgrid" id="qgrid"></div>
+    </section>
+  </div>
+
+  <a class="link" href="./">🎮 Jouer au quiz</a>
+  <p class="muted">Aucune donnée personnelle n'est affichée : ni nom, ni e-mail —
+  uniquement des statistiques anonymes, mises à jour en direct.</p>
+
+</div>
+
+<!-- ============ AGRÉGATION (pure, testable) ============ -->
+<script>
+// Mêmes questions que le quiz (index.html) : si vous modifiez le tableau QUIZ
+// là-bas, mettez aussi celui-ci à jour.
+const QUIZ = [
+  {img:"q1.jpg",  truth:"REELLE"},
+  {img:"q2.jpg",  truth:"IA"},
+  {img:"q3.jpg",  truth:"REELLE"},
+  {img:"q4.jpg",  truth:"IA"},
+  {img:"q5.jpg",  truth:"REELLE"},
+  {img:"q6.jpg",  truth:"IA"},
+  {img:"q7.jpg",  truth:"REELLE"},
+  {img:"q8.jpg",  truth:"IA"},
+  {img:"q9.jpg",  truth:"IA"},
+  {img:"q10.jpg", truth:"IA"},
+  {img:"q11.jpg", truth:"IA"},
+  {img:"q12.jpg", truth:"IA"},
+  {img:"q13.jpg", truth:"IA"},
+];
+
+// docs : [{score, total, answers:[{q, choix, verite, correct}]}]
+function aggregate(quiz, docs){
+  const n = docs.length;
+  const dist = Array(quiz.length + 1).fill(0);
+  const perQ = quiz.map(() => ({tot:0, ok:0}));
+  let nScore = 0, sumScore = 0, totA = 0, totC = 0;
+  for(const d of docs){
+    if(d && Number.isInteger(d.score) && d.score >= 0 && d.score <= quiz.length){
+      nScore++; sumScore += d.score; dist[d.score]++;
+    }
+    if(d && Array.isArray(d.answers)){
+      for(const a of d.answers){
+        const i = (a && Number.isInteger(a.q)) ? a.q - 1 : -1;
+        if(i < 0 || i >= quiz.length) continue;
+        perQ[i].tot++; totA++;
+        if(a.correct === true){ perQ[i].ok++; totC++; }
+      }
+    }
+  }
+  // question la plus trompeuse = plus faible taux de bonnes réponses
+  let trapIdx = -1, trapRate = Infinity;
+  perQ.forEach((q, i) => {
+    if(q.tot > 0 && q.ok / q.tot < trapRate){ trapRate = q.ok / q.tot; trapIdx = i; }
+  });
+  return {n, nScore, sumScore, dist, perQ, totA, totC, trapIdx};
+}
+window.QUIZ_RESULTATS = {QUIZ, aggregate};
+</script>
+
+<!-- ============ FIREBASE + AFFICHAGE ============ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getFirestore, collection, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+// Config de secours, utilisée seulement hors Firebase Hosting (ex. test local).
+// Servi par Firebase Hosting, la vraie config est chargée automatiquement
+// via l'URL réservée /__/firebase/init.json — rien à coller ici.
+const firebaseConfig = {
+  apiKey: "VOTRE_API_KEY",
+  authDomain: "truthcatcher-sequence.firebaseapp.com",
+  projectId: "truthcatcher-sequence",
+  storageBucket: "truthcatcher-sequence.appspot.com",
+  messagingSenderId: "VOTRE_SENDER_ID",
+  appId: "VOTRE_APP_ID"
+};
+let cfg = firebaseConfig;
+try {
+  const r = await fetch("/__/firebase/init.json");
+  if (r.ok) cfg = await r.json();
+} catch (_) { /* hors Firebase Hosting : on garde la config de secours */ }
+
+const {QUIZ, aggregate} = window.QUIZ_RESULTATS;
+const $ = (id) => document.getElementById(id);
+
+function render(stats){
+  const {n, nScore, sumScore, dist, perQ, totA, totC, trapIdx} = stats;
+  $('empty').hidden = n > 0;
+  $('stats').hidden = n === 0;
+  if(n === 0) return;
+
+  $('st-n').textContent = n;
+  $('st-avg').textContent = nScore ? (sumScore / nScore).toFixed(1).replace('.', ',') : '–';
+  $('st-rate').textContent = totA ? Math.round(100 * totC / totA) + ' %' : '–';
+
+  // répartition des scores
+  const max = Math.max(1, ...dist);
+  $('dist').innerHTML = dist.map((c, s) => `
+    <div class="dist-row">
+      <div class="dist-label">${s} / ${QUIZ.length}</div>
+      <div class="dist-bar"><div class="dist-fill" style="width:${Math.round(100 * c / max)}%"></div></div>
+      <div class="dist-count">${c || ''}</div>
+    </div>`).join('');
+
+  // cartes par question
+  $('qgrid').innerHTML = QUIZ.map((q, i) => {
+    const {tot, ok} = perQ[i];
+    const pct = tot ? Math.round(100 * ok / tot) : 0;
+    const real = q.truth === 'REELLE';
+    return `
+    <div class="qcard">
+      ${i === trapIdx ? '<div class="trap">😈 La plus trompeuse</div>' : ''}
+      <img src="${q.img}" alt="Question ${i + 1}" loading="lazy">
+      <div class="qtop"><b>Question ${i + 1}</b>
+        <span class="tag ${real ? 'real' : 'ia'}">${real ? 'VRAIE PHOTO' : 'IA'}</span></div>
+      <div class="rate"><div class="rate-fill" style="width:${pct}%"></div></div>
+      <div class="qpct">${tot ? `${pct} % de bonnes réponses (${ok}/${tot})` : 'pas encore de réponse'}</div>
+    </div>`;
+  }).join('');
+}
+
+try {
+  const app = initializeApp(cfg);
+  const db = getFirestore(app);
+  onSnapshot(collection(db, "quiz_reponses"),
+    (snap) => {
+      render(aggregate(QUIZ, snap.docs.map(d => d.data())));
+      $('live').innerHTML = '<span class="dot"></span>En direct — mise à jour automatique';
+    },
+    (err) => {
+      console.error(err);
+      $('live').textContent = "⚠️ Impossible de charger les résultats (Firestore ou règles à vérifier).";
+    });
+} catch (e) {
+  console.error(e);
+  $('live').textContent = "⚠️ Impossible de charger les résultats (config Firebase à vérifier).";
+}
+</script>
+</body>
+</html>
