@@ -100,11 +100,11 @@
 
   <!-- ÉCRAN QUESTION (réutilisé) -->
   <section class="screen" id="s-question">
-    <div class="qcount" id="qcount">Question 1 / 13</div>
+    <div class="qcount" id="qcount">Question 1 / 11</div>
     <img class="qimg" id="qimg" src="" alt="Image à évaluer">
     <div class="answers">
-      <button class="ans" onclick="answer('REELLE')">📷 Photo réelle</button>
-      <button class="ans" onclick="answer('IA')">🤖 Générée par IA</button>
+      <button class="ans" onclick="answer('REELLE')">Photo réelle</button>
+      <button class="ans" onclick="answer('IA')">Générée par IA</button>
     </div>
   </section>
 
@@ -123,9 +123,9 @@
     <h2>Alors, vous avez tout repéré ?</h2>
     <p class="lead">Si même vous vous êtes fait avoir, imaginez à l'échelle d'un litige, d'une assurance ou d'un média.</p>
     <div class="icons">
-      <div class="ico"><div class="h">🔒 Preuve à la capture</div><div class="d">Photo, heure et position GPS scellées à l'instant de la prise — rien ne peut être modifié après coup.</div></div>
-      <div class="ico"><div class="h">⛓ Gravée sur la blockchain</div><div class="d">Hash SHA-256 + archive IPFS + NFT Polygon. Un pixel modifié, et la preuve casse.</div></div>
-      <div class="ico"><div class="h">🔍 Vérifiable par tous</div><div class="d">N'importe qui contrôle l'authenticité en 5 secondes, sans nous faire confiance.</div></div>
+      <div class="ico"><div class="h">Preuve à la capture</div><div class="d">Photo, heure et position GPS scellées à l'instant de la prise — rien ne peut être modifié après coup.</div></div>
+      <div class="ico"><div class="h">Gravée sur la blockchain</div><div class="d">Hash SHA-256 + archive IPFS + NFT Polygon. Un pixel modifié, et la preuve casse.</div></div>
+      <div class="ico"><div class="h">Vérifiable par tous</div><div class="d">N'importe qui contrôle l'authenticité en 5 secondes, sans nous faire confiance.</div></div>
     </div>
     <p class="lead"><b>On ne court pas après le faux. On prouve le vrai.</b></p>
     <button class="cta" onclick="show('s-score')">Voir mon score</button>
@@ -136,7 +136,7 @@
     <h2>Votre score</h2>
     <div class="score-num"><span id="score-val">0</span> / 11</div>
     <p class="lead" id="score-msg"></p>
-    <button class="share" onclick="shareScore()" id="share-btn">📸 Partager mon score en image</button>
+    <button class="share" onclick="shareScore()" id="share-btn">Partager mon score en image</button>
     <p class="small">Participation 100 % anonyme : aucune donnée personnelle n'est collectée.</p>
     <button class="cta" onclick="submitAll()" id="submit-btn">Continuer</button>
   </section>
@@ -150,22 +150,22 @@
     <a class="link" href="https://linktr.ee/TruthCatcher" target="_blank" rel="noopener">https://linktr.ee/TruthCatcher</a>
 
     <div class="invite">
-      <div class="h">💌 Rejoindre la wishlist &amp; la bêta</div>
+      <div class="h">Rejoindre la wishlist &amp; la bêta</div>
       <p><b>Pas de formulaire, pas d'inscription : un simple e-mail — même vide — suffit.</b><br>
       Scannez le QR ci-dessus ou touchez le bouton : notre Linktree vous donne l'adresse.
       Appuyez sur «&nbsp;Envoyer&nbsp;», et vous êtes sur la liste.</p>
-      <a class="cta" href="https://linktr.ee/TruthCatcher" target="_blank" rel="noopener">💌 Rejoindre la liste</a>
+      <a class="cta" href="https://linktr.ee/TruthCatcher" target="_blank" rel="noopener">Rejoindre la liste</a>
       <p class="small" style="margin-top:12px">Envie d'en dire plus ? Votre plus belle plume est la bienvenue — on lit tout.</p>
     </div>
 
     <p class="lead" style="margin-top:30px"><b>TruthCatcher</b>, c'est la photo qui fait preuve :</p>
     <div class="icons">
-      <div class="ico"><div class="h">📸 Capture brute</div><div class="d">Image, heure, position GPS : tout est saisi tel quel, sans la moindre modification possible.</div></div>
-      <div class="ico"><div class="h">⛓ Information inaltérable</div><div class="d">Notre système scelle chaque preuve (empreinte SHA-256, blockchain) : un pixel changé, et la preuve casse.</div></div>
-      <div class="ico"><div class="h">🔍 Consultation &amp; vérification</div><div class="d">Chacun peut contrôler l'authenticité en quelques secondes, par plusieurs moyens indépendants.</div></div>
+      <div class="ico"><div class="h">Capture brute</div><div class="d">Image, heure, position GPS : tout est saisi tel quel, sans la moindre modification possible.</div></div>
+      <div class="ico"><div class="h">Information inaltérable</div><div class="d">Notre système scelle chaque preuve (empreinte SHA-256, blockchain) : un pixel changé, et la preuve casse.</div></div>
+      <div class="ico"><div class="h">Consultation &amp; vérification</div><div class="d">Chacun peut contrôler l'authenticité en quelques secondes, par plusieurs moyens indépendants.</div></div>
     </div>
 
-    <br><a class="link" href="resultats.html" style="font-size:17px">📊 Voir les réponses de tous les participants</a>
+    <br><a class="link" href="resultats.html" style="font-size:17px">Voir les réponses de tous les participants</a>
     <p class="muted" id="final-status"></p>
   </section>
 
@@ -259,7 +259,7 @@ function answer(choice){
       ? (q.info || "Une image authentique, capturée dans le monde réel.")
       : "Cette image n'existe pas. Elle a été générée par une IA.";
   document.getElementById('fb-credit').textContent =
-    (q.truth==="REELLE" && q.credit) ? "📷 Crédit photo : " + q.credit : "";
+    (q.truth==="REELLE" && q.credit) ? "Crédit photo : " + q.credit : "";
   document.getElementById('fb-next').textContent =
     (idx === QUIZ.length-1) ? "Découvrir le résultat" : "Suivant";
   show('s-feedback');

@@ -81,17 +81,17 @@
     </div>
 
     <section class="panel">
-      <h3>📊 Répartition des scores</h3>
+      <h3>Répartition des scores</h3>
       <div id="dist"></div>
     </section>
 
     <section class="panel">
-      <h3>🖼️ Question par question — qui a vu juste ?</h3>
+      <h3>Question par question — qui a vu juste ?</h3>
       <div class="qgrid" id="qgrid"></div>
     </section>
   </div>
 
-  <a class="link" href="./">🎮 Jouer au quiz</a>
+  <a class="link" href="./">Jouer au quiz</a>
   <p class="muted">Aucune donnée personnelle n'est affichée : ni nom, ni e-mail —
   uniquement des statistiques anonymes, mises à jour en direct.</p>
 
@@ -196,7 +196,7 @@ function render(stats){
     const real = q.truth === 'REELLE';
     return `
     <div class="qcard">
-      ${i === trapIdx ? '<div class="trap">😈 La plus trompeuse</div>' : ''}
+      ${i === trapIdx ? '<div class="trap">La plus trompeuse</div>' : ''}
       <img src="${q.img}" alt="Question ${i + 1}" loading="lazy">
       <div class="qtop"><b>Question ${i + 1}</b>
         <span class="tag ${real ? 'real' : 'ia'}">${real ? 'VRAIE PHOTO' : 'IA'}</span></div>
