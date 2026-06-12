@@ -103,6 +103,25 @@ de règles. Sinon, passez par la Console (étape 1).
 Si ⚠️ apparaît : Firestore pas créé, règles pas publiées, ou aucune app Web
 enregistrée dans le projet (voir plus haut).
 
+## 📷 Crédits des photos réelles
+
+Affichés dans le quiz, sur l'écran qui suit chaque vraie photo :
+
+- **q1** — Lac Hillier (Middle Island, Australie-Occidentale) :
+  [Yodaobione](https://commons.wikimedia.org/wiki/File:Pink_Lake_(Lake_Hillier)_on_Middle_Island_off_the_coast_of_Esperance_Western_Australia.jpg),
+  Wikimedia Commons, CC BY-SA 4.0
+- **q3** — Arc circumhorizontal (Alentejo, Portugal) :
+  [Nbarr](https://commons.wikimedia.org/wiki/File:Circumhorizon_Arc_in_Alentejo,_Portugal.jpg),
+  Wikimedia Commons, CC BY-SA 3.0
+- **q5** — Casa Batlló, Barcelone :
+  [tato grasso](https://commons.wikimedia.org/wiki/File:CasaBatllo_0170.JPG),
+  Wikimedia Commons, CC BY-SA 2.5
+- **q7** — Rat-taupe nu :
+  [Roman Klementschitz](https://commons.wikimedia.org/wiki/File:Nacktmull.jpg),
+  Wikimedia Commons, CC BY-SA 3.0
+
+Les autres images (q2, q4, q6, q8 à q11) sont générées par IA.
+
 ## 🔧 Modifier le quiz plus tard
 
 - **Changer une image** : remplacez `public/quiz/qN.jpg` (gardez le nom).
