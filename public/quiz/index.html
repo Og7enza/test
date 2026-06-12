@@ -247,12 +247,13 @@ function answer(choice){
   const correct = (choice === q.truth);
   if(correct) score++;
   answers.push({q:idx+1, choix:choice, verite:q.truth, correct});
-  // feedback
+  // feedback : le badge reflète la réponse du joueur (vert = juste, rouge = faux)
   const badge = document.getElementById('fb-badge');
-  badge.className = 'badge ' + (q.truth==="REELLE" ? 'ok' : 'no');
-  badge.textContent = q.truth==="REELLE" ? '✓' : '✕';
-  document.getElementById('fb-title').textContent =
-    q.truth==="REELLE" ? "C'était une VRAIE photo" : "C'était une IA";
+  badge.className = 'badge ' + (correct ? 'ok' : 'no');
+  badge.textContent = correct ? '✓' : '✕';
+  document.getElementById('fb-title').textContent = correct
+    ? (q.truth==="REELLE" ? "Bien vu ! C'était une VRAIE photo" : "Bien vu ! C'était bien une IA")
+    : (q.truth==="REELLE" ? "Raté — c'était une VRAIE photo" : "Piégé — c'était une IA");
   document.getElementById('fb-text').textContent =
     q.truth==="REELLE"
       ? (q.info || "Une image authentique, capturée dans le monde réel.")
