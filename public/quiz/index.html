@@ -136,7 +136,7 @@
     <h2>Votre score</h2>
     <div class="score-num"><span id="score-val">0</span> / 11</div>
     <p class="lead" id="score-msg"></p>
-    <button class="share" onclick="shareScore()" id="share-btn">Partager mon score en image</button>
+    <button class="share" onclick="shareScore()" id="share-btn">Partager mon score</button>
     <p class="small">Participation 100 % anonyme : aucune donnée personnelle n'est collectée.</p>
     <button class="cta" onclick="submitAll()" id="submit-btn">Continuer</button>
   </section>
@@ -279,62 +279,23 @@ function fillScore(){
   document.getElementById('score-val').textContent = score;
   document.getElementById('score-msg').textContent = scoreMessage();
 }
-// ---- carte de score partageable (PNG 1080×1080) ----
-const loadImage = (src) => new Promise((ok, ko) => {
-  const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = src;
-});
-function wrapText(x, text, cx, y, maxW, lh){
-  let line = '';
-  for(const w of text.split(' ')){
-    const t = line ? line + ' ' + w : w;
-    if(x.measureText(t).width > maxW && line){ x.fillText(line, cx, y); y += lh; line = w; }
-    else line = t;
-  }
-  if(line) x.fillText(line, cx, y);
-}
+// ---- partage du score : texte + lien du quiz ----
 async function shareScore(){
   const btn = document.getElementById('share-btn');
-  const old = btn.textContent;
-  btn.disabled = true; btn.textContent = "Création de l'image…";
+  const url = location.protocol.startsWith('http') ? location.origin : location.href;
+  const text = `J'ai fait ${score} / ${QUIZ.length} au quiz « Vrai ou IA ? » de TruthCatcher. Et vous, sauriez-vous distinguer le vrai du faux ?`;
+  // menu de partage natif (mobile) si disponible, sinon copie du lien
+  if(navigator.share){
+    try{ await navigator.share({ title: "Vrai ou IA ? — TruthCatcher", text, url }); return; }
+    catch(e){ if(e.name === 'AbortError') return; }
+  }
   try{
-    const W = 1080, H = 1080;
-    const c = document.createElement('canvas'); c.width = W; c.height = H;
-    const x = c.getContext('2d');
-    const F = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif";
-    const g = x.createLinearGradient(0, 0, W, H);
-    g.addColorStop(0, '#206ED2'); g.addColorStop(.5, '#18225C'); g.addColorStop(1, '#2C184E');
-    x.fillStyle = g; x.fillRect(0, 0, W, H);
-    x.textAlign = 'center';
-    try{
-      const logo = await loadImage('logo.png');
-      const lh = 120, lw = logo.width * lh / logo.height;
-      x.drawImage(logo, (W - lw) / 2, 64, lw, lh);
-    }catch(_){ /* sans logo si introuvable */ }
-    x.fillStyle = '#5BA3F5'; x.font = '700 54px ' + F;
-    x.fillText('TruthCatcher', W / 2, 248);
-    x.fillStyle = '#fff'; x.font = '800 66px ' + F;
-    x.fillText('Quiz « Vrai ou IA ? »', W / 2, 356);
-    x.fillStyle = '#5BA3F5'; x.font = '900 220px ' + F;
-    x.fillText(score + ' / ' + QUIZ.length, W / 2, 616);
-    x.fillStyle = '#CADCFC'; x.font = '400 40px ' + F;
-    wrapText(x, scoreMessage(), W / 2, 724, 900, 54);
-    x.fillStyle = '#fff'; x.font = '700 46px ' + F;
-    x.fillText('Et vous, feriez-vous mieux ?', W / 2, 930);
-    x.fillStyle = '#5BA3F5'; x.font = '700 40px ' + F;
-    x.fillText(location.host || 'testtruthcatcher.web.app', W / 2, 1000);
-    const blob = await new Promise((ok) => c.toBlob(ok, 'image/png'));
-    const file = new File([blob], 'truthcatcher-score.png', { type: 'image/png' });
-    // partage natif (mobile) si possible, sinon téléchargement
-    if(navigator.canShare && navigator.canShare({ files: [file] })){
-      try{ await navigator.share({ files: [file], title: 'Mon score au quiz « Vrai ou IA ? »' }); return; }
-      catch(e){ if(e.name === 'AbortError') return; }
-    }
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = 'truthcatcher-score.png';
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-  }finally{
-    btn.disabled = false; btn.textContent = old;
+    await navigator.clipboard.writeText(text + " " + url);
+    const old = btn.textContent;
+    btn.textContent = "Lien copié !";
+    setTimeout(() => { btn.textContent = old; }, 2000);
+  }catch(_){
+    prompt("Copiez le lien :", url);
   }
 }
 async function submitAll(){
