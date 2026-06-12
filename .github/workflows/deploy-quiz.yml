@@ -1,18 +1,17 @@
 name: Déployer le quiz (Firebase)
 
 # Déclenchement manuel uniquement : onglet Actions → ce workflow → "Run workflow".
-# Déploie UNIQUEMENT le site dédié "truthcatcher-quiz" (créé au besoin) —
-# le site truthcatcher-sequence.web.app n'est jamais touché.
+# Déploie le site Hosting du projet testtruthcatcher → https://testtruthcatcher.web.app
 #
 # Prérequis : secret FIREBASE_SERVICE_ACCOUNT (JSON d'un compte de service du
-# projet truthcatcher-sequence, rôle "Firebase Hosting Admin"), à créer dans
+# projet testtruthcatcher, rôle "Firebase Hosting Admin"), à créer dans
 # Settings → Secrets and variables → Actions.
 
 on:
   workflow_dispatch:
     inputs:
       deploy_rules:
-        description: "Déployer firestore.rules — ATTENTION : remplace TOUTES les règles Firestore du projet. Laisser décoché si vous avez déjà des règles ; collez plutôt le bloc quiz_reponses dans la Console."
+        description: "Déployer firestore.rules — ATTENTION : remplace TOUTES les règles Firestore du projet. Laisser décoché si vous gérez les règles dans la Console."
         type: boolean
         default: false
 
@@ -28,18 +27,11 @@ jobs:
         env:
           SA_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: printf '%s' "$SA_JSON" > "$RUNNER_TEMP/firebase-sa.json"
-      - name: Créer le site dédié au quiz (sans effet s'il existe déjà)
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
-        run: |
-          npx firebase-tools@latest hosting:sites:create truthcatcher-quiz \
-            --project truthcatcher-sequence --non-interactive \
-            || echo "Site déjà existant (ou ID pris) : on continue, le deploy le confirmera."
       - name: Déployer
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
         run: |
           npx firebase-tools@latest deploy \
-            --project truthcatcher-sequence \
+            --project testtruthcatcher \
             --only "hosting${{ inputs.deploy_rules && ',firestore:rules' || '' }}" \
             --non-interactive

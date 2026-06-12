@@ -1,10 +1,5 @@
-# 🚀 Quiz « Vrai ou IA ? » — Déploiement (site dédié, données 100 % anonymes)
+# 🚀 Quiz « Vrai ou IA ? » — Déploiement Firebase (projet testtruthcatcher)
 
-Le quiz est déployé sur un **site Firebase Hosting dédié** (`truthcatcher-quiz`)
-dans le même projet `truthcatcher-sequence` :
-
-- ✅ **`truthcatcher-sequence.web.app` n'est JAMAIS touché** — ce repo ne peut
-  déployer que le site quiz (`"site": "truthcatcher-quiz"` dans `firebase.json`).
 - ✅ **Aucune donnée personnelle collectée** : pas d'e-mail, pas de nom — juste
   le score et le détail des réponses, anonymes. Les règles Firestore
   l'interdisent même techniquement (`hasOnly`). Le seul appel à l'action est
@@ -16,13 +11,13 @@ dans le même projet `truthcatcher-sequence` :
 
 ```
 public/
-├── index.html          ← racine du site quiz (redirige vers /quiz/)
+├── index.html          ← racine du site (redirige vers /quiz/)
 └── quiz/
     ├── index.html      ← le quiz (intro, 13 questions, feedback, score, CTA)
     ├── resultats.html  ← résultats de tous les participants (temps réel)
     └── q1…q13.jpg, logo.png, qr.png
-firebase.json           ← Hosting ciblé sur le site "truthcatcher-quiz"
-.firebaserc             ← projet par défaut : truthcatcher-sequence
+firebase.json           ← config Hosting (dossier public/) + règles Firestore
+.firebaserc             ← projet par défaut : testtruthcatcher
 firestore.rules         ← règles (voir ci-dessous)
 .github/workflows/deploy-quiz.yml ← déploiement en 1 clic depuis GitHub
 ```
@@ -30,9 +25,9 @@ firestore.rules         ← règles (voir ci-dessous)
 ## ✅ Config Firebase : automatique
 
 Rien à coller dans les pages : servies par Firebase Hosting, elles chargent la
-config du projet via l'URL réservée `/__/firebase/init.json` (disponible sur
-tous les sites du projet, y compris le site dédié). Les placeholders
-(`VOTRE_API_KEY`…) ne servent que de secours pour un test en local.
+config du projet via l'URL réservée `/__/firebase/init.json`. Les placeholders
+restants (`VOTRE_API_KEY`, `VOTRE_APP_ID`) ne servent que de secours pour un
+test en local.
 
 > Seule condition : le projet doit avoir **au moins une application Web**
 > enregistrée (Console → Paramètres du projet → Vos applications → icône `</>`).
@@ -40,7 +35,7 @@ tous les sites du projet, y compris le site dédié). Les placeholders
 ## 📋 Étape 1 — Firestore (une seule fois, dans la Console)
 
 1. [console.firebase.google.com](https://console.firebase.google.com) →
-   projet **truthcatcher-sequence** → menu **Firestore Database**.
+   projet **testtruthcatcher** → menu **Firestore Database**.
 2. **Créer une base de données** (si pas déjà fait) → emplacement Europe
    (ex. `eur3`) → mode **production** → Créer.
 3. Onglet **Règles** → collez ceci → **Publier** :
@@ -69,17 +64,12 @@ tout le monde peut **lire** les statistiques (c'est anonyme), personne ne peut
 **modifier/supprimer**, et il est **impossible** d'écrire un champ personnel
 (e-mail, nom…) dans la collection.
 
-> Si vous avez déjà des règles pour d'autres usages, ajoutez seulement le bloc
-> `match /quiz_reponses/{doc} {…}` à l'intérieur de votre
-> `match /databases/{database}/documents`.
-
-## 📋 Étape 2 — Déployer (ne touche que le site quiz)
+## 📋 Étape 2 — Déployer
 
 **Option A — CLI sur votre machine** (`npm i -g firebase-tools`, `firebase login`) :
 
 ```bash
-firebase hosting:sites:create truthcatcher-quiz   # une seule fois
-firebase deploy --only hosting                    # déploie UNIQUEMENT le site quiz
+firebase deploy --only hosting
 ```
 
 **Option B — GitHub Actions** (aucune installation locale) :
@@ -88,22 +78,17 @@ firebase deploy --only hosting                    # déploie UNIQUEMENT le site 
 2. GitHub → Settings → Secrets and variables → Actions → secret
    `FIREBASE_SERVICE_ACCOUNT` = contenu du JSON.
 3. Onglet **Actions** → « Déployer le quiz (Firebase) » → **Run workflow**
-   (le site dédié est créé automatiquement au premier lancement ; laissez
-   « Déployer firestore.rules » décoché — voir avertissement ci-dessous).
+   (laissez « Déployer firestore.rules » décoché — voir avertissement).
 
-→ Quiz : **https://truthcatcher-quiz.web.app/** (la racine redirige vers `/quiz/`)
-→ Résultats : **https://truthcatcher-quiz.web.app/quiz/resultats.html**
-
-> Si l'ID `truthcatcher-quiz` est déjà pris au niveau mondial, choisissez-en un
-> autre (ex. `truthcatcher-quiz-vrai-ou-ia`) aux deux endroits : `firebase.json`
-> (`"site"`) et la commande/le workflow de création de site.
+→ Quiz : **https://testtruthcatcher.web.app/** (la racine redirige vers `/quiz/`)
+→ Résultats : **https://testtruthcatcher.web.app/quiz/resultats.html**
 
 ## ⚠️ Règles Firestore via CLI : prudence
 
 `firebase deploy --only firestore:rules` **remplace l'intégralité des règles
 Firestore du projet** par le fichier `firestore.rules` de ce repo. Ne l'utilisez
 (ou ne cochez l'option du workflow) que si ce fichier est votre unique source
-de règles. Sinon, passez par la Console (étape 1, ajout du bloc).
+de règles. Sinon, passez par la Console (étape 1).
 
 ## 🧪 Test de validation
 

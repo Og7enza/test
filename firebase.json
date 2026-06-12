@@ -1,6 +1,5 @@
 {
   "hosting": {
-    "site": "truthcatcher-quiz",
     "public": "public",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   },

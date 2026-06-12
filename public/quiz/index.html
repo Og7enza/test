@@ -148,15 +148,14 @@ import { getFirestore, collection, addDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 // Config de secours, utilisée seulement hors Firebase Hosting (ex. test local).
-// Servi par Firebase Hosting (site dédié truthcatcher-quiz, projet
-// truthcatcher-sequence), la vraie config est chargée automatiquement
-// via l'URL réservée /__/firebase/init.json — rien à coller ici.
+// Servi par Firebase Hosting (projet testtruthcatcher), la vraie config est
+// chargée automatiquement via /__/firebase/init.json — rien à coller ici.
 const firebaseConfig = {
   apiKey: "VOTRE_API_KEY",
-  authDomain: "truthcatcher-sequence.firebaseapp.com",
-  projectId: "truthcatcher-sequence",
-  storageBucket: "truthcatcher-sequence.appspot.com",
-  messagingSenderId: "VOTRE_SENDER_ID",
+  authDomain: "testtruthcatcher.firebaseapp.com",
+  projectId: "testtruthcatcher",
+  storageBucket: "testtruthcatcher.firebasestorage.app",
+  messagingSenderId: "1010478591130",
   appId: "VOTRE_APP_ID"
 };
 let cfg = firebaseConfig;
