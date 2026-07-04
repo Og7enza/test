@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Deck — Portfolio IA &amp; gain de token</title>
+<style>
+  :root{
+    --bg:#05070d; --bg2:#0b1120; --panel:#0f1830;
+    --line:#1e2b4a; --ink:#eaf0ff; --muted:#93a3c7; --accent:#4f9dff;
+    --accent2:#7bffcf; --gold:#ffd166; --danger:#ff6b6b; --ok:#7bffcf;
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:radial-gradient(1200px 800px at 70% -10%, #10203f 0%, var(--bg) 55%) fixed;
+    color:var(--ink);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    overflow:hidden;
+  }
+  .deck{position:fixed;inset:0}
+  .slide{
+    position:absolute;inset:0;display:none;flex-direction:column;
+    padding:min(6vh,54px) min(7vw,80px);
+    animation:fade .35s ease;
+  }
+  .slide.active{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .kicker{color:var(--accent);text-transform:uppercase;letter-spacing:.18em;font-size:.78rem;font-weight:700;margin-bottom:14px}
+  h1{font-size:clamp(2rem,5.2vw,4rem);line-height:1.05;margin:.1em 0 .3em;letter-spacing:-.02em}
+  h2{font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.1;margin:0 0 .55em;letter-spacing:-.01em}
+  .lead{font-size:clamp(1.05rem,1.9vw,1.5rem);color:var(--muted);max-width:60ch}
+  ul{margin:.2em 0;padding:0;list-style:none;display:grid;gap:.7em;max-width:70ch}
+  li{position:relative;padding-left:1.5em;font-size:clamp(1rem,1.6vw,1.25rem)}
+  li::before{content:"";position:absolute;left:0;top:.6em;width:.6em;height:.6em;border-radius:3px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+  li b{color:#fff}
+  .fill{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .grid{display:grid;gap:16px}
+  .cards{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .card{background:linear-gradient(180deg,var(--panel),#0b1226);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+  .card h3{margin:.1em 0 .35em;font-size:1.15rem}
+  .card p{margin:0;color:var(--muted);font-size:.98rem}
+  .tag{display:inline-block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin-bottom:8px}
+  table{border-collapse:collapse;width:100%;max-width:900px;font-size:clamp(.9rem,1.4vw,1.1rem)}
+  th,td{text-align:left;padding:.55em .8em;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:.85em;text-transform:uppercase;letter-spacing:.06em}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr.total td{border-top:2px solid var(--accent);border-bottom:none;font-weight:700;color:#fff}
+  .big{font-size:clamp(2.4rem,7vw,5.5rem);font-weight:800;line-height:1;background:linear-gradient(120deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat-row{display:flex;gap:min(6vw,60px);flex-wrap:wrap;margin-top:.4em}
+  .stat .n{font-size:clamp(1.8rem,4.5vw,3.2rem);font-weight:800;color:#fff;line-height:1}
+  .stat .l{color:var(--muted);font-size:.95rem;margin-top:.3em;max-width:22ch}
+  .bars{display:grid;gap:14px;max-width:760px;margin-top:.6em}
+  .bar{display:grid;grid-template-columns:210px 1fr auto;align-items:center;gap:14px}
+  .bar .name{color:var(--ink);font-size:.98rem}
+  .bar .track{background:#0b1226;border:1px solid var(--line);border-radius:999px;height:22px;overflow:hidden}
+  .bar .fillbar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px}
+  .bar .val{color:var(--muted);font-variant-numeric:tabular-nums;font-size:.9rem;min-width:120px;text-align:right}
+  .quote{font-size:clamp(1.3rem,3vw,2.1rem);line-height:1.25;max-width:24ch;font-weight:600}
+  .quote .hl{background:linear-gradient(120deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .muted{color:var(--muted)}
+  .foot{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:10px min(7vw,80px);font-size:.8rem;color:var(--muted)}
+  .progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s ease;z-index:5}
+  .nav{display:flex;gap:8px;align-items:center}
+  .nav button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit;font-size:.8rem}
+  .nav button:hover{border-color:var(--accent)}
+  .dots{position:fixed;bottom:34px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:4}
+  .dot{width:8px;height:8px;border-radius:50%;background:#25324f;cursor:pointer;border:none;padding:0}
+  .dot.on{background:var(--accent);width:22px;border-radius:6px}
+  .part{color:var(--gold);font-weight:700;letter-spacing:.12em;font-size:.8rem;text-transform:uppercase}
+  .split{display:grid;grid-template-columns:1.1fr .9fr;gap:min(5vw,50px);align-items:center}
+  @media(max-width:820px){.split{grid-template-columns:1fr}.bar{grid-template-columns:120px 1fr;grid-auto-rows:auto}.bar .val{grid-column:2;text-align:left}}
+  .hint{position:fixed;top:14px;right:20px;font-size:.72rem;color:#4c5a7d;z-index:4}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="hint">← → pour naviguer · F plein écran</div>
+<div class="deck" id="deck">
+
+  <!-- 1 -->
+  <section class="slide active">
+    <div class="fill">
+      <div class="kicker">Deck de présentation &amp; étude de gain de token</div>
+      <h1>Trois produits,<br>une méthode.</h1>
+      <p class="lead">Divine Rivals · TruthCatcher · Quiz « Vrai ou IA ? » — construits de
+        bout en bout avec un agent IA, pour une facture de tokens divisée par ~3.</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <div class="part">Partie 1 — Présentation</div>
+    <div class="fill">
+      <h2>Le vrai coût du dev IA est invisible</h2>
+      <ul>
+        <li>Développer un jeu ou une app assistés par IA coûte surtout en <b>tokens</b> :
+          contexte relu, code généré, itérations ratées, génération d'assets.</li>
+        <li>La majeure partie du coût vient de la <b>structure du projet</b>, pas des fonctionnalités.</li>
+        <li>La question : peut-on livrer autant en dépensant <b>beaucoup moins de tokens</b> ?</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <div class="part">Partie 1 — Présentation</div>
+    <div class="fill">
+      <h2>Le portfolio en un coup d'œil</h2>
+      <div class="grid cards">
+        <div class="card"><span class="tag">Jeu</span><h3>Divine Rivals</h3><p>Action/stratégie temps réel 3D isométrique. Web (Three.js) + portage Unity. Jouable et hors-ligne.</p></div>
+        <div class="card"><span class="tag">App mobile</span><h3>TruthCatcher</h3><p>Photos infalsifiables : SHA-256, horodatage, géo, NFT gas-free Polygon. Flutter, démo mock complète.</p></div>
+        <div class="card"><span class="tag">Web / B2B</span><h3>Quiz « Vrai ou IA ? »</h3><p>Sensibilisation deepfakes + acquisition. Firebase, bilingue, zéro donnée personnelle.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <div class="part">Partie 1 — Présentation</div>
+    <div class="fill">
+      <h2>Divine Rivals</h2>
+      <ul>
+        <li>« Build &amp; battle » réimaginé — mythologie <b>grecque &amp; égyptienne</b>.</li>
+        <li><b>100 % original &amp; hors-ligne</b> : modèles 3D procéduraux (primitives Three.js), audio synthétisé (Web Audio API), <b>zéro asset externe</b>.</li>
+        <li>64 missions de campagne, IA d'alliés à <b>gambits</b>, multijoueur écran partagé.</li>
+        <li>Craft par empilement de nuages : 11 armes, véhicules, coéquipiers.</li>
+        <li>Portage <b>Unity</b> « Chaudron / Tier / nuages colorés ».</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <div class="part">Partie 1 — Présentation</div>
+    <div class="fill">
+      <h2>TruthCatcher</h2>
+      <ul>
+        <li>Chaque photo est <b>horodatée, géolocalisée, hachée (SHA-256)</b> puis <b>certifiée</b> avec un matricule unique vérifiable à tout moment.</li>
+        <li>Preuves <b>mintables en NFT gas-free sur Polygon</b>.</li>
+        <li>Architecture propre <span class="muted">presentation → application → domain ← data</span> : backend branchable sans toucher à l'UI.</li>
+        <li>Zéro donnée personnelle sur le funnel public.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <div class="part">Partie 1 — Présentation</div>
+    <div class="fill">
+      <h2>Quiz « Vrai ou IA ? »</h2>
+      <ul>
+        <li>Outil d'acquisition et <b>atelier B2B de sensibilisation aux deepfakes</b> (500–2 000 € / session, produit prêt à ~90 %).</li>
+        <li>Bilingue FR/EN, chronomètre, <b>résultats publics en temps réel</b>.</li>
+        <li><b>Aucune donnée personnelle</b> (garanti par les règles Firestore), hébergement gratuit.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <div class="part">Partie 1 — Présentation</div>
+    <div class="fill">
+      <h2>La méthode commune</h2>
+      <div class="grid cards">
+        <div class="card"><h3>1 · Procédural</h3><p>Visuels et audio produits dans le code.</p></div>
+        <div class="card"><h3>2 · Logique pure</h3><p>Modules déterministes, validables en une ligne.</p></div>
+        <div class="card"><h3>3 · Modularité</h3><p>Fichiers courts, responsabilité unique.</p></div>
+        <div class="card"><h3>4 · Cross-plateforme</h3><p>Même design JS → Unity → Flutter.</p></div>
+        <div class="card"><h3>5 · Hors-ligne</h3><p>Dépendances vendorisées, runs reproductibles.</p></div>
+        <div class="card"><h3>6 · Docs durables</h3><p>Ré-onboarding bon marché à chaque session.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide">
+    <div class="part">Partie 2 — Étude de gain de token</div>
+    <div class="fill">
+      <h2>Pourquoi mesurer les tokens</h2>
+      <p class="lead">Le vrai coût du dev IA n'est pas le code final, mais le contexte relu et les itérations.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="n">8 131</div><div class="l">lignes de code livrées (JS · C# · Dart · HTML/CSS)</div></div>
+        <div class="stat"><div class="n">3</div><div class="l">produits, sur 3 plateformes</div></div>
+        <div class="stat"><div class="n">0</div><div class="l">asset généré par IA pour le jeu (100 % procédural)</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide">
+    <div class="part">Partie 2 — Étude de gain de token</div>
+    <div class="fill">
+      <h2>Méthode &amp; hypothèses</h2>
+      <ul>
+        <li>Consommation décomposée en 4 postes : <b>écriture du code</b>, <b>itérations</b>, <b>assets</b>, <b>ré-onboarding</b>.</li>
+        <li>Hypothèses unitaires explicites : 12 tk/ligne ; contexte relu <b>×18 naïf</b> vs <b>×6 adopté</b> ; itération manuelle 4 500 tk vs test pur 1 200 tk ; asset génératif 3 000 tk + 1 génération média.</li>
+        <li>Estimation transparente et paramétrable — <b>pas</b> une télémétrie.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide">
+    <div class="part">Partie 2 — Étude de gain de token</div>
+    <div class="fill">
+      <h2>Le bilan chiffré</h2>
+      <table>
+        <thead><tr><th>Poste</th><th class="num">Naïf</th><th class="num">Méthode</th><th class="num">Gain</th></tr></thead>
+        <tbody>
+          <tr><td>Écriture du code</td><td class="num">1 854 k</td><td class="num">683 k</td><td class="num">1 171 k</td></tr>
+          <tr><td>Itérations / debug</td><td class="num">585 k</td><td class="num">183 k</td><td class="num">402 k</td></tr>
+          <tr><td>Assets</td><td class="num">144 k</td><td class="num">15 k</td><td class="num">129 k*</td></tr>
+          <tr><td>Ré-onboarding</td><td class="num">455 k</td><td class="num">141 k</td><td class="num">314 k</td></tr>
+          <tr class="total"><td>Total</td><td class="num">≈ 3,04 M</td><td class="num">≈ 1,02 M</td><td class="num">≈ 2,02 M</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top:.8em">* + 48 générations d'images/audio évitées.</p>
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide">
+    <div class="part">Partie 2 — Étude de gain de token</div>
+    <div class="split fill">
+      <div>
+        <h2>Résultat</h2>
+        <div class="big">~66 %</div>
+        <p class="lead" style="margin-top:.5em"><b style="color:#fff">≈ 2,0 M tokens économisés</b> et <b style="color:#fff">48 générations média évitées</b>, pour un livrable équivalent.</p>
+      </div>
+      <div class="bars">
+        <div class="bar"><span class="name">Modularité</span><span class="track"><span class="fillbar" style="width:100%"></span></span><span class="val">58 % · 1,17 M</span></div>
+        <div class="bar"><span class="name">Logique pure / offline</span><span class="track"><span class="fillbar" style="width:34%"></span></span><span class="val">20 % · 0,40 M</span></div>
+        <div class="bar"><span class="name">Ré-onboarding / réutilisation</span><span class="track"><span class="fillbar" style="width:27%"></span></span><span class="val">16 % · 0,31 M</span></div>
+        <div class="bar"><span class="name">Procédural</span><span class="track"><span class="fillbar" style="width:11%"></span></span><span class="val">6 % + médias</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide">
+    <div class="part">Partie 2 — Étude de gain de token</div>
+    <div class="fill">
+      <h2>Sensibilité &amp; limites</h2>
+      <table>
+        <thead><tr><th>Scénario</th><th>Multiplicateur naïf / adopté</th><th class="num">Gain total</th></tr></thead>
+        <tbody>
+          <tr><td>Conservateur</td><td>×10 / ×6</td><td class="num">~48 %</td></tr>
+          <tr><td>Central (retenu)</td><td>×18 / ×6</td><td class="num">~66 %</td></tr>
+          <tr><td>Agressif</td><td>×25 / ×5</td><td class="num">~72 %</td></tr>
+        </tbody>
+      </table>
+      <ul style="margin-top:1em">
+        <li>Même au plus prudent, gain <b>≳ 45 %</b> ; les 48 générations média restent évitées.</li>
+        <li>Limite : coûts unitaires supposés, à confirmer par <b>télémétrie réelle</b>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 13 -->
+  <section class="slide">
+    <div class="part">Partie 3 — Pitch</div>
+    <div class="fill" style="align-items:flex-start">
+      <div class="quote">Nous livrons des produits complets en dépensant <span class="hl">~3× moins de tokens d'IA</span> — sans sacrifier qualité ni originalité.</div>
+      <p class="lead" style="margin-top:1.2em">La méthode <b style="color:#fff">est</b> le produit : procédural, logique pure, modularité, docs réutilisées. Elle change la structure de coût du développement assisté par IA.</p>
+    </div>
+  </section>
+
+  <!-- 14 -->
+  <section class="slide">
+    <div class="part">Partie 3 — Pitch</div>
+    <div class="fill">
+      <h2>Ce que ça débloque</h2>
+      <div class="grid cards">
+        <div class="card"><h3>Plus de produits</h3><p>À budget de tokens constant.</p></div>
+        <div class="card"><h3>Zéro dépendance média</h3><p>Ni banques d'assets, ni crédits de génération.</p></div>
+        <div class="card"><h3>Portabilité</h3><p>Un design, trois plateformes.</p></div>
+        <div class="card"><h3>Reproductibilité</h3><p>Hors-ligne, testable, auditable.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 -->
+  <section class="slide">
+    <div class="part">Partie 3 — Pitch</div>
+    <div class="fill">
+      <h2>L'ask</h2>
+      <ul>
+        <li>Valider l'étude avec <b>télémétrie réelle</b> sur le prochain cycle.</li>
+        <li>Choisir le <b>produit tête d'affiche</b> : Divine Rivals (grand public), TruthCatcher (B2B / preuve légale), ou atelier deepfakes (B2B).</li>
+        <li>Industrialiser la méthode comme <b>avantage de coût durable</b>.</li>
+      </ul>
+      <p class="lead" style="margin-top:1.2em"><b style="color:#fff">Prochaine étape :</b> jouer la démo, ouvrir le deck, décider ensemble du premier lancement.</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="dots" id="dots"></div>
+<div class="foot">
+  <div>Portfolio IA · Divine Rivals · TruthCatcher</div>
+  <div class="nav">
+    <button id="prev">← Précédent</button>
+    <span id="counter">1 / 15</span>
+    <button id="next">Suivant →</button>
+  </div>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsWrap = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  let i = 0;
+
+  slides.forEach((_, k) => {
+    const b = document.createElement('button');
+    b.className = 'dot' + (k === 0 ? ' on' : '');
+    b.setAttribute('aria-label', 'Aller à la diapo ' + (k + 1));
+    b.addEventListener('click', () => go(k));
+    dotsWrap.appendChild(b);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function go(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    dots.forEach((d, k) => d.classList.toggle('on', k === i));
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+    progress.style.width = ((i + 1) / slides.length * 100) + '%';
+    location.hash = i + 1;
+  }
+  const next = () => go(i + 1);
+  const prev = () => go(i - 1);
+
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight',' ','PageDown','Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft','PageUp'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') go(0);
+    else if (e.key === 'End') go(slides.length - 1);
+    else if (e.key.toLowerCase() === 'f') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    }
+  });
+  // Swipe tactile
+  let x0 = null;
+  document.addEventListener('touchstart', e => x0 = e.touches[0].clientX, {passive:true});
+  document.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) (dx < 0 ? next : prev)();
+    x0 = null;
+  }, {passive:true});
+
+  const start = parseInt(location.hash.replace('#',''), 10);
+  go(Number.isFinite(start) && start > 0 ? start - 1 : 0);
+</script>
+</body>
+</html>
