@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Le Cycle">
+  <title>Le Cycle — Ω</title>
+  <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 84 40 A 34 34 0 1 1 78 34"/>
+    <path d="M 78 34 L 88 33 M 78 34 L 82 44"/>
+    <path d="M 60 26 V 34"/>
+    <path d="M 92 45 L 85 49"/>
+    <path d="M 92 78 L 85 74"/>
+    <path d="M 60 94 V 86"/>
+    <path d="M 28 78 L 35 74"/>
+    <path d="M 28 45 L 35 49"/>
+  </g>
+</svg>

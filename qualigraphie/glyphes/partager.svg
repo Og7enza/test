@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Partager">
+  <title>Partager — P</title>
+  <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 60 98 V 62"/>
+    <path d="M 60 62 Q 44 46 34 30"/>
+    <path d="M 34 30 L 42 34 M 34 30 L 34 40"/>
+    <path d="M 60 62 Q 76 46 86 30"/>
+    <path d="M 86 30 L 78 34 M 86 30 L 86 40"/>
+  </g>
+</svg>

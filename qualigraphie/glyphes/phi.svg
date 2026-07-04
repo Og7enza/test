@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="La Découverte">
+  <title>La Découverte — Φ</title>
+  <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 60 18 V 102"/>
+    <circle cx="60" cy="60" r="26"/>
+    <path d="M 44 60 Q 60 48 76 60"/>
+    <path d="M 44 60 Q 60 72 76 60"/>
+    <circle cx="60" cy="60" r="4.5"/>
+    <path d="M 60 18 L 52 10"/>
+    <path d="M 60 18 L 68 10"/>
+    <path d="M 60 18 L 60 8"/>
+  </g>
+</svg>

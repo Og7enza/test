@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Créer">
+  <title>Créer — +</title>
+  <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 60 100 V 42"/>
+    <path d="M 60 66 Q 38 60 40 38"/>
+    <path d="M 60 58 Q 82 52 80 30"/>
+  </g>
+</svg>
