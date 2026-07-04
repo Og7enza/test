@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="La Macro apprise">
+  <title>La Macro apprise — α</title>
+  <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 44 82 C 20 58 34 28 58 32 C 82 36 84 70 66 82 C 57 88 48 84 51 72"/>
+    <path d="M 66 82 C 74 90 86 90 94 82"/>
+    <circle cx="30" cy="34" r="3"/>
+  </g>
+</svg>

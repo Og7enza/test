@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Relier">
+  <title>Relier — =</title>
+  <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="32" cy="60" r="11"/>
+    <circle cx="88" cy="60" r="11"/>
+    <path d="M 43 60 H 77"/>
+  </g>
+</svg>

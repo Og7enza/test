@@ -1,0 +1,300 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 952 862" font-family="Georgia, 'Times New Roman', serif">
+  <rect width="952" height="862" fill="#0f1220"/>
+  <text x="476" y="42" fill="#e9e4d6" font-size="30" text-anchor="middle" letter-spacing="3">NOŌGRAPHIE — PLANCHE DES NOÈMES</text>
+  <g transform="translate(26 86)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">O</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 22 60 Q 60 24 98 60"/>
+      <path d="M 22 60 Q 60 96 98 60"/>
+      <circle cx="60" cy="60" r="9"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Observer</text>
+  </g>
+  <g transform="translate(176 86)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">C</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 60 26 V 44"/>
+      <path d="M 26 44 H 94"/>
+      <path d="M 30 44 Q 22 66 38 66"/>
+      <path d="M 90 44 Q 82 66 98 66"/>
+      <path d="M 34 66 H 34.01"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Comparer</text>
+  </g>
+  <g transform="translate(326 86)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">+</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 60 100 V 42"/>
+      <path d="M 60 66 Q 38 60 40 38"/>
+      <path d="M 60 58 Q 82 52 80 30"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Créer</text>
+  </g>
+  <g transform="translate(476 86)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">?</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 26 62 L 48 84 L 92 30"/>
+      <path d="M 92 30 Q 100 22 91 22"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Vérifier</text>
+  </g>
+  <g transform="translate(626 86)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">!</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 90 56 C 90 26 46 22 38 54 C 32 78 66 86 74 62 C 79 47 60 42 56 56 C 54 63 63 66 65 60"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Apprendre</text>
+  </g>
+  <g transform="translate(776 86)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">M</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 30 46 V 78 Q 30 92 44 92 H 76 Q 90 92 90 78 V 46"/>
+      <path d="M 24 46 H 96"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Mémoriser</text>
+  </g>
+  <g transform="translate(26 236)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">P</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 60 98 V 62"/>
+      <path d="M 60 62 Q 44 46 34 30"/>
+      <path d="M 34 30 L 42 34 M 34 30 L 34 40"/>
+      <path d="M 60 62 Q 76 46 86 30"/>
+      <path d="M 86 30 L 78 34 M 86 30 L 86 40"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Partager</text>
+  </g>
+  <g transform="translate(176 236)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">=</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="32" cy="60" r="11"/>
+      <circle cx="88" cy="60" r="11"/>
+      <path d="M 43 60 H 77"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Relier</text>
+  </g>
+  <g transform="translate(326 236)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">&amp;</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 28 28 Q 56 54 60 62"/>
+      <path d="M 92 28 Q 64 54 60 62"/>
+      <path d="M 60 62 V 98"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Fusionner</text>
+  </g>
+  <g transform="translate(476 236)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">X</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 28 28 L 50 50"/>
+      <path d="M 70 70 L 92 92"/>
+      <path d="M 92 28 L 70 50"/>
+      <path d="M 50 70 L 28 92"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Supprimer</text>
+  </g>
+  <g transform="translate(26 386)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">w</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="60" cy="60" r="34"/>
+      <path d="M 26 60 H 94"/>
+      <path d="M 60 26 Q 44 60 60 94"/>
+      <path d="M 60 26 Q 76 60 60 94"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Monde</text>
+  </g>
+  <g transform="translate(176 386)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">m</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="60" cy="60" r="12"/>
+      <circle cx="60" cy="60" r="23"/>
+      <circle cx="60" cy="60" r="34"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Mémoire</text>
+  </g>
+  <g transform="translate(326 386)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">k</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="60" cy="60" r="8"/>
+      <path d="M 60 24 V 40"/>
+      <path d="M 60 96 V 80"/>
+      <path d="M 24 60 H 40"/>
+      <path d="M 96 60 H 80"/>
+      <path d="M 35 35 L 46 46"/>
+      <path d="M 85 85 L 74 74"/>
+      <path d="M 85 35 L 74 46"/>
+      <path d="M 35 85 L 46 74"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Connaissance</text>
+  </g>
+  <g transform="translate(476 386)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">p</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 34 74 C 30 40 88 40 74 66 C 64 84 40 62 60 46 C 72 36 84 48 82 62"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Problème</text>
+  </g>
+  <g transform="translate(626 386)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">s</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="44" cy="44" r="16"/>
+      <path d="M 55 55 L 88 88"/>
+      <path d="M 88 88 L 96 80"/>
+      <path d="M 76 76 L 84 68"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Solution</text>
+  </g>
+  <g transform="translate(776 386)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">h</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 9">
+      <path d="M 60 24 L 96 60 L 60 96 L 24 60 Z"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Hypothèse</text>
+  </g>
+  <g transform="translate(26 536)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">u</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="60" cy="40" r="15"/>
+      <path d="M 30 92 Q 60 60 90 92"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Utilisateur</text>
+  </g>
+  <g transform="translate(176 536)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">b</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="26" y="46" width="36" height="36" rx="9"/>
+      <rect x="58" y="46" width="36" height="36" rx="9"/>
+      <path d="M 62 64 H 58"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Blockchain</text>
+  </g>
+  <g transform="translate(26 686)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">Ω</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 84 40 A 34 34 0 1 1 78 34"/>
+      <path d="M 78 34 L 88 33 M 78 34 L 82 44"/>
+      <path d="M 60 26 V 34"/>
+      <path d="M 92 45 L 85 49"/>
+      <path d="M 92 78 L 85 74"/>
+      <path d="M 60 94 V 86"/>
+      <path d="M 28 78 L 35 74"/>
+      <path d="M 28 45 L 35 49"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">Le Cycle</text>
+  </g>
+  <g transform="translate(176 686)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">Φ</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 60 18 V 102"/>
+      <circle cx="60" cy="60" r="26"/>
+      <path d="M 44 60 Q 60 48 76 60"/>
+      <path d="M 44 60 Q 60 72 76 60"/>
+      <circle cx="60" cy="60" r="4.5"/>
+      <path d="M 60 18 L 52 10"/>
+      <path d="M 60 18 L 68 10"/>
+      <path d="M 60 18 L 60 8"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">La Découverte</text>
+  </g>
+  <g transform="translate(326 686)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">Ψ</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 60 100 V 54"/>
+      <path d="M 34 44 V 62"/>
+      <path d="M 86 44 V 62"/>
+      <path d="M 34 62 Q 60 78 86 62"/>
+      <path d="M 46 100 Q 46 112 60 112 Q 74 112 74 100"/>
+      <path d="M 60 54 L 52 40"/>
+      <path d="M 60 54 L 68 40"/>
+      <path d="M 60 44 L 60 34"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">La Résolution</text>
+  </g>
+  <g transform="translate(476 686)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">Δ</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 60 26 L 96 96 L 24 96 Z"/>
+      <path d="M 42 78 L 54 90 L 82 58"/>
+      <path d="M 84 40 Q 98 44 94 58 Q 92 64 86 62"/>
+      <path d="M 86 62 L 90 66 M 86 62 L 84 55"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">La Correction</text>
+  </g>
+  <g transform="translate(626 686)" color="#e9e4d6">
+    <rect x="6" y="6" width="138" height="138" fill="none" stroke="#2c3350" stroke-width="1"/>
+    <text x="18" y="30" fill="#e7b455" font-size="18" font-weight="700">α</text>
+    <g transform="translate(15, 14) scale(1)">
+    <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 44 82 C 20 58 34 28 58 32 C 82 36 84 70 66 82 C 57 88 48 84 51 72"/>
+      <path d="M 66 82 C 74 90 86 90 94 82"/>
+      <circle cx="30" cy="34" r="3"/>
+    </g>
+    </g>
+    <text x="75" y="132" fill="#e9e4d6" font-size="16" text-anchor="middle">La Macro apprise</text>
+  </g>
+</svg>

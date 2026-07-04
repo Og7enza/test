@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Noōs — la qualigraphie des idées</title>
+<style>
+  :root{
+    --bg:#0f1220; --ink:#ece7d8; --dim:#8b93c0; --line:#2c3350;
+    --accent:#e7b455; --accent2:#7fd0c4;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#1a2038,#0f1220 60%);
+    color:var(--ink);font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+  header{padding:64px 24px 28px;text-align:center}
+  header h1{font-size:clamp(38px,7vw,74px);margin:0;letter-spacing:6px;font-weight:400}
+  header .sub{color:var(--accent);letter-spacing:3px;text-transform:uppercase;font-size:13px;margin-top:8px}
+  header p{max-width:640px;margin:18px auto 0;color:var(--dim)}
+  main{max-width:1080px;margin:0 auto;padding:0 20px 100px}
+  h2{font-size:26px;font-weight:400;letter-spacing:1px;margin:56px 0 6px;
+    border-bottom:1px solid var(--line);padding-bottom:10px}
+  h2 small{color:var(--dim);font-size:14px;letter-spacing:0;margin-left:10px}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));margin-top:22px}
+  .noeme{margin:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    background:linear-gradient(180deg,#161b31,#11142400);transition:.25s}
+  .noeme:hover{border-color:var(--accent);transform:translateY(-3px)}
+  .glyph{aspect-ratio:1/1;display:grid;place-items:center;padding:18px;color:var(--ink);
+    background:repeating-linear-gradient(0deg,#12162700,#12162700 22px,#1b2140 23px),
+               repeating-linear-gradient(90deg,#12162700,#12162700 22px,#1b2140 23px);
+    border-bottom:1px solid var(--line)}
+  .noeme:hover .glyph{color:var(--accent2)}
+  .glyph svg{width:74%;height:74%}
+  figcaption{padding:12px 14px 16px}
+  figcaption .code{float:right;font-size:22px;color:var(--accent);font-weight:700}
+  figcaption b{display:block;font-size:17px}
+  figcaption small{color:var(--dim)}
+  figcaption p{margin:8px 0 0;font-size:13.5px;color:#c8c8dd}
+  .traits{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin-top:22px}
+  .trait{border:1px dashed var(--line);border-radius:10px;padding:12px 14px}
+  .trait b{color:var(--accent2)} .trait .m{font-size:26px;margin-right:8px}
+  .lab{margin-top:26px;border:1px solid var(--line);border-radius:16px;padding:22px;background:#12162a}
+  .lab input{width:100%;font:inherit;font-size:20px;padding:12px 14px;border-radius:10px;
+    border:1px solid var(--line);background:#0c0f1c;color:var(--ink)}
+  .lab .out{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;min-height:90px;align-items:center}
+  .lab .tok{display:grid;place-items:center;width:76px}
+  .lab .tok svg{width:60px;height:60px;color:var(--accent2)}
+  .lab .tok small{color:var(--dim);font-size:11px;margin-top:4px}
+  .lab .hint{color:var(--dim);font-size:13px;margin-top:10px}
+  .compo{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:20px}
+  .compo .op{font-size:34px;color:var(--accent)}
+  .compo .box{width:120px;height:120px;border:1px solid var(--line);border-radius:12px;
+    display:grid;place-items:center;color:var(--ink)}
+  .compo .box svg{width:80%;height:80%}
+  footer{text-align:center;color:var(--dim);padding:40px 20px;border-top:1px solid var(--line);font-size:13px}
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+<header>
+  <div class="sub">langage cognitif · une idée = un signe</div>
+  <h1>NOŌS</h1>
+  <p>Un langage qui ne compresse plus les <i>mots</i> mais les <i>idées</i>.
+     Sa qualigraphie — la <b>Noōgraphie</b> — dessine chaque unité de pensée
+     (chaque <b>noème</b>) en un seul geste tracé.</p>
+</header>
+<main>
+
+  <h2>Les traits primitifs <small>l'alphabet des gestes</small></h2>
+  <div class="traits">
+    <div class="trait"><span class="m">▢</span><b>Le champ</b><br><small>le carré conceptuel qui accueille la pensée</small></div>
+    <div class="trait"><span class="m">⌒</span><b>L'arc</b><br><small>la perception : une courbe ouverte vers le haut</small></div>
+    <div class="trait"><span class="m">│</span><b>La tige</b><br><small>la genèse, la croissance verticale</small></div>
+    <div class="trait"><span class="m">✓</span><b>Le crochet</b><br><small>le retour sur soi, la vérification</small></div>
+    <div class="trait"><span class="m">@</span><b>La spirale</b><br><small>l'absorption vers l'intérieur, l'apprentissage</small></div>
+    <div class="trait"><span class="m">∪</span><b>La coupe</b><br><small>le contenant, la mémoire qui garde</small></div>
+    <div class="trait"><span class="m">—</span><b>Le lien</b><br><small>la relation entre deux nœuds</small></div>
+    <div class="trait"><span class="m">Y</span><b>La fourche</b><br><small>la divergence, le partage vers l'extérieur</small></div>
+    <div class="trait"><span class="m">✕</span><b>La croix</b><br><small>la coupure, la négation, l'effacement</small></div>
+    <div class="trait"><span class="m">•</span><b>Le point</b><br><small>l'atome d'objet, la graine de sens</small></div>
+  </div>
+
+  <h2>Verbes <small>primitives cognitives</small></h2>
+  <div class="grid">
+      <figure class="noeme" data-code="O">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Observer">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 22 60 Q 60 24 98 60"/>
+        <path d="M 22 60 Q 60 96 98 60"/>
+        <circle cx="60" cy="60" r="9"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">O</span>
+          <b>Observer</b>
+          <small>trait&nbsp;: L'arc</small>
+          <p>Percevoir le réel, ouvrir un regard sur ce qui est.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="C">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Comparer">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 60 26 V 44"/>
+        <path d="M 26 44 H 94"/>
+        <path d="M 30 44 Q 22 66 38 66"/>
+        <path d="M 90 44 Q 82 66 98 66"/>
+        <path d="M 34 66 H 34.01"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">C</span>
+          <b>Comparer</b>
+          <small>trait&nbsp;: Le lien + symétrie</small>
+          <p>Mettre deux choses en balance pour peser la différence.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="+">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Créer">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 60 100 V 42"/>
+        <path d="M 60 66 Q 38 60 40 38"/>
+        <path d="M 60 58 Q 82 52 80 30"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">+</span>
+          <b>Créer</b>
+          <small>trait&nbsp;: La tige</small>
+          <p>Faire naître ce qui n'existait pas ; une pousse qui monte.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="?">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Vérifier">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 26 62 L 48 84 L 92 30"/>
+        <path d="M 92 30 Q 100 22 91 22"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">?</span>
+          <b>Vérifier</b>
+          <small>trait&nbsp;: Le crochet</small>
+          <p>Éprouver la validité, revenir vérifier sa trace.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="!">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Apprendre">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 90 56 C 90 26 46 22 38 54 C 32 78 66 86 74 62 C 79 47 60 42 56 56 C 54 63 63 66 65 60"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">!</span>
+          <b>Apprendre</b>
+          <small>trait&nbsp;: La spirale</small>
+          <p>Absorber vers l'intérieur, enrouler le savoir sur soi.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="M">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Mémoriser">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 30 46 V 78 Q 30 92 44 92 H 76 Q 90 92 90 78 V 46"/>
+        <path d="M 24 46 H 96"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">M</span>
+          <b>Mémoriser</b>
+          <small>trait&nbsp;: La coupe</small>
+          <p>Déposer et garder ; un vase qui retient.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="P">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Partager">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 60 98 V 62"/>
+        <path d="M 60 62 Q 44 46 34 30"/>
+        <path d="M 34 30 L 42 34 M 34 30 L 34 40"/>
+        <path d="M 60 62 Q 76 46 86 30"/>
+        <path d="M 86 30 L 78 34 M 86 30 L 86 40"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">P</span>
+          <b>Partager</b>
+          <small>trait&nbsp;: La fourche</small>
+          <p>Émettre vers l'extérieur ; un flux qui se divise.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="=">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Relier">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="32" cy="60" r="11"/>
+        <circle cx="88" cy="60" r="11"/>
+        <path d="M 43 60 H 77"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">=</span>
+          <b>Relier</b>
+          <small>trait&nbsp;: Le lien</small>
+          <p>Nouer deux nœuds : établir une relation.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="&amp;">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Fusionner">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 28 28 Q 56 54 60 62"/>
+        <path d="M 92 28 Q 64 54 60 62"/>
+        <path d="M 60 62 V 98"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">&amp;</span>
+          <b>Fusionner</b>
+          <small>trait&nbsp;: La convergence</small>
+          <p>Deux gestes qui deviennent un seul.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="X">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Supprimer">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 28 28 L 50 50"/>
+        <path d="M 70 70 L 92 92"/>
+        <path d="M 92 28 L 70 50"/>
+        <path d="M 50 70 L 28 92"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">X</span>
+          <b>Supprimer</b>
+          <small>trait&nbsp;: La croix</small>
+          <p>Trancher, effacer ; une croix rompue au centre.</p>
+        </figcaption>
+      </figure>
+  </div>
+
+  <h2>Objets <small>les référents</small></h2>
+  <div class="grid">
+      <figure class="noeme" data-code="w">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Monde">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="60" cy="60" r="34"/>
+        <path d="M 26 60 H 94"/>
+        <path d="M 60 26 Q 44 60 60 94"/>
+        <path d="M 60 26 Q 76 60 60 94"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">w</span>
+          <b>Monde</b>
+          <small>trait&nbsp;: L'arc fermé</small>
+          <p>Le réel, le tout observable.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="m">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Mémoire">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="60" cy="60" r="12"/>
+        <circle cx="60" cy="60" r="23"/>
+        <circle cx="60" cy="60" r="34"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">m</span>
+          <b>Mémoire</b>
+          <small>trait&nbsp;: Les couches</small>
+          <p>Le magasin des traces (objet), distinct du verbe Mémoriser.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="k">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Connaissance">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="60" cy="60" r="8"/>
+        <path d="M 60 24 V 40"/>
+        <path d="M 60 96 V 80"/>
+        <path d="M 24 60 H 40"/>
+        <path d="M 96 60 H 80"/>
+        <path d="M 35 35 L 46 46"/>
+        <path d="M 85 85 L 74 74"/>
+        <path d="M 85 35 L 74 46"/>
+        <path d="M 35 85 L 46 74"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">k</span>
+          <b>Connaissance</b>
+          <small>trait&nbsp;: Le rayon</small>
+          <p>Le savoir : un foyer qui rayonne.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="p">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Problème">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 34 74 C 30 40 88 40 74 66 C 64 84 40 62 60 46 C 72 36 84 48 82 62"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">p</span>
+          <b>Problème</b>
+          <small>trait&nbsp;: Le nœud</small>
+          <p>Ce qui résiste : un entrelacs.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="s">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Solution">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="44" cy="44" r="16"/>
+        <path d="M 55 55 L 88 88"/>
+        <path d="M 88 88 L 96 80"/>
+        <path d="M 76 76 L 84 68"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">s</span>
+          <b>Solution</b>
+          <small>trait&nbsp;: La clé</small>
+          <p>Ce qui ouvre : une clé.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="h">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Hypothèse">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 9">
+        <path d="M 60 24 L 96 60 L 60 96 L 24 60 Z"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">h</span>
+          <b>Hypothèse</b>
+          <small>trait&nbsp;: Le pointillé</small>
+          <p>Le provisoire, le non encore éprouvé.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="u">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Utilisateur">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="60" cy="40" r="15"/>
+        <path d="M 30 92 Q 60 60 90 92"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">u</span>
+          <b>Utilisateur</b>
+          <small>trait&nbsp;: La figure</small>
+          <p>L'humain avec qui l'on parle.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="b">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Blockchain">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="26" y="46" width="36" height="36" rx="9"/>
+        <rect x="58" y="46" width="36" height="36" rx="9"/>
+        <path d="M 62 64 H 58"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">b</span>
+          <b>Blockchain</b>
+          <small>trait&nbsp;: La chaîne</small>
+          <p>Le registre inaltérable : des blocs chaînés.</p>
+        </figcaption>
+      </figure>
+  </div>
+
+  <h2>Clé de composition <small>verbe (haut) + objet (bas) = noème composé</small></h2>
+  <div class="compo">
+    <div class="box" id="c-verbe"></div>
+    <span class="op">+</span>
+    <div class="box" id="c-objet"></div>
+    <span class="op">→</span>
+    <div class="box" id="c-fusion"></div>
+    <div style="color:var(--dim);max-width:320px">
+      Exemple : <b>Observer</b> (l'arc) posé sur <b>Monde</b> (l'arc fermé) se lit
+      <code>Ow</code> et se dessine d'un trait : « regarder le monde ».
+    </div>
+  </div>
+
+  <h2>Pensées <small>un dessin = un raisonnement entier</small></h2>
+  <div class="grid">
+      <figure class="noeme" data-code="Ω">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="Le Cycle">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 84 40 A 34 34 0 1 1 78 34"/>
+        <path d="M 78 34 L 88 33 M 78 34 L 82 44"/>
+        <path d="M 60 26 V 34"/>
+        <path d="M 92 45 L 85 49"/>
+        <path d="M 92 78 L 85 74"/>
+        <path d="M 60 94 V 86"/>
+        <path d="M 28 78 L 35 74"/>
+        <path d="M 28 45 L 35 49"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">Ω</span>
+          <b>Le Cycle</b>
+          <small>= O → C → + → ? → ! → M</small>
+          <p>Le raisonnement complet : observer, comparer, créer, vérifier, apprendre, mémoriser — bouclé.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="Φ">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="La Découverte">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 60 18 V 102"/>
+        <circle cx="60" cy="60" r="26"/>
+        <path d="M 44 60 Q 60 48 76 60"/>
+        <path d="M 44 60 Q 60 72 76 60"/>
+        <circle cx="60" cy="60" r="4.5"/>
+        <path d="M 60 18 L 52 10"/>
+        <path d="M 60 18 L 68 10"/>
+        <path d="M 60 18 L 60 8"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">Φ</span>
+          <b>La Découverte</b>
+          <small>= Ow · C · +h · ? · !k</small>
+          <p>« Découvrir une nouvelle connaissance fiable. » Un œil dans l'axe du savoir, couronné de rayons.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="Ψ">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="La Résolution">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 60 100 V 54"/>
+        <path d="M 34 44 V 62"/>
+        <path d="M 86 44 V 62"/>
+        <path d="M 34 62 Q 60 78 86 62"/>
+        <path d="M 46 100 Q 46 112 60 112 Q 74 112 74 100"/>
+        <path d="M 60 54 L 52 40"/>
+        <path d="M 60 54 L 68 40"/>
+        <path d="M 60 44 L 60 34"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">Ψ</span>
+          <b>La Résolution</b>
+          <small>= Cm · Op · +s</small>
+          <p>« Résoudre un problème à partir de la mémoire existante. » Un trident dont le pied puise dans la coupe-mémoire et tend vers la clé.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="Δ">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="La Correction">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 60 26 L 96 96 L 24 96 Z"/>
+        <path d="M 42 78 L 54 90 L 82 58"/>
+        <path d="M 84 40 Q 98 44 94 58 Q 92 64 86 62"/>
+        <path d="M 86 62 L 90 66 M 86 62 L 84 55"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">Δ</span>
+          <b>La Correction</b>
+          <small>= ?k · X · +k</small>
+          <p>« Corriger une connaissance après vérification. » Un delta portant un crochet de contrôle et une boucle de reprise.</p>
+        </figcaption>
+      </figure>
+      <figure class="noeme" data-code="α">
+        <div class="glyph">
+          <svg viewBox="0 0 120 120" aria-label="La Macro apprise">
+      <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 44 82 C 20 58 34 28 58 32 C 82 36 84 70 66 82 C 57 88 48 84 51 72"/>
+        <path d="M 66 82 C 74 90 86 90 94 82"/>
+        <circle cx="30" cy="34" r="3"/>
+      </g>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="code">α</span>
+          <b>La Macro apprise</b>
+          <small>= OwCm+k?!kMb</small>
+          <p>Raccourci auto-généré : quand une séquence revient des millions de fois, l'IA en fait un seul geste continu.</p>
+        </figcaption>
+      </figure>
+  </div>
+
+  <h2>Le traducteur <small>tapez un code Noōs, lisez la qualigraphie</small></h2>
+  <div class="lab">
+    <input id="src" value="O w C p + s Φ" spellcheck="false"
+      placeholder="ex : O w C p + s Φ"/>
+    <div class="out" id="out"></div>
+    <div class="hint">Codes reconnus : verbes (O C + ? ! M P = &amp; X), objets (w m k p s h u b),
+      pensées (Ω Φ Ψ Δ α). Les espaces sont optionnels.</div>
+  </div>
+
+</main>
+<footer>
+  Noōgraphie — écriture inventée pour le langage Noōs.
+  Voir <a href="planche.svg">la planche des noèmes</a> et
+  <a href="CONCEPT.md">le concept complet</a>.
+</footer>
+
+<script>
+const MAP = {"O":{"id":"observer","nom":"Observer","els":["M 22 60 Q 60 24 98 60","M 22 60 Q 60 96 98 60","<circle cx=\"60\" cy=\"60\" r=\"9\"/>"],"dash":false},"C":{"id":"comparer","nom":"Comparer","els":["M 60 26 V 44","M 26 44 H 94","M 30 44 Q 22 66 38 66","M 90 44 Q 82 66 98 66","M 34 66 H 34.01"],"dash":false},"+":{"id":"creer","nom":"Créer","els":["M 60 100 V 42","M 60 66 Q 38 60 40 38","M 60 58 Q 82 52 80 30"],"dash":false},"?":{"id":"verifier","nom":"Vérifier","els":["M 26 62 L 48 84 L 92 30","M 92 30 Q 100 22 91 22"],"dash":false},"!":{"id":"apprendre","nom":"Apprendre","els":["M 90 56 C 90 26 46 22 38 54 C 32 78 66 86 74 62 C 79 47 60 42 56 56 C 54 63 63 66 65 60"],"dash":false},"M":{"id":"memoriser","nom":"Mémoriser","els":["M 30 46 V 78 Q 30 92 44 92 H 76 Q 90 92 90 78 V 46","M 24 46 H 96"],"dash":false},"P":{"id":"partager","nom":"Partager","els":["M 60 98 V 62","M 60 62 Q 44 46 34 30","M 34 30 L 42 34 M 34 30 L 34 40","M 60 62 Q 76 46 86 30","M 86 30 L 78 34 M 86 30 L 86 40"],"dash":false},"=":{"id":"relier","nom":"Relier","els":["<circle cx=\"32\" cy=\"60\" r=\"11\"/>","<circle cx=\"88\" cy=\"60\" r=\"11\"/>","M 43 60 H 77"],"dash":false},"&":{"id":"fusionner","nom":"Fusionner","els":["M 28 28 Q 56 54 60 62","M 92 28 Q 64 54 60 62","M 60 62 V 98"],"dash":false},"X":{"id":"supprimer","nom":"Supprimer","els":["M 28 28 L 50 50","M 70 70 L 92 92","M 92 28 L 70 50","M 50 70 L 28 92"],"dash":false},"w":{"id":"monde","nom":"Monde","els":["<circle cx=\"60\" cy=\"60\" r=\"34\"/>","M 26 60 H 94","M 60 26 Q 44 60 60 94","M 60 26 Q 76 60 60 94"],"dash":false},"m":{"id":"memoire","nom":"Mémoire","els":["<circle cx=\"60\" cy=\"60\" r=\"12\"/>","<circle cx=\"60\" cy=\"60\" r=\"23\"/>","<circle cx=\"60\" cy=\"60\" r=\"34\"/>"],"dash":false},"k":{"id":"connaissance","nom":"Connaissance","els":["<circle cx=\"60\" cy=\"60\" r=\"8\"/>","M 60 24 V 40","M 60 96 V 80","M 24 60 H 40","M 96 60 H 80","M 35 35 L 46 46","M 85 85 L 74 74","M 85 35 L 74 46","M 35 85 L 46 74"],"dash":false},"p":{"id":"probleme","nom":"Problème","els":["M 34 74 C 30 40 88 40 74 66 C 64 84 40 62 60 46 C 72 36 84 48 82 62"],"dash":false},"s":{"id":"solution","nom":"Solution","els":["<circle cx=\"44\" cy=\"44\" r=\"16\"/>","M 55 55 L 88 88","M 88 88 L 96 80","M 76 76 L 84 68"],"dash":false},"h":{"id":"hypothese","nom":"Hypothèse","els":["M 60 24 L 96 60 L 60 96 L 24 60 Z"],"dash":true},"u":{"id":"utilisateur","nom":"Utilisateur","els":["<circle cx=\"60\" cy=\"40\" r=\"15\"/>","M 30 92 Q 60 60 90 92"],"dash":false},"b":{"id":"blockchain","nom":"Blockchain","els":["<rect x=\"26\" y=\"46\" width=\"36\" height=\"36\" rx=\"9\"/>","<rect x=\"58\" y=\"46\" width=\"36\" height=\"36\" rx=\"9\"/>","M 62 64 H 58"],"dash":false},"Ω":{"id":"omega","nom":"Le Cycle","els":["M 84 40 A 34 34 0 1 1 78 34","M 78 34 L 88 33 M 78 34 L 82 44","M 60 26 V 34","M 92 45 L 85 49","M 92 78 L 85 74","M 60 94 V 86","M 28 78 L 35 74","M 28 45 L 35 49"],"dash":false},"Φ":{"id":"phi","nom":"La Découverte","els":["M 60 18 V 102","<circle cx=\"60\" cy=\"60\" r=\"26\"/>","M 44 60 Q 60 48 76 60","M 44 60 Q 60 72 76 60","<circle cx=\"60\" cy=\"60\" r=\"4.5\"/>","M 60 18 L 52 10","M 60 18 L 68 10","M 60 18 L 60 8"],"dash":false},"Ψ":{"id":"psi","nom":"La Résolution","els":["M 60 100 V 54","M 34 44 V 62","M 86 44 V 62","M 34 62 Q 60 78 86 62","M 46 100 Q 46 112 60 112 Q 74 112 74 100","M 60 54 L 52 40","M 60 54 L 68 40","M 60 44 L 60 34"],"dash":false},"Δ":{"id":"delta","nom":"La Correction","els":["M 60 26 L 96 96 L 24 96 Z","M 42 78 L 54 90 L 82 58","M 84 40 Q 98 44 94 58 Q 92 64 86 62","M 86 62 L 90 66 M 86 62 L 84 55"],"dash":false},"α":{"id":"alpha","nom":"La Macro apprise","els":["M 44 82 C 20 58 34 28 58 32 C 82 36 84 70 66 82 C 57 88 48 84 51 72","M 66 82 C 74 90 86 90 94 82","<circle cx=\"30\" cy=\"34\" r=\"3\"/>"],"dash":false}};
+const VB = 120;
+function svgFor(g){
+  const dash = g.dash ? ' stroke-dasharray="4 9"' : '';
+  const body = g.els.map(function(e){
+    e = e.trim();
+    return e[0]==='<' ? e : '<path d="'+e+'"/>';
+  }).join('');
+  return '<svg viewBox="0 0 '+VB+' '+VB+'"><g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"'+dash+'>'+body+'</g></svg>';
+}
+function tokenize(s){
+  const known = Object.keys(MAP);
+  const toks = [];
+  for(const ch of s){ if(ch.trim()==='') continue; if(known.includes(ch)) toks.push(ch); }
+  return toks;
+}
+function render(){
+  const out = document.getElementById('out');
+  out.innerHTML='';
+  const toks = tokenize(document.getElementById('src').value);
+  if(!toks.length){ out.innerHTML='<span style="color:var(--dim)">…</span>'; return; }
+  for(const t of toks){
+    const g = MAP[t];
+    const d = document.createElement('div'); d.className='tok';
+    d.innerHTML = svgFor(g) + '<small>'+g.nom+'</small>';
+    out.appendChild(d);
+  }
+}
+document.getElementById('src').addEventListener('input', render);
+render();
+
+// démonstration de composition
+document.getElementById('c-verbe').innerHTML = svgFor(MAP['O']);
+document.getElementById('c-objet').innerHTML = svgFor(MAP['w']);
+// fusion : verbe en haut (réduit) + objet en bas (réduit)
+(function(){
+  const v = MAP['O'], o = MAP['w'];
+  function scaled(g, ty, s){
+    const dash = g.dash ? ' stroke-dasharray="4 9"' : '';
+    const body = g.els.map(function(e){e=e.trim();return e[0]==='<'?e:'<path d="'+e+'"/>';}).join('');
+    return '<g transform="translate('+(VB/2-VB*s/2)+' '+ty+') scale('+s+')"><g fill="none" stroke="currentColor" stroke-width="'+(8.5/s)+'" stroke-linecap="round" stroke-linejoin="round"'+dash+'>'+body+'</g></g>';
+  }
+  document.getElementById('c-fusion').innerHTML =
+    '<svg viewBox="0 0 '+VB+' '+VB+'" style="color:var(--accent)">'+
+    scaled(v, -6, 0.6) + scaled(o, 46, 0.55) + '</svg>';
+})();
+</script>
+</body>
+</html>

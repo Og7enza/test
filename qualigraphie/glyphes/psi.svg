@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="La Résolution">
+  <title>La Résolution — Ψ</title>
+  <g fill="none" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 60 100 V 54"/>
+    <path d="M 34 44 V 62"/>
+    <path d="M 86 44 V 62"/>
+    <path d="M 34 62 Q 60 78 86 62"/>
+    <path d="M 46 100 Q 46 112 60 112 Q 74 112 74 100"/>
+    <path d="M 60 54 L 52 40"/>
+    <path d="M 60 54 L 68 40"/>
+    <path d="M 60 44 L 60 34"/>
+  </g>
+</svg>
